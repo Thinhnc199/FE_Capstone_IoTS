@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 
 const MainLayout = ({ children }) => {
   return (
-    <div>
+    <div className="bg-white">
       <Navbar></Navbar>
       <main>{children}</main>
       <Footer></Footer>
@@ -12,9 +12,8 @@ const MainLayout = ({ children }) => {
   );
 };
 
-
 MainLayout.propTypes = {
-  children: PropTypes.node.isRequired, 
+  children: PropTypes.node.isRequired,
 };
 
 export default MainLayout;

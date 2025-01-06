@@ -1,17 +1,9 @@
 import { Link } from "react-router-dom";
-
+import AuthenticationLayout from "../layouts/AuthenticationLayout";
 const Register = () => {
   return (
-    <div className="container mx-auto flex bg-white">
-      <div className="hidden md:flex w-1/2 items-center justify-center p-8">
-        <img
-          src="https://iotbusinessnews.com/WordPress/wp-content/uploads/IoT-internet-of-things-planet.jpg"
-          alt="IoT Background"
-          className="object-contain w-full h-full rounded-lg "
-        />
-      </div>
-
-      <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-8">
+    <AuthenticationLayout>
+      <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-5">
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-bold text-[#007AFF] mb-6 text-center">
             Create an Account
@@ -58,7 +50,7 @@ const Register = () => {
           </p>
         </div>
       </div>
-    </div>
+    </AuthenticationLayout>
   );
 };
 
