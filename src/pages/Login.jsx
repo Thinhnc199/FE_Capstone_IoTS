@@ -1,18 +1,9 @@
 import { Link } from "react-router-dom";
-
+import AuthenticationLayout from "../layouts/AuthenticationLayout";
 const Login = () => {
   return (
-    <div className="container mx-auto flex bg-white">
-      <div className="hidden md:flex w-1/2 items-center justify-center p-8">
-        <img
-          src="https://novateus.com/blog/wp-content/uploads/2020/05/internet_of_things_iot-1.jpg"
-          alt="IoT Background"
-          className="object-contain w-full h-full rounded-lg "
-        />
-      </div>
-
-   
-      <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-8">
+    <AuthenticationLayout>
+      <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-5">
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-bold text-[#007AFF] mb-6 text-center">
             Log In
@@ -43,7 +34,7 @@ const Login = () => {
           </p>
         </div>
       </div>
-    </div>
+    </AuthenticationLayout>
   );
 };
 

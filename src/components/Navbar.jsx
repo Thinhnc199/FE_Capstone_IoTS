@@ -11,7 +11,7 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md mb-1">
       <div className="container mx-auto flex justify-between items-center py-4 px-6 ">
         {/* Logo */}
         <div className="text-2xl font-bold text-[#007AFF]">
