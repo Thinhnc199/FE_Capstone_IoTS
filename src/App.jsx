@@ -2,7 +2,7 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import { Fragment } from "react";
 import MainLayout from "./layouts/MainLayout";
-import AdminLayout from "./layouts/AdminLayout";
+import AdminLayout from "./components/Admin/AdminLayout";
 import { publicRoute } from "./routes/AppRoutes";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 const App = () => {
