@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <div className="h-[7vh] bg-white flex justify-between">
       <div className="p-4 px-6 font-mainText font-bold text-xl">
-        <h1 className="text-blue-500">IOTS SHOP</h1>
+        <h1 className="text-blue-500 px-10 font-mainText2">IOTS SHOP</h1>
       </div>
       <div className="p-4  font-mainText font-bold text-2xl flex items-center space-x-2">
         <div className="flex items-center space-x-3">
