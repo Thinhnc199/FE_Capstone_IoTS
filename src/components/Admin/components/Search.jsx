@@ -7,7 +7,7 @@ const SearchAndFilter = () => {
 
   return (
     <div className="">
-      <div className="p-2 flex items-center space-x-2">
+      <div className="p-4 flex items-center space-x-2">
         {/* Ô input chứa icon search */}
         <div className="relative w-30vw">
           <input
@@ -28,8 +28,8 @@ const SearchAndFilter = () => {
           className="p-2  border border-gray-300 rounded-md"
         >
           <option value="all">Filter</option>
-          <option value="Fruit">Fruit</option>
-          <option value="Vegetable">Vegetable</option>
+          <option value="price">test</option>
+          <option value="type">test</option>
         </select>
       </div>
     </div>
