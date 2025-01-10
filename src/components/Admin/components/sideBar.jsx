@@ -21,16 +21,16 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="h-screen w-64 text-black font-mainText3">
+    <div className="h-screen w-64 text-black font-mainText3 ">
       <nav className="mt-1 p-3 flex flex-col space-y-4">
         {/* MAIN MANAGE */}
         <div>
           <Link to="/admin/dashboard">
             <div
-              className={`my-1 gap-4 p-3  flex items-center rounded-l-full  transition duration-200 ${
+              className={`my-1 gap-4 p-3  flex items-center rounded-l-full transition-transform duration-200 ${
                 selectedButton === 1
                   ? "bg-bgColer text-textColer font-semibold"
-                  : "hover:font-semibold hover:bg-bgColer hover:text-textColer "
+                  : " hover:bg-bgColer hover:text-textColer "
               }`}
               onClick={() => handleButtonClick(1)}
             >
@@ -40,12 +40,12 @@ const Sidebar = () => {
           </Link>
           <div>
             <h3 className="font-bold text-lg px-4 py-2 mt-2">MAIN MANAGE</h3>
-            <Link to="/admin/list-account">
+            <Link to="/admin/list-product">
               <div
                 className={`my-1 gap-4 p-3 flex items-center rounded-l-full transition duration-200 ${
                   selectedButton === 2
                     ? "bg-bgColer text-textColer font-semibold"
-                    : "hover:font-semibold hover:bg-bgColer hover:text-textColer"
+                    : " hover:bg-bgColer hover:text-textColer"
                 }`}
                 onClick={() => handleButtonClick(2)}
               >
@@ -53,17 +53,17 @@ const Sidebar = () => {
                 <span className="text-base">List Product</span>
               </div>
             </Link>
-            <Link to="/admin/list-product">
+            <Link to="/admin/list-account">
               <div
-                className={`my-1 gap-4 p-3  flex items-center rounded-l-full transition duration-200 ${
+                className={`my-1 gap-4 p-3  flex items-center rounded-l-full  duration-200 ${
                   selectedButton === 3
                     ? "bg-bgColer text-textColer font-semibold"
-                    : "hover:font-semibold hover:bg-bgColer hover:text-textColer"
+                    : "hover:transition-all hover:ease-in-out hover:bg-bgColer hover:text-textColer "
                 }`}
                 onClick={() => handleButtonClick(3)}
               >
                 <i className="las la-users w-6 h-6 flex items-center justify-center text-2xl"></i>
-                <span className="text-base">List Product</span>
+                <span className="text-base ">List Account</span>
               </div>
             </Link>
           </div>
@@ -77,7 +77,7 @@ const Sidebar = () => {
                 className={`my-1 gap-4 p-3  flex items-center rounded-l-full transition duration-200 ${
                   selectedButton === 6
                     ? "bg-bgColer text-textColer font-semibold"
-                    : "hover:font-semibold hover:bg-bgColer hover:text-textColer"
+                    : " hover:bg-bgColer hover:text-textColer"
                 }`}
                 onClick={() => handleButtonClick(6)}
               >
@@ -90,7 +90,7 @@ const Sidebar = () => {
               className={`my-1 gap-4 p-3  flex items-center rounded-l-full transition duration-200 cursor-pointer ${
                 selectedButton === 7
                   ? "bg-bgColer text-textColer font-semibold"
-                  : "hover:font-semibold hover:bg-bgColer hover:text-textColer"
+                  : " hover:bg-bgColer hover:text-textColer"
               }`}
               onClick={handleLogout}
             >
