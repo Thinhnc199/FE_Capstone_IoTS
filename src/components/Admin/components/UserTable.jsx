@@ -2,6 +2,9 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { EllipsisOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { activeUsers } from "../../../redux/slices/listUser";
+import { deActiveUsers } from "../../../redux/slices/listUser";
 const UserTable = ({
   users,
   pageSize,
@@ -11,7 +14,7 @@ const UserTable = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const dispatch = useDispatch();
   const handleOpenModal = (user) => {
     setSelectedUser(user);
     setIsModalOpen(true);
@@ -22,11 +25,12 @@ const UserTable = ({
     setSelectedUser(null);
   };
 
-  const handleAction = (action) => {
-    console.log(`Action: ${action} for user ID: ${selectedUser.id}`);
-    // Gửi yêu cầu API để cập nhật trạng thái hoặc vai trò người dùng ở đây
-
-    // Sau khi hoàn thành hành động, đóng modal
+  const handleActive = () => {
+    dispatch(activeUsers({ id: selectedUser.id }));
+    handleCloseModal();
+  };
+  const handleDeActive = () => {
+    dispatch(deActiveUsers({ id: selectedUser.id }));
     handleCloseModal();
   };
   return (
@@ -123,14 +127,16 @@ const UserTable = ({
 
             <div className="flex justify-between">
               <button
+                // onClick={() => dispatch(activeUsers({ id: selectedUser.id }))}
+                onClick={handleActive}
                 className="px-4 py-2 bg-green-500 text-white rounded"
-                onClick={() => handleAction("Activate")}
               >
                 Activate
               </button>
+
               <button
                 className="px-4 py-2 bg-red-500 text-white rounded"
-                onClick={() => handleAction("Deactivate")}
+                onClick={handleDeActive}
               >
                 Deactivate
               </button>
@@ -156,10 +162,7 @@ const UserTable = ({
               >
                 Cancel
               </button>
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-                onClick={() => handleAction("Update Role")}
-              >
+              <button className="px-4 py-2 bg-blue-500 text-white rounded">
                 Update Role
               </button>
             </div>

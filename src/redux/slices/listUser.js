@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
 
+// Fetch users
 export const fetchUsers = createAsyncThunk(
   "userList/fetchUsers",
   async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
@@ -17,6 +18,31 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
+// Active user
+export const activeUsers = createAsyncThunk(
+  "userList/activeUsers",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/user/activate-user/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+// deActive user
+export const deActiveUsers = createAsyncThunk(
+  "userList/deActiveUsers",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/user/deactive-user/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // State ban đầu
 const initialState = {
   loading: false,
@@ -26,7 +52,6 @@ const initialState = {
   pageSize: 2,
   error: null,
 };
-
 // Redux Slice
 const userListSlice = createSlice({
   name: "userList",
@@ -41,6 +66,7 @@ const userListSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch users
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -53,9 +79,51 @@ const userListSlice = createSlice({
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Active user
+      .addCase(activeUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(activeUsers.fulfilled, (state, action) => {
+        state.loading = false;
+
+        const updatedUser = action.payload;
+        const index = state.users.findIndex(
+          (user) => user.id === updatedUser.id
+        );
+        if (index !== -1) {
+          state.users[index] = updatedUser;
+        }
+      })
+      .addCase(activeUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // deActive user
+      .addCase(deActiveUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deActiveUsers.fulfilled, (state, action) => {
+        state.loading = false;
+
+        const updatedUser = action.payload;
+        const index = state.users.findIndex(
+          (user) => user.id === updatedUser.id
+        );
+        if (index !== -1) {
+          state.users[index] = updatedUser;
+        }
+      })
+      .addCase(deActiveUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
+// Action creators
 export const { setPageIndex, setPageSize } = userListSlice.actions;
+
 export default userListSlice.reducer;
