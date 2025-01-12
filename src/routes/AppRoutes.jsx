@@ -8,7 +8,7 @@ import ListProduct from "../components/Admin/ListProduct";
 import DashBoard from "../components/Admin/DashBoard";
 import Profile from "../components/Admin/Profile";
 // const role = localStorage.getItem("userRole");
-import DetailAccount from "../components/Admin/DetailAccount";
+
 const publicRoute = [
   { path: "/", component: Home, layout: MainLayout },
   { path: "/home", component: Home, layout: MainLayout },
@@ -26,11 +26,7 @@ const publicRoute = [
     component: ListProduct,
     layout: AdminLayout,
   },
-  {
-    path: "/admin/list-account/:id",
-    component: DetailAccount,
-    layout: AdminLayout,
-  },
+
   {
     path: "/admin/Profile",
     component: Profile,

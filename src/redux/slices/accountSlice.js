@@ -3,7 +3,7 @@ import api from "../../api/apiConfig";
 
 // Fetch users
 export const fetchUsers = createAsyncThunk(
-  "userList/fetchUsers",
+  "accounts/fetchUsers",
   async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
     try {
       const response = await api.post(`/api/user/listing`, {
@@ -20,7 +20,7 @@ export const fetchUsers = createAsyncThunk(
 
 // Active user
 export const activeUsers = createAsyncThunk(
-  "userList/activeUsers",
+  "accounts/activeUsers",
   async ({ id }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/api/user/activate-user/${id}`);
@@ -32,10 +32,36 @@ export const activeUsers = createAsyncThunk(
 );
 // deActive user
 export const deActiveUsers = createAsyncThunk(
-  "userList/deActiveUsers",
+  "accounts/deActiveUsers",
   async ({ id }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/api/user/deactive-user/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+//fetch role
+export const fetchRole = createAsyncThunk(
+  "accounts/fetchRole",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/roles`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+//update role
+export const updateRole = createAsyncThunk(
+  "accounts/updateRole",
+  async ({ id, roleIdList }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/user/update-user-role/${id}`, {
+        roleIdList,
+      });
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -51,10 +77,11 @@ const initialState = {
   pageIndex: 1,
   pageSize: 2,
   error: null,
+  roles: [],
 };
 // Redux Slice
-const userListSlice = createSlice({
-  name: "userList",
+const accountListSlice = createSlice({
+  name: "accounts",
   initialState,
   reducers: {
     setPageIndex: (state, action) => {
@@ -119,11 +146,52 @@ const userListSlice = createSlice({
       .addCase(deActiveUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // Fetch roles
+      .addCase(fetchRole.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRole.fulfilled, (state, action) => {
+        state.loading = false;
+        state.roles = action.payload.data;
+      })
+      .addCase(fetchRole.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update role
+      .addCase(updateRole.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateRole.fulfilled, (state, action) => {
+        state.loading = false;
+
+        console.log("action.payload:", action.payload); // Thêm câu lệnh log
+        const updatedUser = action.payload; // Truy cập trực tiếp action.payload
+        console.log("updatedUser:", updatedUser); // Thêm câu lệnh log
+
+        if (updatedUser) {
+          const index = state.users.findIndex(
+            (user) => user.id === updatedUser.id
+          );
+
+          if (index !== -1) {
+            state.users[index] = updatedUser;
+          }
+        } else {
+          console.error("Updated user data is undefined");
+        }
+      })
+      .addCase(updateRole.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 // Action creators
-export const { setPageIndex, setPageSize } = userListSlice.actions;
+export const { setPageIndex, setPageSize } = accountListSlice.actions;
 
-export default userListSlice.reducer;
+export default accountListSlice.reducer;

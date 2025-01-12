@@ -25,7 +25,7 @@ const SearchAndFilter = () => {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="p-2  border border-gray-300 rounded-md"
+          className="p-2  border border-gray-300 rounded-md text-gray-500"
         >
           <option value="all">Filter</option>
           <option value="price">test</option>

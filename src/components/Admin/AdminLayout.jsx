@@ -9,7 +9,7 @@ export default function AdminLayout({ children }) {
         <Sidebar />
 
         <div className="flex-1 overflow-y-scroll bg-bgColer rounded-md">
-          <div className="p-4 ">{children}</div>
+          <div className="p-4 rounded-md ">{children}</div>
         </div>
       </div>
     </div>
