@@ -2,29 +2,26 @@ import {
   fetchUsers,
   setPageIndex,
   setPageSize,
-} from "../../redux/slices/listUser";
+  fetchRole,
+} from "../../redux/slices/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
-import Breadcrumb from "../Atom/Breadcrumb";
 import SearchAndFilter from "./components/Search";
 import UserTable from "./components/UserTable";
 
 export default function ListAccount() {
-  const breadcrumbItems = [
-    { label: "Home", link: "/admin" },
-    { label: "List Account", link: "" },
-  ];
-
   const dispatch = useDispatch();
 
-  const { users, totalCount, pageIndex, pageSize, error } = useSelector(
-    (state) => state.userList
+  const { users, totalCount, pageIndex, pageSize, error, roles } = useSelector(
+    (state) => state.accounts
   );
-
   useEffect(() => {
     dispatch(fetchUsers({ pageIndex, pageSize, searchKeyword: "" }));
   }, [dispatch, pageIndex, pageSize]);
+  useEffect(() => {
+    dispatch(fetchRole());
+  }, [dispatch]);
 
   const handlePageChange = (newPage) => {
     dispatch(setPageIndex(newPage));
@@ -38,7 +35,6 @@ export default function ListAccount() {
 
   return (
     <div>
-      <Breadcrumb items={breadcrumbItems} />
       <SearchAndFilter />
       <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden">
         <h1 className="text-xl font-bold mb-4">User List</h1>
@@ -70,6 +66,7 @@ export default function ListAccount() {
           pageIndex={pageIndex}
           totalCount={totalCount}
           onPageChange={handlePageChange}
+          roles={roles || []}
         />
       </div>
     </div>

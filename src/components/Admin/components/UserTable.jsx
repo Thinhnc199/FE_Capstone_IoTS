@@ -1,174 +1,229 @@
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { useState } from "react";
-import { EllipsisOutlined } from "@ant-design/icons";
+import {
+  EllipsisOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { activeUsers } from "../../../redux/slices/listUser";
-import { deActiveUsers } from "../../../redux/slices/listUser";
+import { Modal, Button, Select, Table, Dropdown, message, Tag } from "antd";
+import {
+  activeUsers,
+  deActiveUsers,
+  updateRole,
+} from "../../../redux/slices/accountSlice";
+
+const { Option } = Select;
 const UserTable = ({
   users,
   pageSize,
   pageIndex,
   totalCount,
   onPageChange,
+  roles,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
-  const handleOpenModal = (user) => {
+  const handleOpenModal = (user, type) => {
     setSelectedUser(user);
+    setModalType(type);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
+    setSelectedRole(null);
+    setModalType(null);
   };
 
   const handleActive = () => {
     dispatch(activeUsers({ id: selectedUser.id }));
+    message.success("User activated successfully");
     handleCloseModal();
   };
+
   const handleDeActive = () => {
     dispatch(deActiveUsers({ id: selectedUser.id }));
+    message.success("User deactivated successfully");
     handleCloseModal();
   };
+
+  const handleUpdateRole = () => {
+    if (selectedUser && selectedRole) {
+      dispatch(updateRole({ id: selectedUser.id, roleIdList: [selectedRole] }));
+      message.success("User role updated successfully");
+      handleCloseModal();
+    }
+  };
+
+  const getRoleColor = (label) => {
+    switch (label) {
+      case "Store":
+        return "orange";
+      case "Customer":
+        return "default";
+      case "Trainer":
+        return "green";
+      case "Manager":
+        return "yellow";
+      case "Staff":
+        return "blue";
+      case "Admin":
+        return "purple";
+      default:
+        return "default";
+    }
+  };
+
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Full Name",
+      dataIndex: "fullname",
+      key: "fullname",
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Role",
+      key: "roles",
+      render: (text, record) => (
+        <>
+          {record.roles.map((role) =>
+            role && role.label ? (
+              <Tag color={getRoleColor(role.label)} key={role.id}>
+                {role.label}
+              </Tag>
+            ) : null
+          )}
+        </>
+      ),
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (text, record) => (
+        <Tag color={record.isActive ? "green" : "red"}>
+          {record.isActive ? "Active" : "Deactive"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, record) => (
+        <Dropdown
+          menu={{
+            items: [
+              record.isActive
+                ? {
+                    key: "2",
+                    label: (
+                      <span onClick={() => handleOpenModal(record, "deactive")}>
+                        <CloseCircleOutlined className="text-red-500 mr-2" />
+                        Deactivate
+                      </span>
+                    ),
+                  }
+                : {
+                    key: "1",
+                    label: (
+                      <span onClick={() => handleOpenModal(record, "active")}>
+                        <CheckCircleOutlined className="text-green-500 mr-2" />
+                        Activate
+                      </span>
+                    ),
+                  },
+              {
+                key: "3",
+                label: (
+                  <span onClick={() => handleOpenModal(record, "updateRole")}>
+                    <EditOutlined className="text-black mr-2" />
+                    Update Role
+                  </span>
+                ),
+              },
+            ],
+          }}
+          trigger={["click"]}
+        >
+          <EllipsisOutlined />
+        </Dropdown>
+      ),
+    },
+  ];
   return (
     <div className="overflow-x-auto">
-      <table className="table-auto border-collapse border border-gray-200 w-full text-sm text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Full Name</th>
-            <th className="border border-gray-300 px-4 py-2">Username</th>
-            <th className="border border-gray-300 px-4 py-2">Email</th>
-            <th className="border border-gray-300 px-4 py-2">Role</th>
-            <th className="border border-gray-300 px-4 py-2">Status</th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2">
-                <Link
-                  to={`/admin/list-account/${user.id}`}
-                  className="text-blue-500"
-                >
-                  {user.id}
-                </Link>
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.fullname}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.username}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.roles.map((role) => role.label).join(", ")}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {user.isActive === 1 ? (
-                  <span className="border border-green-700 text-green-700 bg-green-100 py-1 px-3 rounded-md text-sm">
-                    Active
-                  </span>
-                ) : (
-                  <span className="border border-gray-700 text-gray-700 bg-gray-100 py-1 px-3 rounded-md text-sm">
-                    Deactive
-                  </span>
-                )}
-              </td>
+      <Table
+        columns={columns}
+        dataSource={users}
+        rowKey={(record) => record.id}
+        pagination={{
+          current: pageIndex,
+          pageSize: pageSize,
+          total: totalCount,
+          onChange: onPageChange,
+        }}
+        bordered
+        style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
+      />
 
-              <td className="border border-gray-300 px-4 py-2">
-                <button
-                  className="text-blue-500 flex justify-center items-center"
-                  onClick={() => handleOpenModal(user)}
-                >
-                  <EllipsisOutlined />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Điều khiển phân trang */}
-      <div className="flex justify-end mt-4">
-        <div className="flex gap-2">
-          {Array.from({ length: Math.ceil(totalCount / pageSize) }).map(
-            (_, index) => (
-              <button
-                key={index}
-                onClick={() => onPageChange(index + 1)}
-                className={`px-3 py-1 border rounded ${
-                  pageIndex === index + 1
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 hover:bg-gray-200"
-                }`}
-              >
-                {index + 1}
-              </button>
-            )
-          )}
-        </div>
-      </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">User Action</h2>
-            <p className="mb-4">
-              You are about to perform an action for user{" "}
-              <strong>{selectedUser?.fullname}</strong> (ID: {selectedUser?.id}
-              ).
-            </p>
-
-            <div className="flex justify-between">
-              <button
-                // onClick={() => dispatch(activeUsers({ id: selectedUser.id }))}
-                onClick={handleActive}
-                className="px-4 py-2 bg-green-500 text-white rounded"
-              >
-                Activate
-              </button>
-
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded"
-                onClick={handleDeActive}
-              >
-                Deactivate
-              </button>
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-sm font-medium">
-                Update User Role:
-              </label>
-              <select className="w-full px-3 py-2 mt-1 border rounded-md">
-                {selectedUser?.roles.map((role) => (
-                  <option key={role.id} value={role.id}>
-                    {role.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex justify-end mt-4">
-              <button
-                className="px-4 py-2 bg-gray-300 text-black rounded mr-2"
-                onClick={handleCloseModal}
-              >
-                Cancel
-              </button>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded">
-                Update Role
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        title={modalType === "updateRole" ? "Update User Role" : "Confirmation"}
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={[
+          <Button key="cancel" onClick={handleCloseModal}>
+            Cancel
+          </Button>,
+          modalType === "updateRole" ? (
+            <Button key="update" type="primary" onClick={handleUpdateRole}>
+              Update
+            </Button>
+          ) : (
+            <Button
+              key="confirm"
+              type="primary"
+              onClick={modalType === "active" ? handleActive : handleDeActive}
+            >
+              Confirm
+            </Button>
+          ),
+        ]}
+      >
+        {modalType === "updateRole" ? (
+          <Select
+            className="w-full"
+            placeholder="Select a role"
+            onChange={(value) => setSelectedRole(value)}
+          >
+            {roles.map((role) => (
+              <Option key={role.id} value={role.id}>
+                {role.label}
+              </Option>
+            ))}
+          </Select>
+        ) : (
+          <p>Are you sure you want to {modalType} this user?</p>
+        )}
+      </Modal>
     </div>
   );
 };
@@ -182,15 +237,23 @@ UserTable.propTypes = {
       email: PropTypes.string.isRequired,
       roles: PropTypes.arrayOf(
         PropTypes.shape({
+          id: PropTypes.number.isRequired,
           label: PropTypes.string.isRequired,
         })
       ).isRequired,
+      isActive: PropTypes.number.isRequired,
     })
   ).isRequired,
   pageSize: PropTypes.number.isRequired,
   pageIndex: PropTypes.number.isRequired,
   totalCount: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default UserTable;
