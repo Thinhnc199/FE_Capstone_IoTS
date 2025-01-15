@@ -1,38 +1,43 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
-const Login = () => {
+
+const RegisterEmail = () => {
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle email submission logic here
+    console.log("Email submitted:", email);
+  };
+
   return (
     <AuthenticationLayout>
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 p-5">
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-bold text-[#007AFF] mb-6 text-center">
-            Log In
+            Register with Email
           </h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               type="email"
-              placeholder="Email or Phone Number"
+              placeholder="Enter your email"
               className="w-full p-3 mb-4 border rounded"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-3 mb-4 border rounded"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
             <button
               type="submit"
               className="w-full bg-[#007AFF] text-white py-3 rounded font-bold hover:bg-blue-600"
             >
-              Log In
+              Send OTP
             </button>
           </form>
           <p className="text-center mt-4 text-gray-600">
-            Dont have an account?{" "}
-            <Link
-              to="/emailcustomer"
-              className="text-[#007AFF] hover:underline"
-            >
-              Register
+            Already have an account?{" "}
+            <Link to="/login" className="text-[#007AFF] hover:underline">
+              Log In
             </Link>
           </p>
         </div>
@@ -41,4 +46,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default RegisterEmail;
