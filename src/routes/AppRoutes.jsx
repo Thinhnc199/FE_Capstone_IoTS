@@ -43,6 +43,7 @@ const publicRoute = [
     component: ListProduct,
     layout: AdminLayout,
   },
+
   {
     path: "/admin/Profile",
     component: Profile,
