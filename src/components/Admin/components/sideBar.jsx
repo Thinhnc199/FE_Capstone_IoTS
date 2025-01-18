@@ -1,6 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import ProductManageIcon from "@/assets/icons/ProductManageIcon";
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  LogoutOutlined,
+  UserOutlined,
+  UsergroupAddOutlined,
+} from "@ant-design/icons";
 import { useState } from "react";
 
 const Sidebar = () => {
@@ -21,7 +25,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="h-screen w-64 text-black font-mainText3 ">
+    <div className="h-screen w-[270px] text-black font-sans3 ">
       <nav className="mt-1 p-3 flex flex-col space-y-4">
         {/* MAIN MANAGE */}
         <div>
@@ -35,8 +39,9 @@ const Sidebar = () => {
               onClick={() => handleButtonClick(1)}
             >
               <i className="las la-home w-6 h-6 flex items-center justify-center text-2xl"></i>
-              <span className="text-base">Dashboard</span>
+              <span className="font-semibold">Dashboard</span>
             </div>
+            <hr />
           </Link>
           <div>
             <h3 className="font-bold text-lg px-4 py-2 mt-2">MAIN MANAGE</h3>
@@ -50,7 +55,7 @@ const Sidebar = () => {
                 onClick={() => handleButtonClick(2)}
               >
                 <ProductManageIcon className="w-6 h-6" />
-                <span className="text-base">List Product</span>
+                <span className="font-semibold">List Product</span>
               </div>
             </Link>
             <Link to="/admin/list-account">
@@ -63,12 +68,26 @@ const Sidebar = () => {
                 onClick={() => handleButtonClick(3)}
               >
                 <i className="las la-users w-6 h-6 flex items-center justify-center text-2xl"></i>
-                <span className="text-base ">List Account</span>
+                <span className="font-semibold ">List Account</span>
+              </div>
+            </Link>
+            <Link to="/admin/create-manager-staff">
+              <div
+                className={`my-1 gap-4 p-3  flex items-center rounded-l-full  duration-200 ${
+                  selectedButton === 4
+                    ? "bg-bgColer text-textColer font-semibold"
+                    : "hover:transition-all hover:ease-in-out hover:bg-bgColer hover:text-textColer "
+                }`}
+                onClick={() => handleButtonClick(4)}
+              >
+                <UsergroupAddOutlined className="w-6 h-6 flex items-center justify-center text-xl" />
+                <span className="font-semibold ">Create Account</span>
               </div>
             </Link>
           </div>
         </div>
         {/* ACCOUNT*/}
+        <hr />
         <div>
           <div>
             <a className="font-bold text-lg px-4 py-2">ACCOUNT</a>
@@ -82,7 +101,7 @@ const Sidebar = () => {
                 onClick={() => handleButtonClick(6)}
               >
                 <UserOutlined className="w-6 h-6 flex items-center justify-center text-xl" />
-                <span className="text-base">Profile</span>
+                <span className="font-semibold">Profile</span>
               </div>
             </Link>
 
@@ -95,7 +114,7 @@ const Sidebar = () => {
               onClick={handleLogout}
             >
               <LogoutOutlined className="w-6 h-6 flex items-center justify-center text-xl" />
-              <span className="text-base">Logout</span>
+              <span className="font-semibold">Logout</span>
             </div>
           </div>
         </div>

@@ -1,7 +1,24 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
 
-// Fetch users
+// Helper function to handle async states
+const handleAsyncState = (builder, asyncThunk, onSuccess) => {
+  builder
+    .addCase(asyncThunk.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(asyncThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      onSuccess?.(state, action);
+    })
+    .addCase(asyncThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+};
+
+// Thunks
 export const fetchUsers = createAsyncThunk(
   "accounts/fetchUsers",
   async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
@@ -18,7 +35,6 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
-// Active user
 export const activeUsers = createAsyncThunk(
   "accounts/activeUsers",
   async ({ id }, { rejectWithValue }) => {
@@ -30,7 +46,7 @@ export const activeUsers = createAsyncThunk(
     }
   }
 );
-// deActive user
+
 export const deActiveUsers = createAsyncThunk(
   "accounts/deActiveUsers",
   async ({ id }, { rejectWithValue }) => {
@@ -42,7 +58,7 @@ export const deActiveUsers = createAsyncThunk(
     }
   }
 );
-//fetch role
+
 export const fetchRole = createAsyncThunk(
   "accounts/fetchRole",
   async (_, { rejectWithValue }) => {
@@ -54,7 +70,7 @@ export const fetchRole = createAsyncThunk(
     }
   }
 );
-//update role
+
 export const updateRole = createAsyncThunk(
   "accounts/updateRole",
   async ({ id, roleIdList }, { rejectWithValue }) => {
@@ -69,7 +85,25 @@ export const updateRole = createAsyncThunk(
   }
 );
 
-// State ban đầu
+export const createManagerStaffs = createAsyncThunk(
+  "accounts/createManagerStaff",
+  async ({ email, address, fullName, phone, roleId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/user/create-manager-staff`, {
+        email,
+        fullName,
+        phone,
+        address,
+        roleId,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Initial state
 const initialState = {
   loading: false,
   users: [],
@@ -79,6 +113,7 @@ const initialState = {
   error: null,
   roles: [],
 };
+
 // Redux Slice
 const accountListSlice = createSlice({
   name: "accounts",
@@ -92,102 +127,43 @@ const accountListSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      // Fetch users
-      .addCase(fetchUsers.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.loading = false;
-        state.users = action.payload.data;
-        state.totalCount = action.payload.totalCount;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+    handleAsyncState(builder, fetchUsers, (state, action) => {
+      state.users = action.payload.data;
+      state.totalCount = action.payload.totalCount;
+    });
 
-      // Active user
-      .addCase(activeUsers.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(activeUsers.fulfilled, (state, action) => {
-        state.loading = false;
+    handleAsyncState(builder, activeUsers, (state, action) => {
+      const updatedUser = action.payload;
+      const index = state.users.findIndex((user) => user.id === updatedUser.id);
+      if (index !== -1) {
+        state.users[index] = updatedUser;
+      }
+    });
 
-        const updatedUser = action.payload;
-        const index = state.users.findIndex(
-          (user) => user.id === updatedUser.id
-        );
-        if (index !== -1) {
-          state.users[index] = updatedUser;
-        }
-      })
-      .addCase(activeUsers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+    handleAsyncState(builder, deActiveUsers, (state, action) => {
+      const updatedUser = action.payload;
+      const index = state.users.findIndex((user) => user.id === updatedUser.id);
+      if (index !== -1) {
+        state.users[index] = updatedUser;
+      }
+    });
 
-      // deActive user
-      .addCase(deActiveUsers.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(deActiveUsers.fulfilled, (state, action) => {
-        state.loading = false;
+    handleAsyncState(builder, fetchRole, (state, action) => {
+      state.roles = action.payload.data;
+    });
 
-        const updatedUser = action.payload;
-        const index = state.users.findIndex(
-          (user) => user.id === updatedUser.id
-        );
-        if (index !== -1) {
-          state.users[index] = updatedUser;
-        }
-      })
-      .addCase(deActiveUsers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      // Fetch roles
-      .addCase(fetchRole.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchRole.fulfilled, (state, action) => {
-        state.loading = false;
-        state.roles = action.payload.data;
-      })
-      .addCase(fetchRole.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      // Update role
-      .addCase(updateRole.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateRole.fulfilled, (state, action) => {
-        state.loading = false;
+    handleAsyncState(builder, updateRole, (state, action) => {
+      const updatedUser = action.payload;
+      const index = state.users.findIndex((user) => user.id === updatedUser.id);
+      if (index !== -1) {
+        state.users[index] = updatedUser;
+      }
+    });
 
-        console.log("action.payload:", action.payload); // Thêm câu lệnh log
-        const updatedUser = action.payload; // Truy cập trực tiếp action.payload
-        console.log("updatedUser:", updatedUser); // Thêm câu lệnh log
-
-        if (updatedUser) {
-          const index = state.users.findIndex(
-            (user) => user.id === updatedUser.id
-          );
-
-          if (index !== -1) {
-            state.users[index] = updatedUser;
-          }
-        } else {
-          console.error("Updated user data is undefined");
-        }
-      })
-      .addCase(updateRole.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
+    handleAsyncState(builder, createManagerStaffs, (state, action) => {
+      state.users.unshift(action.payload); // Add new user to the start of the list
+      state.totalCount += 1;
+    });
   },
 });
 

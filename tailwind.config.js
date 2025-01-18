@@ -43,11 +43,10 @@ export default {
         bgColer: "#EBF5FF",
       },
 
-      fontFamily: {
-        mainText: ["Beiruti", "sans-serif"],
-        mainText2: ["Cabin Sketch", "sans-serif"],
-        mainText3: ["Nunito", "sans-serif"],
-      },
+      // fontFamily: {
+      //   sans: ["Inter", "sans-serif"],
+      //   sans22: ["sans-serif"],
+      // },
     },
   },
   plugins: [],
