@@ -87,15 +87,18 @@ export const updateRole = createAsyncThunk(
 
 export const createManagerStaffs = createAsyncThunk(
   "accounts/createManagerStaff",
-  async ({ email, address, fullName, phone, roleId }, { rejectWithValue }) => {
+  async ({ email, fullname, phone, address, roleId }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/user/create-manager-staff`, {
-        email,
-        fullName,
-        phone,
-        address,
-        roleId,
-      });
+      const response = await api.post(
+        `/api/user/create-staff-manager-request`,
+        {
+          email,
+          fullname,
+          phone,
+          address,
+          roleId,
+        }
+      );
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
