@@ -5,7 +5,7 @@ const Footer = () => {
         <div>
           <h3 className="font-bold text-xl">
             <img
-              src="/public/images/iots.png"
+              src="/images/iots.png"
               alt="IOTS Logo"
               className="inline-block w-23 h-23"
             />
