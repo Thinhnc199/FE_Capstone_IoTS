@@ -1,9 +1,9 @@
 export default function Error() {
   return (
     <svg
-      width="1840"
-      height="1380"
-      viewBox="0 0 1840 1380"
+      width="400"
+      height="400"
+      viewBox="0 -200 1840 1380"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

@@ -4,12 +4,9 @@ import Error from "../assets/icons/Error";
 export default function ErrorPage() {
   return (
     <div id="error-page">
-      <main className="grid min-h-full place-items-center bg-white px-6 py-10">
-        <div className=" mx-auto w-[300px] h-[300px]">
-          {/* <img src={Error} alt="Error" className="w-full h-full object-cover" />
-           */}
-          <Error />
-        </div>
+      <main className="flex justify-center items-center flex-col min-h-full place-items-center bg-white px-6 py-10">
+        <Error className="w-20 h-20" />
+
         <div className="text-center">
           <p className="text-4xl font-semibold text-primary">404</p>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">

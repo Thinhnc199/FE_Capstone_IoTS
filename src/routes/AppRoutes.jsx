@@ -13,6 +13,12 @@ import RegisterCustomer from "../pages/RegisterCustomer";
 import ContactPage from "../pages/ContactPage";
 import ErrorPage from "../pages/ErrorPage";
 import CreateManagerStaff from "../components/Admin/CreateManagerStaff";
+import AdminAccount from "../components/Admin/AdminAccount";
+import StaffAccount from "../components/Admin/StaffAccount";
+import VerifyAccount from "../pages/VerifyAccount";
+import UserRequest from "../components/Admin/UserRequest";
+import ManagerAccount from "../components/Admin/ManagerAccount";
+import DetailUserRequest from "../components/Admin/DetailUserRequest";
 // const role = localStorage.getItem("userRole");
 
 const publicRoute = [
@@ -22,6 +28,7 @@ const publicRoute = [
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
+  { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
   { path: "*", component: ErrorPage, layout: null },
   {
     path: "/registerCustomer",
@@ -41,6 +48,21 @@ const publicRoute = [
     layout: AdminLayout,
   },
   {
+    path: "/admin/admin-account",
+    component: AdminAccount,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/staff-account",
+    component: StaffAccount,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/manager-account",
+    component: ManagerAccount,
+    layout: AdminLayout,
+  },
+  {
     path: "/admin/list-product",
     component: ListProduct,
     layout: AdminLayout,
@@ -54,6 +76,16 @@ const publicRoute = [
   {
     path: "/admin/create-manager-staff",
     component: CreateManagerStaff,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/userRequest",
+    component: UserRequest,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/userRequest/:id",
+    component: DetailUserRequest,
     layout: AdminLayout,
   },
 ];

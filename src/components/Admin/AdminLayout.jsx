@@ -1,20 +1,42 @@
 import PropTypes from "prop-types";
-import Header from "./components/header";
+import Headers from "./components/header";
 import Sidebar from "./components/sideBar";
-export default function AdminLayout({ children }) {
-  return (
-    <div className="h-screen flex flex-col overflow-y-hidden no-scrollbar">
-      <Header />
-      <div className="flex h-[calc(100vh-60px)] overflow-y-hidden no-scrollbar bg-white">
-        <Sidebar />
+import { Layout } from "antd";
+import { useSelector } from "react-redux";
 
-        <div className="flex-1 overflow-y-scroll bg-bgColer rounded-md">
-          <div className="p-4 rounded-md ">{children}</div>
-        </div>
-      </div>
-    </div>
+const { Sider, Header, Content } = Layout;
+
+export default function AdminLayout({ children }) {
+  const { isSidebarOpen } = useSelector((state) => state.sidebar);
+
+  return (
+    <Layout style={{ minHeight: "100vh" }} className="bg-bgColer">
+      <Sider
+        className="site-layout-background bg-white "
+        trigger={null}
+        collapsible
+        collapsed={isSidebarOpen}
+        width={250}
+      >
+        <Sidebar />
+      </Sider>
+      <Layout className="site-layout">
+        <Header className="site-layout-background" style={{ padding: 0 }}>
+          <Headers />
+        </Header>
+        <Content style={{ margin: 0 }}>
+          <div
+            className="site-layout-background bg-bgColer"
+            style={{ padding: 24, minHeight: 700 }}
+          >
+            {children}
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
+
 AdminLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };

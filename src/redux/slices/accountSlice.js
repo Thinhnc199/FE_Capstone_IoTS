@@ -21,13 +21,19 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 // Thunks
 export const fetchUsers = createAsyncThunk(
   "accounts/fetchUsers",
-  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
+  async ({ pageIndex, pageSize, searchKeyword, role }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/user/listing`, {
-        pageIndex,
-        pageSize,
-        searchKeyword,
-      });
+      const response = await api.post(
+        `/api/user/listing/`,
+        {
+          pageIndex,
+          pageSize,
+          searchKeyword,
+        },
+        {
+          params: { role },
+        }
+      );
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -90,7 +96,7 @@ export const createManagerStaffs = createAsyncThunk(
   async ({ email, fullname, phone, address, roleId }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `/api/user/create-staff-manager-request`,
+        `/api/staff-manager/create-staff-manager-request`,
         {
           email,
           fullname,
@@ -99,6 +105,50 @@ export const createManagerStaffs = createAsyncThunk(
           roleId,
         }
       );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const verifyAccounts = createAsyncThunk(
+  "accounts/verifyAccount",
+  async ({ otp, requestId, password }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/staff-manager/verify-staff-manager-otp`,
+        {
+          otp,
+          requestId,
+          password,
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const userRequests = createAsyncThunk(
+  "accounts/userRequests",
+  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/user-request/listing`, {
+        pageIndex,
+        pageSize,
+        searchKeyword,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const fetchRequestDetails = createAsyncThunk(
+  "accounts/userRequestDetail",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/user-request/${id}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -115,6 +165,12 @@ const initialState = {
   pageSize: 2,
   error: null,
   roles: [],
+  userRequest: [],
+  userRequestDetail: {
+    data: null,
+    loading: false,
+    error: null,
+  },
 };
 
 // Redux Slice
@@ -166,6 +222,13 @@ const accountListSlice = createSlice({
     handleAsyncState(builder, createManagerStaffs, (state, action) => {
       state.users.unshift(action.payload); // Add new user to the start of the list
       state.totalCount += 1;
+    });
+    handleAsyncState(builder, userRequests, (state, action) => {
+      state.userRequest = action.payload.data;
+      state.totalCount = action.payload.totalCount;
+    });
+    handleAsyncState(builder, fetchRequestDetails, (state, action) => {
+      state.userRequestDetail = action.payload.data;
     });
   },
 });

@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 const App = () => {
   return (
     <Provider store={store}>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-bgColer">
         <Router>
           <div className="App">
             <Routes>
