@@ -6,7 +6,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Select, Typography } from "antd";
-import SearchAndFilter from "./components/Search";
+
 import RequestTable from "./components/RequestTable";
 
 const { Option } = Select;
@@ -36,7 +36,6 @@ export default function UserRequest() {
 
   return (
     <div className="p-4">
-      <SearchAndFilter />
       <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Admin List</h1>
 
@@ -52,14 +51,14 @@ export default function UserRequest() {
               dropdownClassName="page-size-dropdown"
               optionLabelProp="label"
             >
-              <Option value={2} label="2 items per page">
-                2
-              </Option>
-              <Option value={5} label="5 items per page">
-                5
-              </Option>
               <Option value={10} label="10 items per page">
                 10
+              </Option>
+              <Option value={15} label="15 items per page">
+                15
+              </Option>
+              <Option value={30} label="30 items per page">
+                30
               </Option>
             </Select>
           </div>

@@ -13,12 +13,15 @@ import RegisterCustomer from "../pages/RegisterCustomer";
 import ContactPage from "../pages/ContactPage";
 import ErrorPage from "../pages/ErrorPage";
 import CreateManagerStaff from "../components/Admin/CreateManagerStaff";
-import AdminAccount from "../components/Admin/AdminAccount";
-import StaffAccount from "../components/Admin/StaffAccount";
 import VerifyAccount from "../pages/VerifyAccount";
 import UserRequest from "../components/Admin/UserRequest";
-import ManagerAccount from "../components/Admin/ManagerAccount";
 import DetailUserRequest from "../components/Admin/DetailUserRequest";
+import AdminAccount from "../components/Admin/AdminAccount";
+import StaffAccount from "../components/Admin/StaffAccount";
+import ManagerAccount from "../components/Admin/ManagerAccount";
+import CustomerAccount from "../components/Admin/CustomerAccount";
+import StoreAccount from "../components/Admin/StoreAccount";
+
 // const role = localStorage.getItem("userRole");
 
 const publicRoute = [
@@ -60,6 +63,16 @@ const publicRoute = [
   {
     path: "/admin/manager-account",
     component: ManagerAccount,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/customer-account",
+    component: CustomerAccount,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/store-account",
+    component: StoreAccount,
     layout: AdminLayout,
   },
   {

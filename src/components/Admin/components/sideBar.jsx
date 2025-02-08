@@ -75,8 +75,8 @@ const items2 = [
         icon: <UnorderedListOutlined />,
       },
       {
-        key: "userrequest",
-        label: <Link to="/admin/userRequest">Product Requests</Link>,
+        key: "productrequest",
+        label: <Link to="/admin/productRequest">Product Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
     ],

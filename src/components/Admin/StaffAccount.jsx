@@ -9,10 +9,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Select, Typography, Button } from "antd";
 import { Col, Drawer, Form, Input, Row, Space, message } from "antd";
-import SearchAndFilter from "./components/Search";
+
 import AccountsTable from "./components/AccountsTable";
 import { PlusOutlined } from "@ant-design/icons";
-
+import { Roles } from "../../redux/constants";
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -42,7 +42,9 @@ export default function StaffAccount() {
   );
 
   useEffect(() => {
-    dispatch(fetchUsers({ pageIndex, pageSize, searchKeyword: "", role: 2 }));
+    dispatch(
+      fetchUsers({ pageIndex, pageSize, searchKeyword: "", role: Roles.STAFF })
+    );
   }, [dispatch, pageIndex, pageSize]);
 
   useEffect(() => {
@@ -60,8 +62,7 @@ export default function StaffAccount() {
   return (
     <>
       <div className="p-4">
-        <div className="flex justify-between items-center ">
-          <SearchAndFilter />
+        <div className="flex justify-end items-center ">
           <Button
             className="m-4 font-medium"
             onClick={showDrawer}
@@ -189,10 +190,10 @@ export default function StaffAccount() {
                 name="roleId"
                 label="Role"
                 rules={[{ required: true, message: "Please select a role" }]}
-                initialValue="2"
+                initialValue={Roles.STAFF}
               >
                 <Select placeholder="Select a role">
-                  <Option value="2">Staff</Option>
+                  <Option value={Roles.STAFF}>Staff</Option>
                   {/* <Option value="3">Manager</Option> */}
                 </Select>
               </Form.Item>

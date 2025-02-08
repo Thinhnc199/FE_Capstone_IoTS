@@ -9,10 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Select, Typography, Button } from "antd";
 import { Col, Drawer, Form, Input, Row, Space, message } from "antd";
-import SearchAndFilter from "./components/Search";
 import AccountsTable from "./components/AccountsTable";
 import { PlusOutlined } from "@ant-design/icons";
-
+import { Roles } from "../../redux/constants";
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -42,7 +41,14 @@ export default function ManagerAccount() {
   );
 
   useEffect(() => {
-    dispatch(fetchUsers({ pageIndex, pageSize, searchKeyword: "", role: 3 }));
+    dispatch(
+      fetchUsers({
+        pageIndex,
+        pageSize,
+        searchKeyword: "",
+        role: Roles.MANAGER,
+      })
+    );
   }, [dispatch, pageIndex, pageSize]);
 
   useEffect(() => {
@@ -60,8 +66,7 @@ export default function ManagerAccount() {
   return (
     <>
       <div className="p-4">
-        <div className="flex justify-between items-center ">
-          <SearchAndFilter />
+        <div className="flex justify-end items-center ">
           <Button
             className="m-4 font-medium"
             onClick={showDrawer}
@@ -73,7 +78,7 @@ export default function ManagerAccount() {
         </div>
 
         <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
-          <h1 className="text-xl font-bold mb-4">Staff List</h1>
+          <h1 className="text-xl font-bold mb-4">Manager List</h1>
 
           {/* Bộ lọc và phân trang */}
           <div className="flex justify-between items-center mb-4">
@@ -189,10 +194,10 @@ export default function ManagerAccount() {
                 name="roleId"
                 label="Role"
                 rules={[{ required: true, message: "Please select a role" }]}
-                initialValue="3"
+                initialValue={Roles.MANAGER}
               >
                 <Select placeholder="Select a role">
-                  <Option value="3">Manager</Option>
+                  <Option value={Roles.MANAGER}>Manager</Option>
                   {/* <Option value="3">Manager</Option> */}
                 </Select>
               </Form.Item>
