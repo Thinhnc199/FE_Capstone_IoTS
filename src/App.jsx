@@ -1,8 +1,8 @@
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { Fragment } from "react";
-import MainLayout from "./layouts/MainLayout";
-import AdminLayout from "./components/Admin/AdminLayout";
+// import MainLayout from "./layouts/MainLayout";
+// import AdminLayout from "./components/Admin/AdminLayout";
 import { publicRoute } from "./routes/AppRoutes";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 const App = () => {
@@ -14,13 +14,7 @@ const App = () => {
             <Routes>
               {publicRoute.map((route, index) => {
                 const Page = route.component;
-                let Layout = MainLayout;
-
-                if (route.layout == AdminLayout) {
-                  Layout = AdminLayout;
-                } else if (route.layout == null) {
-                  Layout = Fragment;
-                }
+                const Layout = route.layout ? route.layout : Fragment;
                 return (
                   <Route
                     key={index}
