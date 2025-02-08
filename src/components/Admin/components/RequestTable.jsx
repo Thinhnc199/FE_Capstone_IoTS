@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Table, Tag } from "antd";
-
+import { Roles } from "../../../redux/constants";
 const RequestTable = ({
   userRequest,
   pageSize,
@@ -47,16 +47,19 @@ const RequestTable = ({
         return "default";
     }
   };
-
   const columns = [
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      render: (text, record) => (
-        <Link to={`/admin/userRequest/${record.id}`}>{text}</Link>
-      ),
+      render: (text, record) =>
+        record.role.id == Roles.STORE ? (
+          <Link to={`/admin/userRequest/${record.id}`}>{text}</Link>
+        ) : (
+          <div key={record.id}>{text}</div>
+        ),
     },
+
     {
       title: "Role",
       key: "role",

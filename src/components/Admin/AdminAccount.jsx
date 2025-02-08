@@ -7,9 +7,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Select, Typography } from "antd";
-import SearchAndFilter from "./components/Search";
-import AccountsTable from "./components/AccountsTable";
 
+import AccountsTable from "./components/AccountsTable";
+import { Roles } from "../../redux/constants";
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -21,7 +21,9 @@ export default function AdminAccount() {
   );
 
   useEffect(() => {
-    dispatch(fetchUsers({ pageIndex, pageSize, searchKeyword: "" }));
+    dispatch(
+      fetchUsers({ pageIndex, pageSize, searchKeyword: "", role: Roles.ADMIN })
+    );
   }, [dispatch, pageIndex, pageSize]);
 
   useEffect(() => {
@@ -43,10 +45,8 @@ export default function AdminAccount() {
 
   return (
     <div className="p-4">
-      <SearchAndFilter />
       <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Admin List</h1>
-
         {/* Bộ lọc và phân trang */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
