@@ -21,7 +21,9 @@ import StaffAccount from "../components/Admin/StaffAccount";
 import ManagerAccount from "../components/Admin/ManagerAccount";
 import CustomerAccount from "../components/Admin/CustomerAccount";
 import StoreAccount from "../components/Admin/StoreAccount";
-
+import StoreLayout from "../components/StoreIoT/StoreLayout";
+import WelcomeStore from "../components/StoreIoT/WelcomeStore";
+import StoreRegistration from "../components/StoreIoT/StoreRegistration";
 // const role = localStorage.getItem("userRole");
 
 const publicRoute = [
@@ -101,6 +103,16 @@ const publicRoute = [
     component: DetailUserRequest,
     layout: AdminLayout,
   },
+  {
+    path: "/store/registerStore",
+    component: StoreRegistration,
+    layout: StoreLayout,
+  },
+  {
+    path: "/store/welcome",
+    component: WelcomeStore,
+    layout: StoreLayout,
+  },
 ];
 
 // if (role == "ADMIN") {
@@ -114,3 +126,5 @@ const publicRoute = [
 
 const privateRoute = [];
 export { publicRoute, privateRoute };
+// { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout, roles: [6] },
+//   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout, roles: [6] }
