@@ -28,11 +28,6 @@ const DetailUserRequest = () => {
     setOpen(true);
   };
   const handleOk = async () => {
-    if (! ) {
-      alert("Vui lòng nhập lý do!");
-      return;
-    }
-
     if (actionType === "approve") {
       await dispatch(approveUserRequests({ remark, id: userRequestInfo.id }));
     } else if (actionType === "reject") {
