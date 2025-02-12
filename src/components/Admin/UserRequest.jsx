@@ -2,7 +2,7 @@ import {
   userRequests,
   setPageIndex,
   setPageSize,
-} from "../../redux/slices/accountSlice";
+} from "../../redux/slices/userRequestSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Select, Typography } from "antd";
@@ -15,14 +15,15 @@ const { Text } = Typography;
 export default function UserRequest() {
   const dispatch = useDispatch();
 
-  const { userRequest, pageIndex, pageSize, error, totalCount } = useSelector(
-    (state) => state.accounts
+  // const { totalCount } = useSelector((state) => state.accounts);
+
+  const { userRequest, pageIndex, pageSize, totalCount, error } = useSelector(
+    (state) => state.userrequest
   );
 
   useEffect(() => {
     dispatch(userRequests({ pageIndex, pageSize, searchKeyword: "" }));
   }, [dispatch, pageIndex, pageSize]);
-  console.log("userrequest", userRequest);
 
   const handlePageChange = (newPage) => {
     dispatch(setPageIndex(newPage));
@@ -35,9 +36,9 @@ export default function UserRequest() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="p-4">
-      <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
-        <h1 className="text-xl font-bold mb-4">Admin List</h1>
+    <div className="">
+      <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
+        <h1 className="text-xl font-bold mb-4">User Requests</h1>
 
         {/* Bộ lọc và phân trang */}
         <div className="flex justify-between items-center mb-4">

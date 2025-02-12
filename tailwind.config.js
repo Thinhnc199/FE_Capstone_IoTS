@@ -40,7 +40,8 @@ export default {
 
         mainColer: "#f4f8fb",
         textColer: "#58bbf9",
-        bgColer: "#EBF5FF",
+        // bgColer: "#EBF5FF",
+        bgColer: "#f9fbff",
       },
 
       // fontFamily: {

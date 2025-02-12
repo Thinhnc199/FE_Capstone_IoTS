@@ -85,6 +85,8 @@ const UserTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => Number(a.id || 0) - Number(b.id || 0),
     },
     {
       title: "Full Name",

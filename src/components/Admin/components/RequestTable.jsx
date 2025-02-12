@@ -9,12 +9,6 @@ const RequestTable = ({
   totalCount,
   onPageChange,
 }) => {
-  //   const [isModalOpen, setIsModalOpen] = useState(false);
-  //   const [selectedUser, setSelectedUser] = useState(null);
-  //   const [selectedRole, setSelectedRole] = useState(null);
-  //   const [modalType, setModalType] = useState(null);
-  //   const dispatch = useDispatch();
-
   const getRoleColor = (label) => {
     switch (label) {
       case "Store":
@@ -48,6 +42,13 @@ const RequestTable = ({
     }
   };
   const columns = [
+    {
+      title: "Id",
+      key: "id",
+      render: (text, record) => <div key={record.id}>{record.id}</div>,
+      defaultSortOrder: "descend",
+      sorter: (a, b) => Number(a.id || 0) - Number(b.id || 0),
+    },
     {
       title: "Email",
       dataIndex: "email",

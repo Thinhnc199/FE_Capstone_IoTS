@@ -7,7 +7,7 @@ const SearchAndFilter = () => {
 
   return (
     <div className="">
-      <div className="p-4 flex items-center space-x-2">
+      <div className="pb-4 flex items-center space-x-2">
         {/* Ô input chứa icon search */}
         <div className="relative w-30vw">
           <input

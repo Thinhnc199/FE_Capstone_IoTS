@@ -40,8 +40,8 @@ export default function StoreAccount() {
 
   return (
     <>
-      <div className="p-4">
-        <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
+      <div className="">
+        <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
           <h1 className="text-xl font-bold mb-4">Store List</h1>
 
           {/* Bộ lọc và phân trang */}
