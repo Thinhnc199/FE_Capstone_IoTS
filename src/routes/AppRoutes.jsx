@@ -24,6 +24,8 @@ import StoreAccount from "../components/Admin/StoreAccount";
 import StoreLayout from "../components/StoreIoT/StoreLayout";
 import WelcomeStore from "../components/StoreIoT/WelcomeStore";
 import StoreRegistration from "../components/StoreIoT/StoreRegistration";
+import EmailOtpPage from "./../pages/StoreRes/EmailOtpPage";
+import OtpUserInfoPage from "../pages/StoreRes/OtpUserInfoPage";
 // const role = localStorage.getItem("userRole");
 
 const publicRoute = [
@@ -40,6 +42,8 @@ const publicRoute = [
     component: RegisterCustomer,
     layout: MainLayout,
   },
+  { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
+  { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
   {
     path: "/contact",
     component: ContactPage,

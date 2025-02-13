@@ -79,10 +79,14 @@ export const login = async (data) => {
   }
 };
 
-// ✅ Register Customer
+//  Register Customer
 export const registerCustomer = async (data) => {
   try {
-    const response = await api.post("/api/user/register-verify-otp-customer", data);
+    const response = await api.post("/api/customer/register-customer-user", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     return handleApiError(error);
@@ -230,19 +234,19 @@ export const uploadFiles = async (file) => {
 // };
 export const getStoreDetailsByUserId = async (userId) => {
   try {
-    console.log("Calling API: GET /api/store/get-store-details-by-user-id/" + userId);
+    // console.log("Calling API: GET /api/store/get-store-details-by-user-id/" + userId);
     const response = await api.get(`/api/store/get-store-details-by-user-id/${userId}`);
     // console.log("Store Details API Response:", response.data); 
     return response.data; 
   } catch (error) {
-    console.error("Error fetching store details:", error);
+    console.error("Store cannot be found:", error);
     throw error; 
   }
 };
 
 export const getBusinessLicenseByStoreId = async (storeId) => {
   try {
-    console.log("Calling API: GET /api/store/get-business-license/" + storeId);
+    // console.log("Calling API: GET /api/store/get-business-license/" + storeId);
     const response = await api.get(`/api/store/get-business-license/${storeId}`);
     // console.log("Business License API Response:", response.data); 
     return response.data; 
