@@ -35,6 +35,14 @@ const Navbar = () => {
               About
             </Link>
           </li>
+          <li>
+            <Link
+              to="/StoreEmail"
+              className="hover:text-[#007AFF] cursor-pointer"
+            >
+              Become Store
+            </Link>
+          </li>
         </ul>
 
         {/* Right Section */}
@@ -75,7 +83,7 @@ const Navbar = () => {
                   </li>
                   <li className="hover:bg-gray-100">
                     <Link
-                      to="/register"
+                      to="/registerCustomer"
                       className="flex items-center px-4 py-2 w-full text-blue-700"
                     >
                       Register
