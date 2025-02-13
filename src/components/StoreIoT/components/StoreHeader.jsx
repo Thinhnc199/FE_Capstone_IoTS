@@ -3,12 +3,12 @@ import { FaStore } from "react-icons/fa";
 
 const StoreHeader = () => {
   const { userDetails } = useSelector((state) => state.userAuth);
-
+  console.log("User Details:", userDetails?.email);
   return (
     <header className="flex items-center justify-between p-4 bg-white shadow-md">
       <div className="flex items-center space-x-3">
         <img
-          src="/src/assets/iots.png"
+          src="/src/assets/logo1.png"
           alt="Logo"
           className="w-20 h-20 rounded-full"
         />
