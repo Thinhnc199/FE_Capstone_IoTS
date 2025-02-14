@@ -93,10 +93,6 @@ export const registerCustomer = async (data) => {
   }
 };
 
-/* ===========================
- ✅ STORE API CALLS
-=========================== */
-
 // ✅ Send OTP for Store Registration
 export const sendOtpStore = async (email) => {
   try {

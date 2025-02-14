@@ -11,6 +11,7 @@ import {
 import {
   UploadOutlined,
   // DeleteOutlined,
+  CheckCircleOutlined,
   CloseCircleOutlined,
   // EditOutlined,
 } from "@ant-design/icons";
@@ -66,10 +67,10 @@ const StoreRegistration = () => {
             // console.log("Store details received:", storeResponse.payload.data);
 
             if (storeResponse.payload.data.id) {
-              // console.log(
-              //   "Fetching business license for storeId:",
-              //   storeResponse.payload.data.id
-              // );
+              console.log(
+                "Fetching business license for storeId:",
+                storeResponse.payload.data.id
+              );
               const businessLicenseResponse = await dispatch(
                 getBusinessLicenseDetails(storeResponse.payload.data.id)
               );
@@ -108,6 +109,44 @@ const StoreRegistration = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (currentStep === 2) {
+      const fetchStoreAndLicenseDetails = async () => {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          try {
+            const storeResponse = await dispatch(getStoreDetails(userId));
+            if (storeResponse.payload && storeResponse.payload.data) {
+              setStoreDetails(storeResponse.payload.data);
+            } else {
+              notification.error({
+                message: "Error fetching store details"
+              });
+            }
+  
+            const businessLicenseResponse = await dispatch(getBusinessLicenseDetails(storeDetails.id));
+            if (businessLicenseResponse.payload) {
+              setBusinessLicense(businessLicenseResponse.payload);
+            } else {
+              notification.error({
+                message: "Error fetching business license details"
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching details:", error);
+            notification.error({
+              message: "Error fetching store and business license details",
+              description: error.message
+            });
+          }
+        }
+      };
+  
+      fetchStoreAndLicenseDetails();
+    }
+  }, [currentStep, dispatch, storeDetails?.id]);  // `storeDetails?.id` makes sure that the business license is fetched after the store details are fetched
+  
+
+  useEffect(() => {
     if (storeDetails) {
       form.setFieldsValue({
         name: storeDetails.name,
@@ -127,7 +166,7 @@ const StoreRegistration = () => {
         issueDate: businessLicense.data?.issueDate?.split("T")[0],
         expiredDate: businessLicense.data?.expiredDate?.split("T")[0],
       });
-      // ✅ Cập nhật hình ảnh đã có sẵn
+  
       setDocuments({
         frontIdentification: businessLicense.data.frontIdentification || null,
         backIdentification: businessLicense.data.backIdentification || null,
@@ -216,11 +255,16 @@ const StoreRegistration = () => {
       imageUrl: logoUrl,
       storeAttachments: allAttachments.map((url) => ({ imageUrl: url })),
     };
-
     try {
       const storeInfo = await dispatch(submitStoreInfo({ userId, storeData }));
       if (storeInfo.payload && storeInfo.payload.id) {
-        setCurrentStep(1);
+        setCurrentStep(1); // Proceed to step 2
+        // Fetch store details again to get storeId
+        const userId = localStorage.getItem("userId");
+        const storeResponse = await dispatch(getStoreDetails(userId));
+        if (storeResponse.payload && storeResponse.payload.data) {
+          setStoreId(storeResponse.payload.data.id); // Set storeId
+        }
       }
       notification.success({
         message: "Store details submitted successfully!",
@@ -232,6 +276,21 @@ const StoreRegistration = () => {
       });
     }
   };
+  //   try {
+  //     const storeInfo = await dispatch(submitStoreInfo({ userId, storeData }));
+  //     if (storeInfo.payload && storeInfo.payload.id) {
+  //       setCurrentStep(1);
+  //     }
+  //     notification.success({
+  //       message: "Store details submitted successfully!",
+  //     });
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Submit Failed",
+  //       description: error.message,
+  //     });
+  //   }
+  // };
 
   // const handleStoreDetailsSubmit = async (values) => {
   //   const userId = localStorage.getItem("userId");
@@ -299,15 +358,34 @@ const StoreRegistration = () => {
     }
 
     try {
+      // Check if the user has uploaded new documents, otherwise use the existing URLs
       const frontIdUrl = documents.frontIdentification
-        ? await handleUpload(documents.frontIdentification)
-        : documents.frontIdentification;
+        ? documents.frontIdentification instanceof File
+          ? await handleUpload(documents.frontIdentification)
+          : documents.frontIdentification
+        : null;
+
       const backIdUrl = documents.backIdentification
-        ? await handleUpload(documents.backIdentification)
-        : documents.backIdentification;
+        ? documents.backIdentification instanceof File
+          ? await handleUpload(documents.backIdentification)
+          : documents.backIdentification
+        : null;
+
       const businessLicenseUrl = documents.businessLicences
-        ? await handleUpload(documents.businessLicences)
-        : documents.businessLicencesll;
+        ? documents.businessLicences instanceof File
+          ? await handleUpload(documents.businessLicences)
+          : documents.businessLicences
+        : null;
+      // try {
+      //   const frontIdUrl = documents.frontIdentification
+      //     ? await handleUpload(documents.frontIdentification)
+      //     : documents.frontIdentification;
+      //   const backIdUrl = documents.backIdentification
+      //     ? await handleUpload(documents.backIdentification)
+      //     : documents.backIdentification;
+      //   const businessLicenseUrl = documents.businessLicences
+      //     ? await handleUpload(documents.businessLicences)
+      //     : documents.businessLicences;
 
       if (!frontIdUrl || !backIdUrl || !businessLicenseUrl) {
         notification.error({ message: "Documents uploaded Fail, try again!" });
@@ -347,46 +425,46 @@ const StoreRegistration = () => {
     }
   };
 
-  const handleNextStep = () => {
-    setDocuments((prev) => ({
-      frontIdentification:
-        prev.frontIdentification instanceof File
-          ? prev.frontIdentification
-          : businessLicense?.data?.frontIdentification,
-      backIdentification:
-        prev.backIdentification instanceof File
-          ? prev.backIdentification
-          : businessLicense?.data?.backIdentification,
-      businessLicences:
-        prev.businessLicences instanceof File
-          ? prev.businessLicences
-          : businessLicense?.data?.businessLicences,
-    }));
-
-    setCurrentStep(currentStep + 1);
-  };
 
   const handleSubmitApproval = async () => {
     const userId = localStorage.getItem("userId");
-
+  
     if (!userId) {
       notification.error({
-        message: "User  ID not found!",
+        message: "User ID not found!",
       });
       return;
     }
-
+  
     try {
+      // Fetch the latest store details and business license before submitting
+      const storeResponse = await dispatch(getStoreDetails(userId));
+      if (storeResponse.payload && storeResponse.payload.data) {
+        setStoreDetails(storeResponse.payload.data); // Update store details
+        setStoreId(storeResponse.payload.data.id); // Update storeId
+      }
+  
+      const businessLicenseResponse = await dispatch(getBusinessLicenseDetails(storeId));
+      if (businessLicenseResponse.payload) {
+        setBusinessLicense(businessLicenseResponse.payload); // Update business license data
+      } else {
+        notification.error({
+          message: "Error fetching business license details",
+        });
+        return;
+      }
+  
+      // Now proceed to submit the store for approval using the latest data
       const userRequestResponse = await getUserRequestDetails(userId);
       const requestId = userRequestResponse.data.userRequestInfo.id;
-
+  
       if (!requestId) {
         notification.error({
           message: "Request ID not found!",
         });
         return;
       }
-
+  
       await dispatch(submitStoreApproval(requestId));
       notification.success({
         message: "Store registration submitted for approval!",
@@ -399,6 +477,40 @@ const StoreRegistration = () => {
       });
     }
   };
+  
+  // const handleSubmitApproval = async () => {
+  //   const userId = localStorage.getItem("userId");
+
+  //   if (!userId) {
+  //     notification.error({
+  //       message: "User  ID not found!",
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const userRequestResponse = await getUserRequestDetails(userId);
+  //     const requestId = userRequestResponse.data.userRequestInfo.id;
+
+  //     if (!requestId) {
+  //       notification.error({
+  //         message: "Request ID not found!",
+  //       });
+  //       return;
+  //     }
+
+  //     await dispatch(submitStoreApproval(requestId));
+  //     notification.success({
+  //       message: "Store registration submitted for approval!",
+  //     });
+  //     setCurrentStep(3);
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Submit Failed",
+  //       description: error.message,
+  //     });
+  //   }
+  // };
 
   return (
     <div className="p-5">
@@ -410,7 +522,7 @@ const StoreRegistration = () => {
       </Steps>
 
       {loading && <Spin size="large" />}
-
+      <div className="bg-white shadow-lg rounded-lg p-6">
       {/* Step 1: Store Details */}
       {currentStep === 0 && (
         <Form
@@ -450,10 +562,10 @@ const StoreRegistration = () => {
             name="summary"
             rules={[
               { required: true, message: "Please provide a summary!" },
-              { max: 25, message: "Summary cannot exceed 25 characters!" },
+              { max: 255, message: "Summary cannot exceed 25 characters!" },
             ]}
           >
-            <Input maxLength={25} className="border-gray-300 rounded-md p-2" />
+            <Input maxLength={255} className="border-gray-300 rounded-md p-2" />
           </Form.Item>
 
           <Form.Item
@@ -462,13 +574,13 @@ const StoreRegistration = () => {
             rules={[
               { required: true, message: "Please provide a description!" },
               {
-                max: 100,
+                max: 550,
                 message: "Description cannot exceed 100 characters!",
               },
             ]}
           >
             <Input.TextArea
-              maxLength={100}
+              maxLength={550}
               className="border-gray-300 rounded-md p-2"
             />
           </Form.Item>
@@ -703,20 +815,12 @@ const StoreRegistration = () => {
             <Input type="date" />
           </Form.Item>
 
-          <Button
-            type="primary"
-            className="w-full mt-4"
-            onClick={() => handleNextStep(formStep2)}
-          >
+          <Button type="primary" htmlType="submit" className="w-full mt-4">
             Next
           </Button>
-
-          {/* <Button type="primary" htmlType="submit" className="w-full mt-4">
-            Next
-          </Button> */}
         </Form>
       )}
-
+</div>
       {/* Step 3: Submit */}
       {currentStep === 2 && (
         <div className="bg-white shadow-lg rounded-lg p-6">
@@ -764,21 +868,21 @@ const StoreRegistration = () => {
               </h3>
               <p className="mb-1">
                 <strong>License Number:</strong>{" "}
-                {businessLicense?.data?.liscenseNumber}
+                {businessLicense.data?.liscenseNumber}
               </p>
               <p className="mb-1">
-                <strong>Issued By:</strong> {businessLicense?.data?.issueBy}
+                <strong>Issued By:</strong> {businessLicense.data?.issueBy}
               </p>
               <p className="mb-1">
                 <strong>Issue Date:</strong>{" "}
-                {businessLicense?.data?.issueDate?.split("T")[0]}
+                {businessLicense.data?.issueDate?.split("T")[0]}
               </p>
               <p className="mb-3">
                 <strong>Expired Date:</strong>{" "}
-                {businessLicense?.data?.expiredDate?.split("T")[0]}
+                {businessLicense.data?.expiredDate?.split("T")[0]}
               </p>
 
-              {businessLicense?.data?.businessLicences && (
+              {businessLicense.data?.businessLicences && (
                 <div className="flex justify-center">
                   <img
                     src={businessLicense.data.businessLicences}
@@ -801,6 +905,51 @@ const StoreRegistration = () => {
           </div>
         </div>
       )}
+
+{currentStep === 3 && (
+  <div className="bg-white shadow-lg rounded-lg p-6">
+    <h2 className="text-2xl font-bold text-blue-600 text-center mb-6">
+      🎉 Submission Successful!
+    </h2>
+
+    <div className="flex justify-center">
+      <div className="bg-green-100 p-6 rounded-lg shadow-md text-center">
+        <div className="mb-4">
+          <CheckCircleOutlined className="text-4xl text-green-500" />
+        </div>
+        <h3 className="text-xl font-semibold text-green-700 mb-2">
+          Your Registration has been successfully submitted!
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Please wait for the admin team to review and approve your application within the next 24 hours.
+        </p>
+
+        <p className="text-gray-700">
+          For any further queries or assistance, please contact our team via our{" "}
+          <a
+            href="/contact"
+            className="text-blue-600 hover:underline"
+          >
+            Contact Form
+          </a>
+        </p>
+
+        <div className="mt-6">
+          <Button
+            type="primary"
+            icon={<CheckCircleOutlined />}
+            className="bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
+            disabled
+          >
+            ✅ Submitted Successfully
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };
