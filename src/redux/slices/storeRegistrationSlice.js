@@ -127,7 +127,7 @@ export const getStoreDetails = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await getStoreDetailsByUserId(userId);
-      console.log("Store API Response:", response); // Debug API response
+      console.log("Store API Response:", response); 
       return response; 
     } catch (error) {
       console.error("Error fetching store details:", error);
@@ -142,7 +142,7 @@ export const getBusinessLicenseDetails = createAsyncThunk(
   async (storeId, { rejectWithValue }) => {
     try {
       const response = await getBusinessLicenseByStoreId(storeId);
-      console.log("Business License API Response:", response); // Debug API response
+      console.log("Business License API Response:", response); 
       return response; 
     } catch (error) {
       console.error("Error fetching business license:", error);
