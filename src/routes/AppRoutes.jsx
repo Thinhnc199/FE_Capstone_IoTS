@@ -98,12 +98,12 @@ const publicRoute = [
     layout: AdminLayout,
   },
   {
-    path: "/admin/userRequest",
+    path: "/admin/user-request",
     component: UserRequest,
     layout: AdminLayout,
   },
   {
-    path: "/admin/userRequest/:id",
+    path: "/admin/user-request/:id",
     component: DetailUserRequest,
     layout: AdminLayout,
   },

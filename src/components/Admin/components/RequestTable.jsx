@@ -54,7 +54,7 @@ const RequestTable = ({
       key: "email",
       render: (text, record) =>
         record.role.id == Roles.STORE ? (
-          <Link to={`/admin/userRequest/${record.id}`}>{text}</Link>
+          <Link to={`/admin/user-request/${record.id}`}>{text}</Link>
         ) : (
           <div key={record.id}>{text}</div>
         ),

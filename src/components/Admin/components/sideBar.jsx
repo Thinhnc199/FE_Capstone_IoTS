@@ -71,12 +71,12 @@ const items2 = [
     children: [
       {
         key: "userrequest",
-        label: <Link to="/admin/userRequest">User Requests</Link>,
+        label: <Link to="/admin/user-request">User Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
       {
         key: "productrequest",
-        label: <Link to="/admin/productRequest">Product Requests</Link>,
+        label: <Link to="/admin/product-request">Product Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
     ],
