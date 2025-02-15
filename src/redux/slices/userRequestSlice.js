@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
+
 // Helper function to handle async states
 const handleAsyncState = (builder, asyncThunk, onSuccess) => {
   builder
@@ -32,7 +33,7 @@ export const userRequests = createAsyncThunk(
   }
 );
 export const fetchRequestDetails = createAsyncThunk(
-  "accounts/userRequestDetail",
+  "userrequest/userRequestDetail",
   async ({ id }, { rejectWithValue }) => {
     try {
       const response = await api.get(`/api/user-request/${id}`);
@@ -43,43 +44,50 @@ export const fetchRequestDetails = createAsyncThunk(
   }
 );
 export const fetchStoreDetails = createAsyncThunk(
-  "accounts/fetchStoreRequestDetails",
+  "userrequest/fetchStoreRequestDetails",
   async ({ userId }, { rejectWithValue }) => {
     try {
       const response = await api.get(
         `/api/store/get-store-details-by-user-id/${userId}`
       );
-      return response.data.data;
+      return response;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 export const approveUserRequests = createAsyncThunk(
-  "accounts/approveUserRequest",
+  "userrequest/approveUserRequest",
   async ({ remark, id }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `http://api/user-request/approve-user-request/${id}`,
+        `/api/user-request/approve-user-request/${id}`,
         { remark }
       );
-      return response.data.data;
+      console.log("responsessssss", response.data.isSuccess);
+
+      return {
+        isSuccess: response.data.isSuccess,
+        message: response.data.message,
+        statusCode: response.data.statusCode,
+      };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
+
 export const rejectUserRequests = createAsyncThunk(
-  "accounts/rejectUserRequest",
+  "userrequest/rejectUserRequest",
   async ({ remark, id }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `http://api/user-request/reject-user-request/${id}`,
+        `/api/user-request/reject-user-request/${id}`,
         { remark }
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -99,8 +107,11 @@ const initialState = {
     data: null,
     message: "",
   },
-  aproveUserRequest: [],
-  rejectUserRequest: [],
+  confirmUserRequest: {
+    isSuccess: null, // Chỉ cần isSuccess, message, và statusCode
+    message: "",
+    statusCode: null,
+  },
 };
 // Redux Slice
 const userRequestSlice = createSlice({
@@ -128,10 +139,14 @@ const userRequestSlice = createSlice({
       state.storeDetail.data = action.payload;
     });
     handleAsyncState(builder, approveUserRequests, (state, action) => {
-      state.approveUserRequest.data = action.payload;
+      state.confirmUserRequest.isSuccess = action.payload.isSuccess;
+      state.confirmUserRequest.message = action.payload.message;
+      state.confirmUserRequest.statusCode = action.payload.statusCode;
     });
     handleAsyncState(builder, rejectUserRequests, (state, action) => {
-      state.rejectUserRequest.data = action.payload;
+      state.confirmUserRequest.isSuccess = action.payload.isSuccess;
+      state.confirmUserRequest.message = action.payload.message;
+      state.confirmUserRequest.statusCode = action.payload.statusCode;
     });
   },
 });
