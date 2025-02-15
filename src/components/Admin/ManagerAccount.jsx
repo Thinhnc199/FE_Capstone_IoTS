@@ -65,7 +65,7 @@ export default function ManagerAccount() {
 
   return (
     <>
-      <div className="p-4">
+      <div className="">
         <div className="flex justify-end items-center ">
           <Button
             className="m-4 font-medium"
@@ -77,7 +77,7 @@ export default function ManagerAccount() {
           </Button>
         </div>
 
-        <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
+        <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
           <h1 className="text-xl font-bold mb-4">Manager List</h1>
 
           {/* Bộ lọc và phân trang */}

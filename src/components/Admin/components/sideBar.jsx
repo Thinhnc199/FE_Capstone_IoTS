@@ -27,11 +27,11 @@ const items2 = [
         label: <Link to="/admin/list-account">List Account</Link>,
         icon: <UnorderedListOutlined />,
       },
-      {
-        key: "admin",
-        label: <Link to="/admin/admin-account">Admin Account</Link>,
-        icon: <UnorderedListOutlined />,
-      },
+      // {
+      //   key: "admin",
+      //   label: <Link to="/admin/admin-account">Admin Account</Link>,
+      //   icon: <UnorderedListOutlined />,
+      // },
       {
         key: "staff",
         label: <Link to="/admin/staff-account">Staff Account</Link>,

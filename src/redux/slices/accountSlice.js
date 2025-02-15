@@ -129,32 +129,6 @@ export const verifyAccounts = createAsyncThunk(
     }
   }
 );
-export const userRequests = createAsyncThunk(
-  "accounts/userRequests",
-  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
-    try {
-      const response = await api.post(`/api/user-request/listing`, {
-        pageIndex,
-        pageSize,
-        searchKeyword,
-      });
-      return response.data.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
-    }
-  }
-);
-export const fetchRequestDetails = createAsyncThunk(
-  "accounts/userRequestDetail",
-  async ({ id }, { rejectWithValue }) => {
-    try {
-      const response = await api.get(`/api/user-request/${id}`);
-      return response.data.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
-    }
-  }
-);
 
 // Initial state
 const initialState = {
@@ -162,15 +136,9 @@ const initialState = {
   users: [],
   totalCount: 0,
   pageIndex: 1,
-  pageSize: 2,
+  pageSize: 10,
   error: null,
   roles: [],
-  userRequest: [],
-  userRequestDetail: {
-    data: null,
-    loading: false,
-    error: null,
-  },
 };
 
 // Redux Slice
@@ -222,13 +190,6 @@ const accountListSlice = createSlice({
     handleAsyncState(builder, createManagerStaffs, (state, action) => {
       state.users.unshift(action.payload); // Add new user to the start of the list
       state.totalCount += 1;
-    });
-    handleAsyncState(builder, userRequests, (state, action) => {
-      state.userRequest = action.payload.data;
-      state.totalCount = action.payload.totalCount;
-    });
-    handleAsyncState(builder, fetchRequestDetails, (state, action) => {
-      state.userRequestDetail = action.payload.data;
     });
   },
 });
