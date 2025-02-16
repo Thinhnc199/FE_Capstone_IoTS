@@ -3,28 +3,50 @@ import {
   setPageIndex,
   setPageSize,
   fetchRole,
+  setEndFilterDate,
+  setStartFilterDate,
+  setsearchKeyword,
 } from "../../redux/slices/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { Select, Typography } from "antd";
-
+import SearchAndFilter from "./components/SearchAndFilter";
 import AccountsTable from "./components/AccountsTable";
 import { Roles } from "../../redux/constants";
-const { Option } = Select;
-const { Text } = Typography;
 
 export default function AdminAccount() {
   const dispatch = useDispatch();
 
-  const { users, pageIndex, pageSize, error, roles } = useSelector(
-    (state) => state.accounts
-  );
+  const {
+    users,
+    pageIndex,
+    pageSize,
+    error,
+    roles,
+    searchKeyword,
+    startFilterDate,
+    endFilterDate,
+    totalCount,
+  } = useSelector((state) => state.accounts);
 
   useEffect(() => {
     dispatch(
-      fetchUsers({ pageIndex, pageSize, searchKeyword: "", role: Roles.ADMIN })
+      fetchUsers({
+        pageIndex,
+        pageSize,
+        searchKeyword,
+        role: Roles.ADMIN,
+        startFilterDate,
+        endFilterDate,
+      })
     );
-  }, [dispatch, pageIndex, pageSize]);
+  }, [
+    dispatch,
+    pageIndex,
+    pageSize,
+    searchKeyword,
+    startFilterDate,
+    endFilterDate,
+  ]);
 
   useEffect(() => {
     dispatch(fetchRole());
@@ -40,16 +62,15 @@ export default function AdminAccount() {
   const adminUsers = users.filter((user) => {
     return user.roles.some((role) => role.label === "Admin");
   });
-  const TotalAcc = adminUsers.length;
+
   if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="p-4">
       <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Admin List</h1>
-        {/* Bộ lọc và phân trang */}
 
-        <div className="flex justify-between items-center mb-4">
+        {/* <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
             <Text className="mr-2">Page Size:</Text>
             <Select
@@ -76,14 +97,22 @@ export default function AdminAccount() {
               Total Users: <span className="font-bold">{TotalAcc}</span>
             </p>
           </div>
+        </div> */}
+        <div className="mb-4">
+          <p className="font-semibold text-sm">Search by related</p>
+          <SearchAndFilter
+            setEndFilterDate={setEndFilterDate}
+            setStartFilterDate={setStartFilterDate}
+            setsearchKeyword={setsearchKeyword}
+          />
         </div>
-
         <AccountsTable
           users={adminUsers}
           pageSize={pageSize}
           pageIndex={pageIndex}
-          totalCount={TotalAcc}
+          totalCount={totalCount}
           onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
           roles={roles || []}
         />
       </div>

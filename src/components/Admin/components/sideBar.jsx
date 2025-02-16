@@ -49,6 +49,11 @@ const items2 = [
         icon: <UnorderedListOutlined />,
       },
       {
+        key: "trainer",
+        label: <Link to="/admin/trainer-account">Trainer Account</Link>,
+        icon: <UnorderedListOutlined />,
+      },
+      {
         key: "customer",
         label: <Link to="/admin/customer-account">Customer Account</Link>,
         icon: <UnorderedListOutlined />,

@@ -21,6 +21,7 @@ const AccountsTable = ({
   pageIndex,
   totalCount,
   onPageChange,
+  onPageSizeChange,
   roles,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -181,11 +182,22 @@ const AccountsTable = ({
           pageSize: pageSize,
           total: totalCount,
           onChange: onPageChange,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 15, 30],
+          onShowSizeChange: (current, size) => onPageSizeChange(size),
         }}
-        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white"
+        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white [&_.ant-pagination]:p-2"
         bordered
         style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
       />
+      <div className="flex justify-between items-center -mt-14 p-2">
+        <p>
+          <span className="font-medium">
+            {(pageIndex - 1) * pageSize + 1} to{" "}
+            {Math.min(pageIndex * pageSize, totalCount)} of {totalCount}
+          </span>
+        </p>
+      </div>
       <Modal
         title={modalType === "updateRole" ? "Update User Role" : "Confirmation"}
         open={isModalOpen}
@@ -249,6 +261,7 @@ AccountsTable.propTypes = {
   pageIndex: PropTypes.number.isRequired,
   totalCount: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
+  onPageSizeChange: PropTypes.func.isRequired,
   roles: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,

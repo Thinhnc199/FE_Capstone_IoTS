@@ -9,45 +9,33 @@ import {
 } from "../../redux/slices/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { Select, Typography } from "antd";
+
 import SearchAndFilter from "./components/SearchAndFilter";
 import UserTable from "./components/UserTable";
-
-const { Option } = Select;
-const { Text } = Typography;
 
 export default function ListAccount() {
   const dispatch = useDispatch();
 
-  const {
-    users,
-    totalCount,
-    pageIndex,
-    pageSize,
-    error,
-    roles,
-    searchKeyword,
-    startFilterDate,
-    endFilterDate,
-  } = useSelector((state) => state.accounts);
-
+  const { users, totalCount, pageIndex, pageSize, error, roles, filters } =
+    useSelector((state) => state.accounts);
+  const currentTab = "all";
   useEffect(() => {
     dispatch(
       fetchUsers({
         pageIndex,
         pageSize,
-        searchKeyword,
-        startFilterDate,
-        endFilterDate,
+        searchKeyword: filters[currentTab].searchKeyword,
+        startFilterDate: filters[currentTab].startFilterDate, // Sử dụng filter của tab hiện tại
+        endFilterDate: filters[currentTab].endFilterDate,
       })
     );
   }, [
     dispatch,
     pageIndex,
     pageSize,
-    searchKeyword,
-    startFilterDate,
-    endFilterDate,
+    filters[currentTab].searchKeyword, // Theo dõi thay đổi của filter trong tab hiện tại
+    filters[currentTab].startFilterDate,
+    filters[currentTab].endFilterDate,
   ]);
 
   useEffect(() => {
@@ -75,6 +63,7 @@ export default function ListAccount() {
             setEndFilterDate={setEndFilterDate}
             setStartFilterDate={setStartFilterDate}
             setsearchKeyword={setsearchKeyword}
+            currentTab={currentTab}
           />
         </div>
         <UserTable
@@ -83,39 +72,9 @@ export default function ListAccount() {
           pageIndex={pageIndex}
           totalCount={totalCount}
           onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
           roles={roles || []}
         />
-        {/* <div className="flex justify-between items-center mb-4">
-          <div>
-            <p>
-              <span className="font-bold">
-                {(pageIndex - 1) * pageSize + 1} to{" "}
-                {Math.min(pageIndex * pageSize, totalCount)} of {totalCount}
-              </span>
-            </p>
-          </div>
-        </div> */}
-        <div className="flex items-center">
-          <Text className="mr-2">Page Size:</Text>
-          <Select
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            style={{ width: 120 }}
-            className="border px-2 py-1"
-            dropdownClassName="page-size-dropdown"
-            optionLabelProp="label"
-          >
-            <Option value={10} label="10 items per page">
-              10
-            </Option>
-            <Option value={15} label="15 items per page">
-              15
-            </Option>
-            <Option value={30} label="30 items per page">
-              30
-            </Option>
-          </Select>
-        </div>
       </div>
     </div>
   );

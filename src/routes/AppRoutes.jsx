@@ -21,6 +21,7 @@ import StaffAccount from "../components/Admin/StaffAccount";
 import ManagerAccount from "../components/Admin/ManagerAccount";
 import CustomerAccount from "../components/Admin/CustomerAccount";
 import StoreAccount from "../components/Admin/StoreAccount";
+import TrainerAccount from "../components/Admin/TrainerAccount";
 import StoreLayout from "../components/StoreIoT/StoreLayout";
 import WelcomeStore from "../components/StoreIoT/WelcomeStore";
 import StoreRegistration from "../components/StoreIoT/StoreRegistration";
@@ -79,6 +80,11 @@ const publicRoute = [
   {
     path: "/admin/store-account",
     component: StoreAccount,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/trainer-account",
+    component: TrainerAccount,
     layout: AdminLayout,
   },
   {
