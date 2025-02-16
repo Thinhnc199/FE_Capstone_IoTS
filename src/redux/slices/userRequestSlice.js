@@ -19,12 +19,17 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 };
 export const userRequests = createAsyncThunk(
   "userrequest/userRequests",
-  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
+  async (
+    { pageIndex, pageSize, searchKeyword, startFilterDate, endFilterDate },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await api.post(`/api/user-request/listing`, {
         pageIndex,
         pageSize,
         searchKeyword,
+        startFilterDate,
+        endFilterDate,
       });
       return response.data.data;
     } catch (error) {
@@ -50,7 +55,7 @@ export const fetchStoreDetails = createAsyncThunk(
       const response = await api.get(
         `/api/store/get-store-details-by-user-id/${userId}`
       );
-      return response;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -108,9 +113,21 @@ const initialState = {
     message: "",
   },
   confirmUserRequest: {
-    isSuccess: null, // Chỉ cần isSuccess, message, và statusCode
+    isSuccess: null,
     message: "",
     statusCode: null,
+  },
+  filters: {
+    user: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    product: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
   },
 };
 // Redux Slice
@@ -123,6 +140,18 @@ const userRequestSlice = createSlice({
     },
     setPageSize: (state, action) => {
       state.pageSize = action.payload;
+    },
+    setsearchKeyword: (state, action) => {
+      const { tab, keyword } = action.payload;
+      state.filters[tab].searchKeyword = keyword;
+    },
+    setStartFilterDate: (state, action) => {
+      const { tab, date } = action.payload;
+      state.filters[tab].startFilterDate = date;
+    },
+    setEndFilterDate: (state, action) => {
+      const { tab, date } = action.payload;
+      state.filters[tab].endFilterDate = date;
     },
   },
   extraReducers: (builder) => {
@@ -151,5 +180,11 @@ const userRequestSlice = createSlice({
   },
 });
 // Action creators
-export const { setPageIndex, setPageSize } = userRequestSlice.actions;
+export const {
+  setPageIndex,
+  setPageSize,
+  setsearchKeyword,
+  setEndFilterDate,
+  setStartFilterDate,
+} = userRequestSlice.actions;
 export default userRequestSlice.reducer;

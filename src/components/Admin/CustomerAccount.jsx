@@ -3,33 +3,41 @@ import {
   setPageIndex,
   setPageSize,
   fetchRole,
+  setEndFilterDate,
+  setStartFilterDate,
+  setsearchKeyword,
 } from "../../redux/slices/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { Select, Typography } from "antd";
+
 import { Roles } from "../../redux/constants";
 import AccountsTable from "./components/AccountsTable";
-
-const { Option } = Select;
-const { Text } = Typography;
-
+import SearchAndFilter from "./components/SearchAndFilter";
 export default function CustomerAccount() {
   const dispatch = useDispatch();
 
-  const { users, pageIndex, pageSize, roles, totalCount } = useSelector(
-    (state) => state.accounts
-  );
-
+  const { users, pageIndex, pageSize, roles, totalCount, filters } =
+    useSelector((state) => state.accounts);
+  const currentTab = "customer";
   useEffect(() => {
     dispatch(
       fetchUsers({
         pageIndex,
         pageSize,
-        searchKeyword: "",
+        searchKeyword: filters[currentTab].searchKeyword,
         role: Roles.CUSTOMER,
+        startFilterDate: filters[currentTab].startFilterDate, // Sử dụng filter của tab hiện tại
+        endFilterDate: filters[currentTab].endFilterDate,
       })
     );
-  }, [dispatch, pageIndex, pageSize]);
+  }, [
+    dispatch,
+    pageIndex,
+    pageSize,
+    filters[currentTab].searchKeyword, // Theo dõi thay đổi của filter trong tab hiện tại
+    filters[currentTab].startFilterDate,
+    filters[currentTab].endFilterDate,
+  ]);
 
   useEffect(() => {
     dispatch(fetchRole());
@@ -48,43 +56,22 @@ export default function CustomerAccount() {
       <div className="">
         <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
           <h1 className="text-xl font-bold mb-4">Customer List</h1>
-
-          {/* Bộ lọc và phân trang */}
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center">
-              <Text className="mr-2">Page Size:</Text>
-              <Select
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                style={{ width: 120 }}
-                className="border px-2 py-1"
-                dropdownClassName="page-size-dropdown"
-                optionLabelProp="label"
-              >
-                <Option value={10} label="10 items per page">
-                  10
-                </Option>
-                <Option value={15} label="15 items per page">
-                  15
-                </Option>
-                <Option value={30} label="30 items per page">
-                  30
-                </Option>
-              </Select>
-            </div>
-            <div>
-              <p>
-                Total Users: <span className="font-bold">{totalCount}</span>
-              </p>
-            </div>
+          <div className="mb-4">
+            <p className="font-semibold text-sm">Search by related</p>
+            <SearchAndFilter
+              setEndFilterDate={setEndFilterDate}
+              setStartFilterDate={setStartFilterDate}
+              setsearchKeyword={setsearchKeyword}
+              currentTab={currentTab}
+            />
           </div>
-
           <AccountsTable
             users={users}
             pageSize={pageSize}
             pageIndex={pageIndex}
             totalCount={totalCount}
             onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
             roles={roles || []}
           />
         </div>

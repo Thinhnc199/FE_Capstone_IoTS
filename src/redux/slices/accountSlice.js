@@ -151,9 +151,43 @@ const initialState = {
   pageSize: 10,
   error: null,
   roles: [],
-  searchKeyword: "",
-  startFilterDate: null,
-  endFilterDate: null,
+  filters: {
+    all: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    admin: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    store: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    customer: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    staff: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    manager: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+    trainer: {
+      searchKeyword: "",
+      startFilterDate: null,
+      endFilterDate: null,
+    },
+  },
 };
 
 // Redux Slice
@@ -168,13 +202,16 @@ const accountListSlice = createSlice({
       state.pageSize = action.payload;
     },
     setsearchKeyword: (state, action) => {
-      state.searchKeyword = action.payload;
+      const { tab, keyword } = action.payload;
+      state.filters[tab].searchKeyword = keyword;
     },
     setStartFilterDate: (state, action) => {
-      state.startFilterDate = action.payload;
+      const { tab, date } = action.payload;
+      state.filters[tab].startFilterDate = date;
     },
     setEndFilterDate: (state, action) => {
-      state.endFilterDate = action.payload;
+      const { tab, date } = action.payload;
+      state.filters[tab].endFilterDate = date;
     },
   },
   extraReducers: (builder) => {
@@ -184,11 +221,14 @@ const accountListSlice = createSlice({
     });
 
     handleAsyncState(builder, activeUsers, (state, action) => {
-      const updatedUser = action.payload;
-      const index = state.users.findIndex((user) => user.id === updatedUser.id);
-      if (index !== -1) {
-        state.users[index] = updatedUser;
-      }
+      // const updatedUser = action.payload;
+      // const index = state.users.findIndex((user) => user.id === updatedUser.id);
+      // if (index !== -1) {
+      //   state.users[index] = updatedUser;
+      // }
+      state.users = state.users.map((user) =>
+        user.id === action.payload.id ? action.payload : user
+      );
     });
 
     handleAsyncState(builder, deActiveUsers, (state, action) => {

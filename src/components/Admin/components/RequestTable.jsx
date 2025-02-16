@@ -8,6 +8,7 @@ const RequestTable = ({
   pageIndex,
   totalCount,
   onPageChange,
+  onPageSizeChange,
 }) => {
   //   const [isModalOpen, setIsModalOpen] = useState(false);
   //   const [selectedUser, setSelectedUser] = useState(null);
@@ -83,7 +84,7 @@ const RequestTable = ({
     },
   ];
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-hidden">
       <Table
         columns={columns}
         dataSource={userRequest}
@@ -93,11 +94,22 @@ const RequestTable = ({
           pageSize: pageSize,
           total: totalCount,
           onChange: onPageChange,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 15, 30],
+          onShowSizeChange: (current, size) => onPageSizeChange(size),
         }}
-        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white"
+        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white [&_.ant-pagination]:p-2"
         bordered
         style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
       />
+      <div className="flex justify-between items-center -mt-14 p-2">
+        <p>
+          <span className="font-medium">
+            {(pageIndex - 1) * pageSize + 1} to{" "}
+            {Math.min(pageIndex * pageSize, totalCount)} of {totalCount}
+          </span>
+        </p>
+      </div>
     </div>
   );
 };
@@ -121,6 +133,7 @@ RequestTable.propTypes = {
       ).isRequired,
     })
   ).isRequired,
+  onPageSizeChange: PropTypes.func.isRequired,
   pageSize: PropTypes.number.isRequired,
   pageIndex: PropTypes.number.isRequired,
   totalCount: PropTypes.number.isRequired,
