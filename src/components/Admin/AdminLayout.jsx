@@ -27,7 +27,7 @@ export default function AdminLayout({ children }) {
         <Content style={{ margin: 0 }}>
           <div
             className="site-layout-background bg-bgColer"
-            style={{ padding: 24, minHeight: 700 }}
+            style={{ padding: 20, minHeight: 700 }}
           >
             {children}
           </div>

@@ -21,7 +21,17 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 // Thunks
 export const fetchUsers = createAsyncThunk(
   "accounts/fetchUsers",
-  async ({ pageIndex, pageSize, searchKeyword, role }, { rejectWithValue }) => {
+  async (
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+      role,
+    },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await api.post(
         `/api/user/listing/`,
@@ -29,6 +39,8 @@ export const fetchUsers = createAsyncThunk(
           pageIndex,
           pageSize,
           searchKeyword,
+          startFilterDate,
+          endFilterDate,
         },
         {
           params: { role },
@@ -139,6 +151,9 @@ const initialState = {
   pageSize: 10,
   error: null,
   roles: [],
+  searchKeyword: "",
+  startFilterDate: null,
+  endFilterDate: null,
 };
 
 // Redux Slice
@@ -151,6 +166,15 @@ const accountListSlice = createSlice({
     },
     setPageSize: (state, action) => {
       state.pageSize = action.payload;
+    },
+    setsearchKeyword: (state, action) => {
+      state.searchKeyword = action.payload;
+    },
+    setStartFilterDate: (state, action) => {
+      state.startFilterDate = action.payload;
+    },
+    setEndFilterDate: (state, action) => {
+      state.endFilterDate = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -195,6 +219,12 @@ const accountListSlice = createSlice({
 });
 
 // Action creators
-export const { setPageIndex, setPageSize } = accountListSlice.actions;
+export const {
+  setPageIndex,
+  setPageSize,
+  setsearchKeyword,
+  setEndFilterDate,
+  setStartFilterDate,
+} = accountListSlice.actions;
 
 export default accountListSlice.reducer;

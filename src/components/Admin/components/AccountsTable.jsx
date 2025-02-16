@@ -182,6 +182,7 @@ const AccountsTable = ({
           total: totalCount,
           onChange: onPageChange,
         }}
+        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white"
         bordered
         style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
       />

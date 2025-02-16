@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "../../../assets/icons/logo2";
-import "./custom.css";
+
 import {
   PullRequestOutlined,
   UserOutlined,
@@ -100,7 +100,8 @@ const Sidebar = () => {
           colorItemBgSelected: "red",
         }}
         items={items2}
-        className="font-semibold "
+        className="font-semibold [&_.ant-menu-submenu_.ant-menu]:!bg-white [&_.ant-menu-item:hover]:!bg-[#ebf5ff]
+[&_.ant-menu-submenu-title:hover]:!bg-[#ebf5ff]"
         StyledSubMenu
       />
 
