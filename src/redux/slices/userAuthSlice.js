@@ -26,7 +26,7 @@ export const fetchUserRequest = async (userId) => {
     const { userRequestInfo, id } = response.data.data;
 
     // Fix: Remove the trailing space from the key name in localStorage
-    localStorage.setItem("requestId", id); // Store requestId correctly
+    localStorage.setItem("requestId", id); 
 
     // Show modal with the remark if available
     if (userRequestInfo?.remark) {
@@ -72,35 +72,6 @@ export const loginUser = createAsyncThunk("auth/loginUser", async (credentials, 
     return rejectWithValue(error.response?.data);
   }
 });
-
-// export const loginUser = createAsyncThunk(
-//   "auth/loginUser",
-//   async (credentials, { rejectWithValue, dispatch }) => {
-//     try {
-//       const response = await api.post("/api/login", credentials);
-//       const { token, id, roleId, email, imageUrl, username } = response.data.data;
-
-//       // Lưu thông tin vào localStorage
-//       localStorage.setItem("token", token);
-//       localStorage.setItem("userId", id);
-//       localStorage.setItem("role", roleId);
-//       localStorage.setItem("imageUrl", imageUrl);
-//       localStorage.setItem("username", username);
-//       localStorage.setItem("email", email);
-
-//       // Gọi fetchUserRequest ngay lập tức
-//       const userDetails = await dispatch(fetchUserRequest(id)).unwrap();
-
-//       // Cập nhật state Redux ngay lập tức
-//       dispatch(setUserDetails(userDetails));
-
-//       return { ...response.data.data, userDetails };
-//     } catch (error) {
-//       showNotification("error", "Login Failed", error.response?.data?.message || "Invalid credentials");
-//       return rejectWithValue(error.response?.data);
-//     }
-//   }
-// );
 
 
 

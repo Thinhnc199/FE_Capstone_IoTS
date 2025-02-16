@@ -1,72 +1,3 @@
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import { submitStoreDetails, submitDocuments } from "../../api/apiConfig";
-
-// export const submitStoreInfo = createAsyncThunk(
-//   "storeRegistration/submitStoreInfo",
-//   async (storeData, { rejectWithValue }) => {
-//     try {
-//       const response = await submitStoreDetails(storeData);
-//       return response;
-//     } catch (error) {
-//       return rejectWithValue(error);
-//     }
-//   }
-// );
-
-// export const submitStoreDocuments = createAsyncThunk(
-//   "storeRegistration/submitStoreDocuments",
-//   async (documentData, { rejectWithValue }) => {
-//     try {
-//       const response = await submitDocuments(documentData.storeId, documentData);
-//       return response;
-//     } catch (error) {
-//       return rejectWithValue(error);
-//     }
-//   }
-// );
-
-// const storeRegistrationSlice = createSlice({
-//   name: "storeRegistration",
-//   initialState: {
-//     storeDetails: {},
-//     documents: {},
-//     loading: false,
-//     error: null,
-//   },
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(submitStoreInfo.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(submitStoreInfo.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.storeDetails = action.payload;
-//       })
-//       .addCase(submitStoreInfo.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       })
-//       .addCase(submitStoreDocuments.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(submitStoreDocuments.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.documents = action.payload;
-//       })
-//       .addCase(submitStoreDocuments.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       });
-//   },
-// });
-
-// export default storeRegistrationSlice.reducer;
-
-
-
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createOrUpdateStore, createOrUpdateBusinessLicense, uploadFiles, submitStoreRegistration, getStoreDetailsByUserId, getBusinessLicenseByStoreId } from "../../api/apiConfig";
@@ -184,8 +115,13 @@ const storeRegistrationSlice = createSlice({
     loading: false,
     businessLicense: null,
     error: null,
+    requestStatus: "",
   },
-  reducers: {},
+  reducers: {
+    setRequestStatus: (state, action) => {
+      state.requestStatus = action.payload;  // ✅ Allows updating `requestStatus`
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Upload Image
@@ -198,6 +134,11 @@ const storeRegistrationSlice = createSlice({
       .addCase(submitStoreInfo.fulfilled, (state, action) => {
         state.storeInfo = action.payload;
         state.loading = false;
+      })
+      .addCase(submitStoreApproval.fulfilled, (state) => {
+        state.loading = false;
+        state.requestStatus = "Pending to Approved"; 
+        state.storeInfo = null;// ✅ Update requestStatus when approved
       })
       .addCase(submitStoreInfo.rejected, (state, action) => {
         state.error = action.payload;
@@ -241,10 +182,7 @@ const storeRegistrationSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
-      // Submit Store Approval
-      .addCase(submitStoreApproval.fulfilled, (state) => {
-        state.storeInfo = null;
-      });
+      
   },
 });
 
