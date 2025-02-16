@@ -5,6 +5,7 @@ import {
   faShoppingCart,
   faHeart,
   faUserCircle,
+  faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () => {
@@ -93,6 +94,16 @@ const Navbar = () => {
               </div>
             )}
           </div>
+          <Link
+            to="/login"
+            className="flex items-center px-4 py-2 w-full text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition"
+          >
+            <FontAwesomeIcon
+              icon={faSignInAlt}
+              className="w-6 h-6 text-white mr-2"
+            />
+            <span className="text-white font-semibold">Login</span>
+          </Link>
         </div>
       </div>
     </nav>
