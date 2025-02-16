@@ -8,7 +8,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Form, Input, Button, Select, message, Row, Col } from "antd";
-import SearchAndFilter from "./components/Search";
+
 import UserTable from "./components/UserTable";
 
 const { Option } = Select;
@@ -50,8 +50,6 @@ export default function CreateManagerStaff() {
 
   return (
     <div className="p-4">
-      <SearchAndFilter />
-
       <Row gutter={16}>
         {/* Form Create Manager */}
         <Col span={24} md={12}>

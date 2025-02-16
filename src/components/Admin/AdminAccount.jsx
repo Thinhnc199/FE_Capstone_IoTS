@@ -48,6 +48,7 @@ export default function AdminAccount() {
       <div className="bg-white rounded-md p-4 m-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Admin List</h1>
         {/* Bộ lọc và phân trang */}
+
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
             <Text className="mr-2">Page Size:</Text>

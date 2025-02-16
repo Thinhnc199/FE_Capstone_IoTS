@@ -41,6 +41,7 @@ export default {
         mainColer: "#f4f8fb",
         textColer: "#58bbf9",
         bgColer: "#EBF5FF",
+        headerBg: "#007AFF",
       },
 
       // fontFamily: {

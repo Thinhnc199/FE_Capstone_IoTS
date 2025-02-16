@@ -170,7 +170,7 @@ const UserTable = ({
     },
   ];
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-hidden">
       <Table
         columns={columns}
         dataSource={users}
@@ -182,9 +182,19 @@ const UserTable = ({
           onChange: onPageChange,
         }}
         bordered
+        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white "
         style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
       />
-
+      <div className="flex justify-between items-center -mt-10">
+        <div>
+          <p>
+            <span className="font-bold">
+              {(pageIndex - 1) * pageSize + 1} to{" "}
+              {Math.min(pageIndex * pageSize, totalCount)} of {totalCount}
+            </span>
+          </p>
+        </div>
+      </div>
       <Modal
         title={modalType === "updateRole" ? "Update User Role" : "Confirmation"}
         open={isModalOpen}
