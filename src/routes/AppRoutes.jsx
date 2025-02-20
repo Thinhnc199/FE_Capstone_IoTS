@@ -23,10 +23,14 @@ import CustomerAccount from "../components/Admin/CustomerAccount";
 import StoreAccount from "../components/Admin/StoreAccount";
 import TrainerAccount from "../components/Admin/TrainerAccount";
 import StoreLayout from "../components/StoreIoT/StoreLayout";
+import StoreIotLayout from "../components/StoreIoT/StoreIotLayout";
 import WelcomeStore from "../components/StoreIoT/WelcomeStore";
 import StoreRegistration from "../components/StoreIoT/StoreRegistration";
 import EmailOtpPage from "./../pages/StoreRes/EmailOtpPage";
 import OtpUserInfoPage from "../pages/StoreRes/OtpUserInfoPage";
+import DashBoardStore from "../components/StoreIoT/DashBoardStore";
+import WalletStore from "../components/StoreIoT/WalletStore";
+import ListProductStore from "../components/StoreIoT/ListProductStore";
 // const role = localStorage.getItem("userRole");
 
 const publicRoute = [
@@ -50,6 +54,8 @@ const publicRoute = [
     component: ContactPage,
     layout: MainLayout,
   },
+
+  // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
   {
@@ -113,6 +119,7 @@ const publicRoute = [
     component: DetailUserRequest,
     layout: AdminLayout,
   },
+  // Store
   {
     path: "/store/registerStore",
     component: StoreRegistration,
@@ -122,6 +129,21 @@ const publicRoute = [
     path: "/store/welcome",
     component: WelcomeStore,
     layout: StoreLayout,
+  },
+  {
+    path: "/store/dashboard",
+    component: DashBoardStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/wallet",
+    component: WalletStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/list-product",
+    component: ListProductStore,
+    layout: StoreIotLayout,
   },
 ];
 
