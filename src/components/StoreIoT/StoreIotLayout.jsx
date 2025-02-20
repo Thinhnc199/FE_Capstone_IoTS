@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
-import HeaderAdmin from "./components/headerAdmin";
-import SidebarAdmin from "./components/sideBarAdmin";
+import HeaderStore from "./components/headerStore";
+import SidebarStore from "./components/sideBarStore";
 import { Layout } from "antd";
 import { useSelector } from "react-redux";
 
 const { Sider, Header, Content } = Layout;
 
-export default function AdminLayout({ children }) {
+export default function StoreIotLayout({ children }) {
   const { isSidebarOpen } = useSelector((state) => state.sidebar);
 
   return (
@@ -18,11 +18,11 @@ export default function AdminLayout({ children }) {
         collapsed={isSidebarOpen}
         width={250}
       >
-        <SidebarAdmin />
+        <SidebarStore />
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={{ padding: 0 }}>
-          <HeaderAdmin />
+          <HeaderStore />
         </Header>
         <Content style={{ margin: 0 }}>
           <div
@@ -37,6 +37,6 @@ export default function AdminLayout({ children }) {
   );
 }
 
-AdminLayout.propTypes = {
+StoreIotLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };

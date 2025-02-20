@@ -17,11 +17,11 @@ const SearchAndFilter = ({
     console.log("Search:", value, "tab", currentTab);
   };
 
-  const onDateChange = (dates, dateStrings) => {
-    dispatch(setStartFilterDate(null));
-    dispatch(setEndFilterDate(null));
-    console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
-  };
+  // const onDateChange = (dates, dateStrings) => {
+  //   dispatch(setStartFilterDate(null));
+  //   dispatch(setEndFilterDate(null));
+  //   console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
+  // };
   // const onDateChange = (dates, dateStrings) => {
   //   dispatch(setStartFilterDate({ tab: currentTab, date: dateStrings[0] })); // Truyền thêm tab
   //   dispatch(setEndFilterDate({ tab: currentTab, date: dateStrings[1] })); // Truyền thêm tab

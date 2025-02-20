@@ -1,4 +1,4 @@
-import { Modal, Button, Dropdown, Space } from "antd";
+import { Modal, Button, Dropdown, Space, Badge } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
-export default function Header() {
+export default function HeaderAdmin() {
   const dispatch = useDispatch();
   const avatarUrl =
     "https://vietlucoder.id.vn/img/Picsart_23-06-13_14-41-05-648.png";
@@ -70,7 +70,10 @@ export default function Header() {
 
       <div className="p-4  font-sans font-bold text-2xl flex items-center space-x-2">
         <div className="flex items-center space-x-3">
-          <BellOutlined className="text-xl" />
+          <Badge count={5} size="small" className="">
+            {" "}
+            <BellOutlined className="text-xl" />{" "}
+          </Badge>
 
           <img
             src={avatarUrl}
