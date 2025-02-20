@@ -1,4 +1,4 @@
-import Home from "../pages/Home";
+import Home from "../pages/Home/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import RegisterEmail from "../pages/RegisterEmail";
@@ -32,10 +32,10 @@ import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
 // const role = localStorage.getItem("userRole");
-
+import Test from "../components/test";
 const publicRoute = [
   { path: "/", component: Home, layout: MainLayout },
-  { path: "/home", component: Home, layout: MainLayout },
+  { path: "/home", component: Test, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
