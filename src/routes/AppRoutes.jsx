@@ -28,9 +28,13 @@ import WelcomeStore from "../components/StoreIoT/WelcomeStore";
 import StoreRegistration from "../components/StoreIoT/StoreRegistration";
 import EmailOtpPage from "./../pages/StoreRes/EmailOtpPage";
 import OtpUserInfoPage from "../pages/StoreRes/OtpUserInfoPage";
+import PaymentMembershipPage from "../components/StoreIoT/PaymentMembershipPage";
+import TrainerRegister from "../components/Trainer/TrainerResgister";
+import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
+
 // const role = localStorage.getItem("userRole");
 import Test from "../components/test";
 const publicRoute = [
@@ -131,6 +135,16 @@ const publicRoute = [
     layout: StoreLayout,
   },
   {
+    path: "/store/payment-packages",
+    component: PaymentMembershipPage,
+    layout: StoreLayout,
+  },
+  {
+    path: "/trainer/registerTrainer",
+    component: TrainerRegister,
+    layout: TrainerLayout,
+  },
+  {
     path: "/store/dashboard",
     component: DashBoardStore,
     layout: StoreIotLayout,
@@ -153,7 +167,6 @@ const publicRoute = [
 //     component: AccountList,
 //     layout: AdminPage,
 //   });
-
 // }
 
 const privateRoute = [];

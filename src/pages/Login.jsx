@@ -116,7 +116,7 @@ const Login = () => {
           navigate("/manager/dashboard");
           break;
         case 4:
-          navigate("/trainer/dashboard");
+          navigate("/trainer/registerTrainer");
           break;
         case 5:
           navigate("/home");

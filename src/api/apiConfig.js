@@ -117,6 +117,30 @@ export const registerStoreUser = async (userInfo, otp, password) => {
   }
 };
 
+// ✅ Send OTP for Trainer Registration
+export const sendOtpTrainer = async (email) => {
+  try {
+    const response = await api.post("/api/trainer/create-trainer-user-request-verify-otp", { email });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
+// ✅ Register Trainer User
+export const registerTrainerUser = async (userInfo, otp, password) => {
+  try {
+    const response = await api.post("/api/trainer/register-trainer-user", {
+      userInfomation: userInfo,
+      otp,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
 /* ===========================
  ✅ CUSTOMER API CALLS
 =========================== */
@@ -242,15 +266,25 @@ export const getStoreDetailsByUserId = async (userId) => {
 
 export const getBusinessLicenseByStoreId = async (storeId) => {
   try {
-    // console.log("Calling API: GET /api/store/get-business-license/" + storeId);
     const response = await api.get(`/api/store/get-business-license/${storeId}`);
-    // console.log("Business License API Response:", response.data); 
     return response.data; 
   } catch (error) {
     console.error("Error fetching business license:", error);
     throw error; 
   }
 };
+
+export const getTrainerBusinessLicense = async (trainerId) => {
+  try {
+    const response = await api.get(`/api/trainer/get-trainer-business-license/${trainerId}`);
+    console.log("Trainer Business License API Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching trainer business license:", error);
+    throw error;
+  }
+};
+
 
 
 export default api;

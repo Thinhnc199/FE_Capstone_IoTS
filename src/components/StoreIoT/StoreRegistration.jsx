@@ -10,10 +10,8 @@ import {
 } from "antd";
 import {
   UploadOutlined,
-  // DeleteOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  // EditOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -25,7 +23,8 @@ import {
 } from "../../redux/slices/storeRegistrationSlice";
 import { useState, useEffect } from "react";
 import { uploadFiles, getUserRequestDetails } from "../../api/apiConfig";
-// import { useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 const { Step } = Steps;
 
 const StoreRegistration = () => {
@@ -36,7 +35,7 @@ const StoreRegistration = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [storeLogo, setStoreLogo] = useState(null);
   const [storeAttachments, setStoreAttachments] = useState([]);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState({
     frontIdentification: null,
     backIdentification: null,
@@ -53,7 +52,7 @@ const StoreRegistration = () => {
   const [existingAttachments, setExistingAttachments] = useState([]);
   const [form] = Form.useForm();
   const [formStep2] = Form.useForm();
-  // Fetch store details when the component mounts
+
   useEffect(() => {
     const fetchStoreDetails = async () => {
       const userId = localStorage.getItem("userId");
@@ -215,13 +214,16 @@ const StoreRegistration = () => {
         if (userRequestStatus === "Pending to Approved") {
           setCurrentStep(3);
         }
+        if (userRequestStatus === "Approved") {
+          navigate("/store/payment-packages");
+        }
       } catch (error) {
         console.error("Error fetching user request status:", error);
       }
     };
 
     checkUserStatus();
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   const handleImagePreview = (imageUrl) => {
     setPreviewImage(imageUrl);
@@ -422,7 +424,7 @@ const StoreRegistration = () => {
       dispatch({
         type: "storeRegistration/setRequestStatus",
         payload: "Pending to Approved",
-      }); // ✅ Fixed
+      }); 
 
       notification.success({
         message: "Store registration submitted for approval!",
@@ -588,39 +590,7 @@ const StoreRegistration = () => {
                 ) : null}
               </div>
             </Form.Item>
-            {/* <Form.Item label="Store Logo">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setStoreLogo(file);
-                  return false;
-                }}
-              >
-                <div className="flex justify-center items-center p-6 border-2 border-dashed border-gray-300 rounded-md cursor-pointer">
-                  <UploadOutlined className="text-blue-500 text-3xl" />
-                 
-                </div>
-              </Upload>
-              <div className="mt-2">
-                {storeLogo ? (
-                  <img
-                    src={URL.createObjectURL(storeLogo)}
-                    alt="Store Logo"
-                    className="w-32 h-32 object-cover border border-gray-300 rounded-md"
-                    onClick={() =>
-                      handleImagePreview(URL.createObjectURL(storeLogo))
-                    }
-                  />
-                ) : storeDetails?.imageUrl ? (
-                  <img
-                    src={storeDetails.imageUrl}
-                    alt="Store Logo"
-                    className="w-32 h-32 object-cover border border-gray-300 rounded-md"
-                    onClick={() => handleImagePreview(storeDetails.imageUrl)}
-                  />
-                ) : null}
-              </div>
-            </Form.Item> */}
+
             {/* Upload Store Attachments */}
             <Form.Item label="Store Attachments">
               <Upload
@@ -693,73 +663,6 @@ const StoreRegistration = () => {
                 />
               </Modal>
             </Form.Item>
-
-            {/* <Form.Item label="Store Attachments">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  handleAddAttachment(file);
-                  return false;
-                }}
-              >
-                <div className="flex justify-center items-center p-6 border-2 border-dashed border-gray-300 rounded-md cursor-pointer">
-                  <UploadOutlined className="text-blue-500 text-3xl" />
-                 
-                </div>
-              </Upload>
-
-              <div className="mt-4 flex space-x-4 flex-wrap">
-                
-                {storeAttachments.map((file, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt="Attachment"
-                      className="w-20 h-20 object-cover border border-gray-300 rounded-md"
-                      onClick={() =>
-                        handleImagePreview(URL.createObjectURL(file))
-                      }
-                    />
-                    <Button
-                      type="danger"
-                      icon={<CloseCircleOutlined style={{ color: "red" }} />}
-                      onClick={() => handleRemoveAttachment(index, false)}
-                      className="absolute top-0 right-0 bg-white rounded-full"
-                    />
-                  </div>
-                ))}
-
-                
-                {existingAttachments.map((url, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={url}
-                      alt="Attachment"
-                      className="w-20 h-20 object-cover border border-gray-300 rounded-md"
-                      onClick={() => handleImagePreview(url)}
-                    />
-                    <Button
-                      type="danger"
-                      icon={<CloseCircleOutlined style={{ color: "red" }} />}
-                      onClick={() => handleRemoveAttachment(index, true)}
-                      className="absolute top-0 right-0 bg-white rounded-full"
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <Modal
-                visible={previewVisible}
-                footer={null}
-                onCancel={() => setPreviewVisible(false)}
-              >
-                <img
-                  alt="Preview"
-                  style={{ width: "100%" }}
-                  src={previewImage}
-                />
-              </Modal>
-            </Form.Item> */}
 
             <div className="flex justify-end">
               <Button

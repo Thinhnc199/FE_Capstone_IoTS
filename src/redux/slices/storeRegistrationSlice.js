@@ -1,6 +1,17 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createOrUpdateStore, createOrUpdateBusinessLicense, uploadFiles, submitStoreRegistration, getStoreDetailsByUserId, getBusinessLicenseByStoreId } from "../../api/apiConfig";
+import axios from 'axios';
+
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+
 
 // Upload Image Action
 export const uploadImage = createAsyncThunk(
@@ -107,6 +118,51 @@ export const submitStoreApproval = createAsyncThunk(
   }
 );
 
+//---------------------------------------------------------------
+// Fetch Wallet Balance
+export const getWalletBalance = createAsyncThunk(
+  "storeRegistration/getWalletBalance",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/wallet/get-wallet-by-user-id/${userId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch wallet balance");
+    }
+  }
+);
+
+// Fetch Membership Options
+export const getMembershipOptions = createAsyncThunk(
+  'storeRegistration/getMembershipOptions',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/api/account-membership-package/get-all-membership-package-options');
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch membership options');
+    }
+  }
+);
+
+// Register Membership Package
+export const registerMembershipPackage = createAsyncThunk(
+  "storeRegistration/registerMembershipPackage",
+  async (data, { rejectWithValue }) => {
+    try {
+      console.log('Sending request with data:', data); 
+      const response = await api.post('/api/account-membership-package/register-membership-package', data);
+      console.log('API Response:', response.data); 
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error); 
+      // Assuming the error message is in error.response.data.message
+      return rejectWithValue(error.response?.data?.message || "Failed to register membership package");
+    }
+  }
+);
+
+
 // Store Slice
 const storeRegistrationSlice = createSlice({
   name: "storeRegistration",
@@ -116,10 +172,14 @@ const storeRegistrationSlice = createSlice({
     businessLicense: null,
     error: null,
     requestStatus: "",
+    walletBalance: 0,
+    membershipPackages: [],
+    errorMessage: null,
+    userId: localStorage.getItem('userId'), 
   },
   reducers: {
     setRequestStatus: (state, action) => {
-      state.requestStatus = action.payload;  // ✅ Allows updating `requestStatus`
+      state.requestStatus = action.payload;  
     },
   },
   extraReducers: (builder) => {
@@ -182,6 +242,46 @@ const storeRegistrationSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
+
+
+      .addCase(getWalletBalance.pending, (state) => { state.loading = true; })
+      .addCase(getWalletBalance.fulfilled, (state, action) => {
+        state.walletBalance = action.payload.data.ballance;
+        state.loading = false;
+      })
+      .addCase(getWalletBalance.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      
+      // Handle membership options
+      .addCase(getMembershipOptions.pending, (state) => { state.loading = true; })
+      .addCase(getMembershipOptions.fulfilled, (state, action) => {
+        state.membershipOptions = Array.isArray(action.payload) ? action.payload : [];
+        state.loading = false;
+      })
+      .addCase(getMembershipOptions.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      // Handle register membership
+      .addCase(registerMembershipPackage.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(registerMembershipPackage.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log('Success:', action.payload); 
+      })
+      // In your store slice
+.addCase(registerMembershipPackage.rejected, (state, action) => {
+  state.loading = false;
+  state.errorMessage = action.payload || "Failed to register membership package";
+  console.error('Failed:', action.payload); 
+});
+
+      
+      
       
   },
 });
