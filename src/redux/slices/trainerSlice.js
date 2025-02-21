@@ -44,7 +44,7 @@ export const submitForApproval = createAsyncThunk(
 );
 
 // Slice cho Trainer Register
-const trainerRegisterSlice = createSlice({
+const trainerSlice = createSlice({
   name: 'trainerRegister',
   initialState: {
     documents: {
@@ -107,6 +107,6 @@ export const {
   setCurrentStep,
   setRequestStatus,
   setRequestId,
-} = trainerRegisterSlice.actions;
+} = trainerSlice.actions;
 
-export default trainerRegisterSlice.reducer;
+export default trainerSlice.reducer;

@@ -6,7 +6,7 @@ import {
   submitTrainerDocuments,
   submitForApproval,
   getTrainerBusinessLicenseDetails,
-} from "../../redux/slices/trainerregisterSlice";
+} from "../../redux/slices/trainerSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const TrainerRegister = () => {

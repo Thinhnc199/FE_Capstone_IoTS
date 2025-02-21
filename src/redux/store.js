@@ -8,7 +8,8 @@ import userAuthReducer from "./slices/userAuthSlice";
 import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
 import userRequest from "./slices/userRequestSlice";
-import trainerRegisterReducer from "./slices/trainerregisterSlice";
+import trainerSlice from './slices/trainerSlice';
+
 
 const store = configureStore({
   reducer: {
@@ -21,7 +22,7 @@ const store = configureStore({
     storeAuth: storeAuthSlice,
     storeRegistration: storeRegistrationSlice,
     userrequest: userRequest,
-    trainerRegister: trainerRegisterReducer,
+    trainerRegister: trainerSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
