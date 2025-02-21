@@ -6,7 +6,7 @@ const MainLayout = ({ children }) => {
   return (
     <div className="bg-white">
       <Navbar></Navbar>
-      <main>{children}</main>
+      <main className=" py-5 ">{children}</main>
       <Footer></Footer>
     </div>
   );

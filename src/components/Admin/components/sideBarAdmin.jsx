@@ -88,7 +88,7 @@ const items2 = [
   },
 ];
 
-const Sidebar = () => {
+const SidebarAdmin = () => {
   return (
     <div className=" font-sans3 border-r bg-white space-y-5">
       <div>
@@ -115,4 +115,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarAdmin;

@@ -1,4 +1,4 @@
-import Home from "../pages/Home";
+import Home from "../pages/Home/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import RegisterEmail from "../pages/RegisterEmail";
@@ -23,6 +23,7 @@ import CustomerAccount from "../components/Admin/CustomerAccount";
 import StoreAccount from "../components/Admin/StoreAccount";
 import TrainerAccount from "../components/Admin/TrainerAccount";
 import StoreLayout from "../components/StoreIoT/StoreLayout";
+import StoreIotLayout from "../components/StoreIoT/StoreIotLayout";
 import WelcomeStore from "../components/StoreIoT/WelcomeStore";
 import StoreRegistration from "../components/StoreIoT/StoreRegistration";
 import EmailOtpPage from "./../pages/StoreRes/EmailOtpPage";
@@ -30,11 +31,15 @@ import OtpUserInfoPage from "../pages/StoreRes/OtpUserInfoPage";
 import PaymentMembershipPage from "../components/StoreIoT/PaymentMembershipPage";
 import TrainerRegister from "../components/Trainer/TrainerResgister";
 import TrainerLayout from "../components/Trainer/TrainerLayout";
-// const role = localStorage.getItem("userRole");
+import DashBoardStore from "../components/StoreIoT/DashBoardStore";
+import WalletStore from "../components/StoreIoT/WalletStore";
+import ListProductStore from "../components/StoreIoT/ListProductStore";
 
+// const role = localStorage.getItem("userRole");
+import Test from "../components/test";
 const publicRoute = [
   { path: "/", component: Home, layout: MainLayout },
-  { path: "/home", component: Home, layout: MainLayout },
+  { path: "/home", component: Test, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
@@ -53,6 +58,8 @@ const publicRoute = [
     component: ContactPage,
     layout: MainLayout,
   },
+
+  // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
   {
@@ -116,6 +123,7 @@ const publicRoute = [
     component: DetailUserRequest,
     layout: AdminLayout,
   },
+  // Store
   {
     path: "/store/registerStore",
     component: StoreRegistration,
@@ -135,6 +143,21 @@ const publicRoute = [
     path: "/trainer/registerTrainer",
     component: TrainerRegister,
     layout: TrainerLayout,
+  },
+  {
+    path: "/store/dashboard",
+    component: DashBoardStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/wallet",
+    component: WalletStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/list-product",
+    component: ListProductStore,
+    layout: StoreIotLayout,
   },
 ];
 
