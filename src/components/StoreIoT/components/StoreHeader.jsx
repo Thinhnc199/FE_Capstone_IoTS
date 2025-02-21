@@ -3,6 +3,8 @@ import { FaStore } from "react-icons/fa";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { LogoutOutlined } from "@ant-design/icons";
+import Logo2 from "../../../assets/logo2.png";
+
 const StoreHeader = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const StoreHeader = () => {
     <header className="flex items-center justify-between p-4 bg-white shadow-md">
       <div className="flex items-center space-x-3">
         <img
-          src="/src/assets/logo1.png"
+          src={Logo2}
           alt="Logo"
           className="w-20 h-20 rounded-full"
         />

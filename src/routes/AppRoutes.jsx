@@ -27,6 +27,9 @@ import WelcomeStore from "../components/StoreIoT/WelcomeStore";
 import StoreRegistration from "../components/StoreIoT/StoreRegistration";
 import EmailOtpPage from "./../pages/StoreRes/EmailOtpPage";
 import OtpUserInfoPage from "../pages/StoreRes/OtpUserInfoPage";
+import PaymentMembershipPage from "../components/StoreIoT/PaymentMembershipPage";
+import TrainerRegister from "../components/Trainer/TrainerResgister";
+import TrainerLayout from "../components/Trainer/TrainerLayout";
 // const role = localStorage.getItem("userRole");
 
 const publicRoute = [
@@ -123,6 +126,16 @@ const publicRoute = [
     component: WelcomeStore,
     layout: StoreLayout,
   },
+  {
+    path: "/store/payment-packages",
+    component: PaymentMembershipPage,
+    layout: StoreLayout,
+  },
+  {
+    path: "/trainer/registerTrainer",
+    component: TrainerRegister,
+    layout: TrainerLayout,
+  },
 ];
 
 // if (role == "ADMIN") {
@@ -131,7 +144,6 @@ const publicRoute = [
 //     component: AccountList,
 //     layout: AdminPage,
 //   });
-
 // }
 
 const privateRoute = [];

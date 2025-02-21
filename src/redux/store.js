@@ -7,8 +7,9 @@ import storeReducer from "./slices/storeSlice";
 import userAuthReducer from "./slices/userAuthSlice";
 import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
-
 import userRequest from "./slices/userRequestSlice";
+import trainerRegisterReducer from "./slices/trainerregisterSlice";
+
 const store = configureStore({
   reducer: {
     products: productReducer,
@@ -20,6 +21,7 @@ const store = configureStore({
     storeAuth: storeAuthSlice,
     storeRegistration: storeRegistrationSlice,
     userrequest: userRequest,
+    trainerRegister: trainerRegisterReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
