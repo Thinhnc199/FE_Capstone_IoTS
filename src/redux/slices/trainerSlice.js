@@ -53,7 +53,7 @@ const trainerSlice = createSlice({
       businessLicences: null,
     },
     currentStep: 0,
-    requestStatus: '',
+    requestStatus: "",
     requestId: null,
     loading: false,
     error: null,
@@ -93,7 +93,7 @@ const trainerSlice = createSlice({
       .addCase(submitForApproval.fulfilled, (state) => {
         state.loading = false;
         state.requestStatus = 'Pending to Approved';
-        state.currentStep = 1; // Chuyển bước sau khi gửi yêu cầu phê duyệt thành công
+        state.currentStep = 1;
       })
       .addCase(submitForApproval.rejected, (state, action) => {
         state.loading = false;

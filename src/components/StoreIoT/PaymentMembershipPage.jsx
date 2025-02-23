@@ -7,7 +7,7 @@ import {
   getWalletBalance,
   getMembershipOptions,
 } from "../../redux/slices/storeRegistrationSlice";
-
+import { useNavigate } from "react-router-dom";
 const { Meta } = Card;
 
 const PaymentMembershipPage = () => {
@@ -17,7 +17,7 @@ const PaymentMembershipPage = () => {
   );
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [userId, setUserId] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const id = localStorage.getItem("userId");
     if (id) {
@@ -73,6 +73,7 @@ const PaymentMembershipPage = () => {
         notification.success({
           message: "Membership registered successfully!",
         });
+        navigate("/store/welcome");
       })
       .catch((error) => {
         notification.error({
@@ -81,17 +82,15 @@ const PaymentMembershipPage = () => {
       });
   };
 
-  // Show error message 
+  // Show error message
   useEffect(() => {
     if (errorMessage) {
       notification.error({
         message: errorMessage,
-        placement: 'top', 
-      
+        placement: "top",
       });
     }
   }, [errorMessage]);
-  
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-8 mx-auto w-full max-w-[1000px]">

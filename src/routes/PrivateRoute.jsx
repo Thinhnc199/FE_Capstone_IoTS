@@ -11,7 +11,7 @@ const PrivateRoute = ({ layout: Layout = Fragment }) => {
       <Outlet />
     </Layout>
   ) : (
-    <Navigate to="/login" />
+    <Navigate to="/Access-Restricted" />
   );
 };
 
@@ -20,3 +20,4 @@ PrivateRoute.propTypes = {
 };
 
 export default PrivateRoute;
+

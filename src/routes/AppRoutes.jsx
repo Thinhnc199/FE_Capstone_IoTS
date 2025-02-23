@@ -9,7 +9,6 @@ import ListAccount from "../components/Admin/ListAccount";
 import ListProduct from "../components/Admin/ListProduct";
 import DashBoard from "../components/Admin/DashBoard";
 import Profile from "../components/Admin/Profile";
-import RegisterCustomer from "../pages/RegisterCustomer";
 import ContactPage from "../pages/ContactPage";
 import ErrorPage from "../pages/ErrorPage";
 import CreateManagerStaff from "../components/Admin/CreateManagerStaff";
@@ -34,9 +33,58 @@ import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
-
-// const role = localStorage.getItem("userRole");
+// const allowedroles = localStorage.getItem("userAllowedRoles");
 import Test from "../components/test";
+import AccessRestricted from "../pages/AccessRestricted";
+import CheckStatus from "../components/StoreIoT/CheckStatus";
+
+// const publicRoute = [
+//   { path: "/", component: Home, layout: MainLayout },
+//   { path: "/home", component: Test, layout: MainLayout },
+//   { path: "/register", component: Register, layout: MainLayout },
+//   { path: "/login", component: Login, layout: MainLayout },
+//   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
+//   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
+//   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
+//   { path: "*", component: ErrorPage, layout: null },
+//   { path: "/Access-Restricted", component: AccessRestricted, layout: null },
+//   { path: "/registerCustomer", component: RegisterCustomer, layout: MainLayout },
+//   { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
+//   { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
+//   { path: "/contact", component: ContactPage, layout: MainLayout },
+// ];
+
+// const privateRoute = [
+//   // Admin Routes
+//   { path: "/admin", component: DashBoard, layout: AdminLayout },
+//   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
+//   { path: "/admin/list-account", component: ListAccount, layout: AdminLayout },
+//   { path: "/admin/admin-account", component: AdminAccount, layout: AdminLayout },
+//   { path: "/admin/staff-account", component: StaffAccount, layout: AdminLayout },
+//   { path: "/admin/manager-account", component: ManagerAccount, layout: AdminLayout },
+//   { path: "/admin/customer-account", component: CustomerAccount, layout: AdminLayout },
+//   { path: "/admin/store-account", component: StoreAccount, layout: AdminLayout },
+//   { path: "/admin/trainer-account", component: TrainerAccount, layout: AdminLayout },
+//   { path: "/admin/list-product", component: ListProduct, layout: AdminLayout },
+//   { path: "/admin/profile", component: Profile, layout: AdminLayout },
+//   { path: "/admin/create-manager-staff", component: CreateManagerStaff, layout: AdminLayout },
+//   { path: "/admin/user-request", component: UserRequest, layout: AdminLayout },
+//   { path: "/admin/user-request/:id", component: DetailUserRequest, layout: AdminLayout },
+
+//   // Store Routes
+//   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout },
+//   { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout },
+//   { path: "/store/payment-packages", component: PaymentMembershipPage, layout: StoreLayout },
+//   { path: "/store/dashboard", component: DashBoardStore, layout: StoreIotLayout },
+//   { path: "/store/wallet", component: WalletStore, layout: StoreIotLayout },
+//   { path: "/store/list-product", component: ListProductStore, layout: StoreIotLayout },
+
+//   // Trainer Routes
+//   { path: "/trainer/registerTrainer", component: TrainerRegister, layout: TrainerLayout },
+// ];
+
+// export { publicRoute, privateRoute };
+
 const publicRoute = [
   { path: "/", component: Home, layout: MainLayout },
   { path: "/home", component: Test, layout: MainLayout },
@@ -46,11 +94,8 @@ const publicRoute = [
   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
   { path: "*", component: ErrorPage, layout: null },
-  {
-    path: "/registerCustomer",
-    component: RegisterCustomer,
-    layout: MainLayout,
-  },
+  { path: "/Access-Restricted", component: AccessRestricted, layout: null },
+
   { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
   { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
   {
@@ -159,9 +204,14 @@ const publicRoute = [
     component: ListProductStore,
     layout: StoreIotLayout,
   },
+  {
+    path: "/store/status",
+    component: CheckStatus,
+    layout: StoreLayout,
+  },
 ];
 
-// if (role == "ADMIN") {
+// if (allowedroles == "ADMIN") {
 //   publicRoute.push({
 //     path: "/admin",
 //     component: AccountList,
@@ -171,5 +221,5 @@ const publicRoute = [
 
 const privateRoute = [];
 export { publicRoute, privateRoute };
-// { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout, roles: [6] },
-//   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout, roles: [6] }
+// { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout, allowedroless: [6] },
+//   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout, allowedroless: [6] }

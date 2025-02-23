@@ -6,12 +6,16 @@ import {
   notification,
   Spin,
   Steps,
+  Tooltip,
+  Tag,
   Modal,
 } from "antd";
 import {
   UploadOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  EyeOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,6 +24,7 @@ import {
   submitStoreApproval,
   getStoreDetails,
   getBusinessLicenseDetails,
+  fetchUserStatus,
 } from "../../redux/slices/storeRegistrationSlice";
 import { useState, useEffect } from "react";
 import { uploadFiles, getUserRequestDetails } from "../../api/apiConfig";
@@ -29,7 +34,7 @@ const { Step } = Steps;
 
 const StoreRegistration = () => {
   const dispatch = useDispatch();
-  const { requestStatus, loading } = useSelector(
+  const { requestStatus, loading, status, remark } = useSelector(
     (state) => state.storeRegistration
   );
   const [currentStep, setCurrentStep] = useState(0);
@@ -43,7 +48,6 @@ const StoreRegistration = () => {
   });
   const [storeDetails, setStoreDetails] = useState(null);
   const [businessLicense, setBusinessLicense] = useState(null);
-  // const [isEditable, setIsEditable] = useState(false);
   const [storeId, setStoreId] = useState(null);
 
   const [previewImage, setPreviewImage] = useState(null);
@@ -53,20 +57,69 @@ const StoreRegistration = () => {
   const [form] = Form.useForm();
   const [formStep2] = Form.useForm();
 
+  const statusColors = {
+    "Pending to Approved": {
+      color: "gold",
+      background: "#fffbe6",
+      border: "#ffe58f",
+    },
+    Approved: { color: "green", background: "#f6ffed", border: "#b7eb8f" },
+    "Pending to Verify OTP": {
+      color: "gray",
+      background: "#f5f5f5",
+      border: "#d9d9d9",
+    },
+    Rejected: { color: "red", background: "#fff1f0", border: "#ffa39e" },
+  };
+  const getStatusTag = (status) => {
+    const statusInfo = statusColors[status?.trim()] || {
+      color: "black",
+      background: "#f0f0f0",
+      border: "#d9d9d9",
+    };
+    return (
+      <Tag
+        style={{
+          color: statusInfo.color,
+          backgroundColor: statusInfo.background,
+          borderColor: statusInfo.border,
+          fontWeight: "bold",
+          fontSize: "14px",
+          padding: "5px 10px",
+          borderRadius: "5px",
+        }}
+      >
+        {status}
+      </Tag>
+    );
+  };
+
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchUserStatus(userId));
+    }
+  }, [userId, dispatch]);
+
+  const showRemark = () => {
+    Modal.info({
+      title: "Remark Details",
+      content: <p>{remark || "No additional remarks available."}</p>,
+      okText: "Close",
+    });
+  };
+
   useEffect(() => {
     const fetchStoreDetails = async () => {
       const userId = localStorage.getItem("userId");
       if (userId) {
         try {
-          // console.log("Fetching store details for userId:", userId);
-
           const storeResponse = await dispatch(getStoreDetails(userId));
 
           if (storeResponse.payload && storeResponse.payload.data) {
             setStoreDetails(storeResponse.payload.data);
             setStoreId(storeResponse.payload.data.id); // Set storeId
-
-            // console.log("Store details received:", storeResponse.payload.data);
 
             if (storeResponse.payload.data.id) {
               console.log(
@@ -79,10 +132,6 @@ const StoreRegistration = () => {
 
               if (businessLicenseResponse.payload) {
                 setBusinessLicense(businessLicenseResponse.payload);
-                // console.log(
-                //   "Business license data:",
-                //   businessLicenseResponse.payload
-                // );
               } else {
                 notification.error({
                   message: "Error fetching business license details",
@@ -181,7 +230,6 @@ const StoreRegistration = () => {
   const handleUpload = async (file) => {
     try {
       const imageUrl = await uploadFiles(file);
-      // console.log("Uploaded Image URL:", imageUrl);
       return imageUrl;
     } catch (error) {
       notification.error({
@@ -226,8 +274,10 @@ const StoreRegistration = () => {
   }, [dispatch, navigate]);
 
   const handleImagePreview = (imageUrl) => {
-    setPreviewImage(imageUrl);
-    setPreviewVisible(true);
+    if (imageUrl) {
+      setPreviewImage(imageUrl);
+      setPreviewVisible(true);
+    }
   };
 
   useEffect(() => {
@@ -256,6 +306,7 @@ const StoreRegistration = () => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
       notification.error({ message: "User is not logged in!" });
+
       return;
     }
 
@@ -299,7 +350,7 @@ const StoreRegistration = () => {
         const userId = localStorage.getItem("userId");
         const storeResponse = await dispatch(getStoreDetails(userId));
         if (storeResponse.payload && storeResponse.payload.data) {
-          setStoreId(storeResponse.payload.data.id); // Set storeId
+          setStoreId(storeResponse.payload.data.id);
         }
       }
       notification.success({
@@ -424,7 +475,7 @@ const StoreRegistration = () => {
       dispatch({
         type: "storeRegistration/setRequestStatus",
         payload: "Pending to Approved",
-      }); 
+      });
 
       notification.success({
         message: "Store registration submitted for approval!",
@@ -441,9 +492,30 @@ const StoreRegistration = () => {
   return (
     <div className="p-5">
       <h1 className="text-2xl font-bold text-blue-600">Store Registration</h1>
+      <div
+        style={{
+          fontSize: "18px",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <span>Status: </span>
+        <span style={{ marginLeft: "10px" }}>{getStatusTag(status)}</span>
+
+        {status === "Rejected" && (
+          <Tooltip title="Click to view remark">
+            <ExclamationCircleOutlined
+              style={{ color: "red", marginLeft: "10px", cursor: "pointer" }}
+              onClick={showRemark}
+            />
+          </Tooltip>
+        )}
+      </div>
+
       <Steps current={currentStep} className="my-4">
-        <Step title="Store Details" />
-        <Step title="Upload Documents" />
+        <Step title="Store Details" onClick={() => setCurrentStep(0)} />
+        <Step title="Upload Documents" onClick={() => setCurrentStep(1)} />
         <Step title="Submit for Approval" />
       </Steps>
 
@@ -470,6 +542,137 @@ const StoreRegistration = () => {
             layout="vertical"
             className="mt-5 space-y-6"
           >
+            {/* Upload Store Logo */}
+            <div className="flex justify-center mt-4">
+              <Form.Item
+                label="Upload Store Logo"
+                rules={[
+                  { required: true, message: "Please upload store logo!" },
+                ]}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="relative">
+                    {/* Kiểm tra kiểu dữ liệu trước khi gọi URL.createObjectURL */}
+                    {storeLogo instanceof File || storeLogo instanceof Blob ? (
+                      <img
+                        src={URL.createObjectURL(storeLogo)}
+                        alt="Store Logo"
+                        className="w-44 h-44 object-cover border border-gray-300 rounded-full shadow-md cursor-pointer"
+                        onClick={() =>
+                          handleImagePreview(URL.createObjectURL(storeLogo))
+                        }
+                      />
+                    ) : storeDetails?.imageUrl ? (
+                      <img
+                        src={storeDetails.imageUrl}
+                        alt="Store Logo"
+                        className="w-44 h-44 object-cover border border-gray-300 rounded-full shadow-md cursor-pointer"
+                        onClick={() =>
+                          handleImagePreview(storeDetails.imageUrl)
+                        }
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
+                        <UploadOutlined className="text-blue-500 text-4xl" />
+                      </div>
+                    )}
+
+                    {/* Nút upload ảnh */}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2">
+                      <Button
+                        icon={<UploadOutlined />}
+                        onClick={() =>
+                          document.getElementById("upload-input").click()
+                        }
+                        className="bg-white-500 text-blue rounded-full"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Input file ẩn */}
+                  <input
+                    id="upload-input"
+                    type="file"
+                    style={{ display: "none" }}
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files[0]) {
+                        setStoreLogo(e.target.files[0]); // Lưu file vào state
+                      }
+                    }}
+                  />
+                </div>
+              </Form.Item>
+
+              {/* <Form.Item
+                label="Upload Store Logo"
+                rules={[
+                  { required: true, message: "Please upload store logo!" },
+                ]}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="relative">
+                    {storeLogo || storeDetails?.imageUrl ? (
+                      <img
+                        src={
+                          storeLogo
+                            ? URL.createObjectURL(storeLogo)
+                            : storeDetails.imageUrl
+                        }
+                        alt="Store Logo"
+                        className="w-44 h-44 object-cover border border-gray-300 rounded-full shadow-md cursor-pointer"
+                        onClick={() =>
+                          handleImagePreview(
+                            storeLogo
+                              ? URL.createObjectURL(storeLogo)
+                              : storeDetails.imageUrl
+                          )
+                        }
+                      />
+                    ) : (
+                      // <img
+                      //   src={
+                      //     storeLogo
+                      //       ? URL.createObjectURL(storeLogo)
+                      //       : storeDetails.imageUrl
+                      //   }
+                      //   alt="Store Logo"
+                      //   className="w-44 h-44 object-cover border border-gray-300 rounded-full shadow-md cursor-pointer"
+                      //   onClick={() =>
+                      //     handleImagePreview(
+                      //       storeLogo
+                      //         ? URL.createObjectURL(storeLogo)
+                      //         : storeDetails.imageUrl
+                      //     )
+                      //   }
+                      // />
+                      <div className="flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
+                        <UploadOutlined className="text-blue-500 text-4xl" />
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2">
+                      <Button
+                        icon={<UploadOutlined />}
+                        onClick={() =>
+                          document.getElementById("upload-input").click()
+                        }
+                        className="bg-white-500 text-blue rounded-full"
+                      ></Button>
+                    </div>
+                  </div>
+                  <input
+                    id="upload-input"
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      if (e.target.files[0]) {
+                        setStoreLogo(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </div>
+              </Form.Item> */}
+            </div>
             <div className="grid md:grid-cols-2 gap-4">
               {/* Store Name */}
               <Form.Item
@@ -552,45 +755,6 @@ const StoreRegistration = () => {
               />
             </Form.Item>
 
-            {/* Upload Store Logo */}
-            {/* Upload Store Logo */}
-            <Form.Item label="Store Logo">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setStoreLogo(file);
-                  return false;
-                }}
-              >
-                <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                  <UploadOutlined className="text-blue-500 text-4xl mb-2" />
-                  <p className="text-gray-500 text-sm">
-                    Click or drag file to upload
-                  </p>
-                </div>
-              </Upload>
-
-              <div className="mt-4 flex justify-center">
-                {storeLogo ? (
-                  <img
-                    src={URL.createObjectURL(storeLogo)}
-                    alt="Store Logo"
-                    className="w-40 h-40 object-cover border border-gray-300 rounded-lg shadow-md cursor-pointer"
-                    onClick={() =>
-                      handleImagePreview(URL.createObjectURL(storeLogo))
-                    }
-                  />
-                ) : storeDetails?.imageUrl ? (
-                  <img
-                    src={storeDetails.imageUrl}
-                    alt="Store Logo"
-                    className="w-40 h-40 object-cover border border-gray-300 rounded-lg shadow-md cursor-pointer"
-                    onClick={() => handleImagePreview(storeDetails.imageUrl)}
-                  />
-                ) : null}
-              </div>
-            </Form.Item>
-
             {/* Upload Store Attachments */}
             <Form.Item label="Store Attachments">
               <Upload
@@ -614,13 +778,27 @@ const StoreRegistration = () => {
                 {storeAttachments.map((file, index) => (
                   <div key={index} className="relative w-24 h-24">
                     <img
+                      src={
+                        file instanceof File ? URL.createObjectURL(file) : file
+                      }
+                      alt="Attachment"
+                      className="w-full h-full object-cover border border-gray-300 rounded-lg shadow-md cursor-pointer"
+                      onClick={() =>
+                        handleImagePreview(
+                          file instanceof File
+                            ? URL.createObjectURL(file)
+                            : file
+                        )
+                      }
+                    />
+                    {/* <img
                       src={URL.createObjectURL(file)}
                       alt="Attachment"
                       className="w-full h-full object-cover border border-gray-300 rounded-lg shadow-md cursor-pointer"
                       onClick={() =>
                         handleImagePreview(URL.createObjectURL(file))
                       }
-                    />
+                    /> */}
                     <Button
                       type="danger"
                       icon={<CloseCircleOutlined style={{ color: "white" }} />}
@@ -648,20 +826,6 @@ const StoreRegistration = () => {
                   </div>
                 ))}
               </div>
-
-              {/* Modal xem ảnh lớn hơn */}
-              <Modal
-                visible={previewVisible}
-                footer={null}
-                onCancel={() => setPreviewVisible(false)}
-                centered
-              >
-                <img
-                  alt="Preview"
-                  style={{ width: "100%" }}
-                  src={previewImage}
-                />
-              </Modal>
             </Form.Item>
 
             <div className="flex justify-end">
@@ -696,6 +860,157 @@ const StoreRegistration = () => {
             layout="vertical"
             className="mt-5"
           >
+            {/* Front Identification */}
+            <Form.Item label="Front Identification">
+              <div className="flex flex-col items-center">
+                {!documents.frontIdentification ? (
+                  <Upload
+                    showUploadList={false}
+                    beforeUpload={() => false}
+                    onChange={(info) => {
+                      const file = info.file;
+                      if (file) {
+                        setDocuments((prev) => ({
+                          ...prev,
+                          frontIdentification: file,
+                        }));
+                      }
+                    }}
+                  >
+                    <div className="w-64 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition flex items-center justify-center">
+                      <UploadOutlined className="text-blue-500 text-3xl" />
+                      <p className="text-gray-500 ml-2">Click or drag file</p>
+                    </div>
+                  </Upload>
+                ) : (
+                  <div className="relative w-64 h-40">
+                    <img
+                      src={
+                        documents.frontIdentification instanceof File
+                          ? URL.createObjectURL(documents.frontIdentification)
+                          : documents.frontIdentification
+                      }
+                      alt="Front ID"
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+
+                    {/* Nút xem ảnh */}
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-white p-1 rounded-full shadow-md"
+                      onClick={() =>
+                        handleImagePreview(
+                          documents.frontIdentification instanceof File
+                            ? URL.createObjectURL(documents.frontIdentification)
+                            : documents.frontIdentification
+                        )
+                      }
+                    >
+                      <EyeOutlined className="text-blue-500 text-xl cursor-pointer" />
+                    </button>
+
+                    {/* Nút update ảnh */}
+                    <Upload
+                      showUploadList={false}
+                      beforeUpload={() => false}
+                      onChange={(info) => {
+                        const file = info.file;
+                        if (file) {
+                          setDocuments((prev) => ({
+                            ...prev,
+                            frontIdentification: file,
+                          }));
+                        }
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-md text-sm hover:bg-blue-200 transition"
+                      >
+                        <UploadOutlined className="text-blue-500 text-xl" />
+                      </button>
+                    </Upload>
+                  </div>
+                )}
+              </div>
+            </Form.Item>
+
+            {/* Back Identification */}
+            <Form.Item label="Back Identification">
+              <div className="flex flex-col items-center">
+                {!documents.backIdentification ? (
+                  <Upload
+                    showUploadList={false}
+                    beforeUpload={() => false}
+                    onChange={(info) => {
+                      const file = info.file;
+                      if (file) {
+                        setDocuments((prev) => ({
+                          ...prev,
+                          backIdentification: file,
+                        }));
+                      }
+                    }}
+                  >
+                    <div className="w-64 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition flex items-center justify-center">
+                      <UploadOutlined className="text-blue-500 text-3xl" />
+                      <p className="text-gray-500 ml-2">Click or drag file</p>
+                    </div>
+                  </Upload>
+                ) : (
+                  <div className="relative w-64 h-40">
+                    <img
+                      src={
+                        documents.backIdentification instanceof File
+                          ? URL.createObjectURL(documents.backIdentification)
+                          : documents.backIdentification
+                      }
+                      alt="Back ID"
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+
+                    {/* Nút xem ảnh */}
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-white p-1 rounded-full shadow-md"
+                      onClick={() =>
+                        handleImagePreview(
+                          documents.backIdentification instanceof File
+                            ? URL.createObjectURL(documents.backIdentification)
+                            : documents.backIdentification
+                        )
+                      }
+                    >
+                      <EyeOutlined className="text-blue-500 text-xl cursor-pointer" />
+                    </button>
+
+                    {/* Nút update ảnh */}
+                    <Upload
+                      showUploadList={false}
+                      beforeUpload={() => false}
+                      onChange={(info) => {
+                        const file = info.file;
+                        if (file) {
+                          setDocuments((prev) => ({
+                            ...prev,
+                            backIdentification: file,
+                          }));
+                        }
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-md text-sm hover:bg-blue-200 transition"
+                      >
+                        <UploadOutlined className="text-blue-500 text-xl" />
+                      </button>
+                    </Upload>
+                  </div>
+                )}
+              </div>
+            </Form.Item>
+
+            {/*          
             <Form.Item label="Front Identification">
               <Upload
                 showUploadList={false}
@@ -756,24 +1071,29 @@ const StoreRegistration = () => {
                   />
                 )}
               </div>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item label="Business Licenses">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setDocuments((prev) => ({
-                    ...prev,
-                    businessLicences: file,
-                  }));
-                  return false;
-                }}
-              >
-                <div className="flex justify-center items-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                  <UploadOutlined className="text-blue-500 text-3xl" />
-                  <p className="text-gray-500">Click or drag files to upload</p>
-                </div>
-              </Upload>
+              <div className="flex justify-center">
+                <Upload
+                  showUploadList={false}
+                  beforeUpload={(file) => {
+                    setDocuments((prev) => ({
+                      ...prev,
+                      businessLicences: file,
+                    }));
+                    return false;
+                  }}
+                >
+                  <div className="flex justify-center items-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
+                    <UploadOutlined className="text-blue-500 text-3xl" />
+                    <p className="text-gray-500">
+                      Click or drag files to upload
+                    </p>
+                  </div>
+                </Upload>
+              </div>
+
               <div className="mt-4 flex justify-center">
                 {documents.businessLicences && (
                   <img
@@ -784,6 +1104,13 @@ const StoreRegistration = () => {
                     }
                     alt="Business License"
                     className="w-64 h-40 object-cover rounded-lg border border-gray-600 mt-2"
+                    onClick={() =>
+                      handleImagePreview(
+                        documents.businessLicences instanceof File
+                          ? URL.createObjectURL(documents.businessLicences)
+                          : documents.businessLicences
+                      )
+                    }
                   />
                 )}
               </div>
@@ -838,7 +1165,15 @@ const StoreRegistration = () => {
           </Form>
         </div>
       )}
-
+      {/* Modal xem ảnh lớn hơn */}
+      <Modal
+        visible={previewVisible}
+        footer={null}
+        onCancel={() => setPreviewVisible(false)}
+        centered
+      >
+        <img alt="Preview" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
       {/* Step 3: Submit */}
       {currentStep === 2 && (
         <div className="bg-white shadow-lg rounded-lg p-6">

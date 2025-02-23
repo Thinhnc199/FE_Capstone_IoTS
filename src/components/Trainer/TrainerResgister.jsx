@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button, Form, notification, Modal, Upload, Input } from "antd";
-import { UploadOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  CheckCircleOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import { uploadFiles, getUserRequestDetails } from "../../api/apiConfig";
 import {
   submitTrainerDocuments,
@@ -209,6 +213,39 @@ const TrainerRegister = () => {
     }
   };
 
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const response = await getUserRequestDetails(userId);
+        const userRequestStatus =
+          response?.data?.userRequestInfo?.userRequestStatus?.label;
+
+        if (userRequestStatus) {
+          dispatch({
+            type: "trainerRegister/setRequestStatus",
+            payload: userRequestStatus,
+          });
+        } else {
+          console.warn("User request status is undefined in API response.");
+        }
+
+        if (userRequestStatus === "Pending to Approved") {
+          setCurrentStep(1);
+        }
+        if (userRequestStatus === "Rejected") {
+          setCurrentStep(0);
+        }
+      } catch (error) {
+        console.error("Error fetching user request status:", error);
+      }
+    };
+
+    checkUserStatus();
+  }, [dispatch]);
+
   const handleCancelModal = () => {
     setIsModalVisible(false);
     setCurrentStep(0);
@@ -226,7 +263,229 @@ const TrainerRegister = () => {
             layout="vertical"
             className="mt-5"
           >
+            {/* Front Identification */}
             <Form.Item label="Front Identification">
+              <div className="flex flex-col items-center">
+                {!documents.frontIdentification ? (
+                  <Upload
+                    showUploadList={false}
+                    beforeUpload={() => false} // Ngăn tự động submit form
+                    onChange={(info) => {
+                      const file = info.file;
+                      if (file) {
+                        setDocuments((prev) => ({
+                          ...prev,
+                          frontIdentification: file,
+                        }));
+                      }
+                    }}
+                  >
+                    <div className="w-64 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition flex items-center justify-center">
+                      <UploadOutlined className="text-blue-500 text-3xl" />
+                      <p className="text-gray-500 ml-2">Click or drag file</p>
+                    </div>
+                  </Upload>
+                ) : (
+                  <div className="relative w-64 h-40">
+                    <img
+                      src={
+                        documents.frontIdentification instanceof File
+                          ? URL.createObjectURL(documents.frontIdentification)
+                          : documents.frontIdentification
+                      }
+                      alt="Front ID"
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+
+                    {/* Nút xem ảnh */}
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-white p-1 rounded-full shadow-md"
+                      onClick={() =>
+                        handleImagePreview(
+                          documents.frontIdentification instanceof File
+                            ? URL.createObjectURL(documents.frontIdentification)
+                            : documents.frontIdentification
+                        )
+                      }
+                    >
+                      <EyeOutlined className="text-blue-500 text-xl" />
+                    </button>
+
+                    {/* Nút update ảnh */}
+                    <Upload
+                      showUploadList={false}
+                      beforeUpload={() => false} // Ngăn tự động submit
+                      onChange={(info) => {
+                        const file = info.file;
+                        if (file) {
+                          setDocuments((prev) => ({
+                            ...prev,
+                            frontIdentification: file,
+                          }));
+                        }
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-md text-sm hover:bg-blue-200 transition"
+                      >
+                        <UploadOutlined className="text-blue-500 text-xl" />
+                      </button>
+                    </Upload>
+                  </div>
+                )}
+              </div>
+            </Form.Item>
+
+            {/* Back Identification */}
+            <Form.Item label="Back Identification">
+              <div className="flex flex-col items-center">
+                {!documents.backIdentification ? (
+                  <Upload
+                    showUploadList={false}
+                    beforeUpload={() => false} // Ngăn tự động submit
+                    onChange={(info) => {
+                      const file = info.file;
+                      if (file) {
+                        setDocuments((prev) => ({
+                          ...prev,
+                          backIdentification: file,
+                        }));
+                      }
+                    }}
+                  >
+                    <div className="w-64 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition flex items-center justify-center">
+                      <UploadOutlined className="text-blue-500 text-3xl" />
+                      <p className="text-gray-500 ml-2">Click or drag file</p>
+                    </div>
+                  </Upload>
+                ) : (
+                  <div className="relative w-64 h-40">
+                    <img
+                      src={
+                        documents.backIdentification instanceof File
+                          ? URL.createObjectURL(documents.backIdentification)
+                          : documents.backIdentification
+                      }
+                      alt="Back ID"
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-white p-1 rounded-full shadow-md"
+                      onClick={() =>
+                        handleImagePreview(
+                          documents.backIdentification instanceof File
+                            ? URL.createObjectURL(documents.backIdentification)
+                            : documents.backIdentification
+                        )
+                      }
+                    >
+                      <EyeOutlined className="text-blue-500 text-xl" />
+                    </button>
+
+                    <Upload
+                      showUploadList={false}
+                      beforeUpload={() => false} // Ngăn tự động submit
+                      onChange={(info) => {
+                        const file = info.file;
+                        if (file) {
+                          setDocuments((prev) => ({
+                            ...prev,
+                            backIdentification: file,
+                          }));
+                        }
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-md text-sm hover:bg-blue-200 transition"
+                      >
+                        <UploadOutlined className="text-blue-500 text-xl" />
+                      </button>
+                    </Upload>
+                  </div>
+                )}
+              </div>
+            </Form.Item>
+
+            {/* Business Licenses */}
+            <Form.Item label="Business Licenses">
+              <div className="flex flex-col items-center">
+                {!documents.businessLicences ? (
+                  <Upload
+                    showUploadList={false}
+                    beforeUpload={() => false} // Ngăn tự động submit
+                    onChange={(info) => {
+                      const file = info.file;
+                      if (file) {
+                        setDocuments((prev) => ({
+                          ...prev,
+                          businessLicences: file,
+                        }));
+                      }
+                    }}
+                  >
+                    <div className="w-64 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition flex items-center justify-center">
+                      <UploadOutlined className="text-blue-500 text-3xl" />
+                      <p className="text-gray-500 ml-2">Click or drag file</p>
+                    </div>
+                  </Upload>
+                ) : (
+                  <div className="relative w-64 h-40">
+                    <img
+                      src={
+                        documents.businessLicences instanceof File
+                          ? URL.createObjectURL(documents.businessLicences)
+                          : documents.businessLicences
+                      }
+                      alt="Business License"
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-white p-1 rounded-full shadow-md"
+                      onClick={() =>
+                        handleImagePreview(
+                          documents.businessLicences instanceof File
+                            ? URL.createObjectURL(documents.businessLicences)
+                            : documents.businessLicences
+                        )
+                      }
+                    >
+                      <EyeOutlined className="text-blue-500 text-xl" />
+                    </button>
+
+                    <Upload
+                      showUploadList={false}
+                      beforeUpload={() => false} // Ngăn tự động submit
+                      onChange={(info) => {
+                        const file = info.file;
+                        if (file) {
+                          setDocuments((prev) => ({
+                            ...prev,
+                            businessLicences: file,
+                          }));
+                        }
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-md text-sm hover:bg-blue-200 transition"
+                      >
+                        <UploadOutlined className="text-blue-500 text-xl" />
+                      </button>
+                    </Upload>
+                  </div>
+                )}
+              </div>
+            </Form.Item>
+
+            {/* <Form.Item label="Front Identification">
+            <div className="flex justify-center">
               <Upload
                 showUploadList={false}
                 beforeUpload={(file) => {
@@ -260,9 +519,10 @@ const TrainerRegister = () => {
                   />
                 )}
               </div>
-            </Form.Item>
+            </div>
+            </Form.Item> */}
 
-            <Form.Item label="Back Identification">
+            {/* <Form.Item label="Back Identification">
               <Upload
                 showUploadList={false}
                 beforeUpload={(file) => {
@@ -296,9 +556,9 @@ const TrainerRegister = () => {
                   />
                 )}
               </div>
-            </Form.Item>
+            </Form.Item> */}
 
-            <Form.Item label="Business Licenses">
+            {/* <Form.Item label="Business Licenses">
               <Upload
                 showUploadList={false}
                 beforeUpload={(file) => {
@@ -332,7 +592,7 @@ const TrainerRegister = () => {
                   />
                 )}
               </div>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               label="Issued By"
@@ -350,14 +610,15 @@ const TrainerRegister = () => {
                 <Input type="date" />
               </Form.Item>
             </div>
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition"
-            >
-              Next
-            </Button>
+            <div className="flex justify-center mt-6">
+              <Button
+                type="primary"
+                htmlType="submit"
+                className=" bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition"
+              >
+                Submit
+              </Button>
+            </div>
           </Form>
         </div>
       )}
