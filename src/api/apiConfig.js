@@ -1,4 +1,4 @@
-
+// api/apiConfig.js
 import axios from "axios";
 import { notification } from "antd";
 
@@ -10,14 +10,43 @@ const api = axios.create({
   },
 });
 
+const isTokenExpired = (token) => {
+  try {
+    // Decode the token and get the payload
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    
+    // Check if the expiration time exists
+    if (!payload.exp) {
+      console.error("Token doesn't have an expiration time.");
+      return true; // Treat as expired if no expiration exists
+    }
+    
+    // Convert the expiration time to milliseconds and compare it with current time
+    const expirationTime = payload.exp * 1000;
+    return expirationTime < Date.now();
+  } catch (error) {
+    console.error("Error decoding token:", error); // Log the error for debugging
+    return true; // If token decoding fails, assume expired
+  }
+};
+
+
+
 
 api.interceptors.request.use(
   (config) => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
+        if (isTokenExpired(token)) {
+          localStorage.removeItem("token"); // Remove expired token
+          showNotification("error", "Session Expired", "Please log in again.");
+          window.location.href = "/login"; // Redirect to login
+          return Promise.reject("Token expired, redirecting to login.");
+        }
         config.headers["Authorization"] = `Bearer ${token}`;
       }
+      console.log("Request Headers:", config.headers);
     } catch (error) {
       console.error("Request Interceptor Error:", error);
     }
@@ -26,20 +55,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Handle global API errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error);
-
+    
     if (error.response?.status === 401) {
+      console.error("Unauthorized error:", error.response?.data);
       localStorage.clear();
       showNotification("warning", "Session Expired", "Redirecting to login...");
 
-      // ✅ Delay redirect to prevent instant UI refresh
-      // setTimeout(() => {
-      //   window.location.href = "/login";
-      // }, 2000);
+      setTimeout(() => {
+        window.location.href = "/login"; // Redirect after 2 seconds
+      }, 2000);
 
       return Promise.reject("Session expired. Please log in again.");
     }
@@ -47,6 +75,45 @@ api.interceptors.response.use(
     return Promise.reject(error.response?.data?.message || "An error occurred, please try again.");
   }
 );
+
+
+// api.interceptors.request.use(
+//   (config) => {
+//     try {
+//       const token = localStorage.getItem("token");
+//       if (token) {
+//         config.headers["Authorization"] = `Bearer ${token}`;
+//       }
+//       console.log('Request Headers:', config.headers);
+//     } catch (error) {
+//       console.error("Request Interceptor Error:", error);
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     console.error("API Error:", error);
+
+//     if (error.response?.status === 401) {
+//       console.error("Unauthorized error:", error.response?.data);
+//       localStorage.clear();
+//       showNotification("warning", "Session Expired", "Redirecting to login...");
+
+//       // ✅ Delay redirect to prevent instant UI refresh
+//       setTimeout(() => {
+//         window.location.href = "/login";
+//       }, 2000);
+
+//       return Promise.reject("Session expired. Please log in again.");
+//     }
+
+//     return Promise.reject(error.response?.data?.message || "An error occurred, please try again.");
+//   }
+// );
 
 // ✅ Helper function for toast notifications
 const showNotification = (type, message, description) => {

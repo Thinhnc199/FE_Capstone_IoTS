@@ -25,6 +25,20 @@ export const uploadImage = createAsyncThunk(
   }
 );
 
+// ✅ Async Thunk để lấy trạng thái người dùng từ API
+export const fetchUserStatus = createAsyncThunk(
+  "storeRegistration/fetchUserStatus",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/user-request/get-user-request-details-by-user-id/${userId}`);
+      return response.data.data.userRequestInfo; // Trả về dữ liệu userRequestInfo
+    } catch (error) {
+      console.error("Error fetching user status:", error);
+      return rejectWithValue(error.response?.data || "Failed to fetch user status");
+    }
+  }
+);
+
 // Submit Store Info
 export const submitStoreInfo = createAsyncThunk(
   "storeRegistration/submitStoreInfo",
@@ -150,17 +164,32 @@ export const registerMembershipPackage = createAsyncThunk(
   "storeRegistration/registerMembershipPackage",
   async (data, { rejectWithValue }) => {
     try {
-      console.log('Sending request with data:', data); 
-      const response = await api.post('/api/account-membership-package/register-membership-package', data);
-      console.log('API Response:', response.data); 
+      console.log("Sending request with data:", data);
+      const response = await api.post("/api/account-membership-package/register-membership-package", data);
+      console.log("API Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error('API Error:', error); 
-      // Assuming the error message is in error.response.data.message
-      return rejectWithValue(error.response?.data?.message || "Failed to register membership package");
+      console.error("API Error:", error);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
+
+// export const registerMembershipPackage = createAsyncThunk(
+//   "storeRegistration/registerMembershipPackage",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       console.log('Sending request with data:', data); 
+//       const response = await api.post('/api/account-membership-package/register-membership-package', data);
+//       console.log('API Response:', response.data); 
+//       return response.data;
+//     } catch (error) {
+//       console.error('API Error:', error); 
+//       // Assuming the error message is in error.response.data.message
+//       return rejectWithValue(error.response?.data?.message || "Failed to register membership package");
+//     }
+//   }
+// );
 
 
 // Store Slice
@@ -168,6 +197,8 @@ const storeRegistrationSlice = createSlice({
   name: "storeRegistration",
   initialState: {
     storeInfo: null,
+    status: null,
+    remark: "",
     loading: false,
     businessLicense: null,
     error: null,
@@ -184,6 +215,19 @@ const storeRegistrationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    .addCase(fetchUserStatus.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchUserStatus.fulfilled, (state, action) => {
+      state.loading = false;
+      state.status = action.payload?.userRequestStatus?.label;
+      state.remark = action.payload?.remark || "";
+    })
+    .addCase(fetchUserStatus.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
       // Upload Image
       .addCase(uploadImage.pending, (state) => { state.loading = true; })
       .addCase(uploadImage.fulfilled, (state) => { state.loading = false; })

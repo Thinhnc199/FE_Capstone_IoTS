@@ -27,57 +27,6 @@ const Login = () => {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // // ✅ Handle login
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-
-  //   let formValid = true;
-  //   const newErrors = { email: "", password: "" };
-
-  //   if (!credentials.email) {
-  //     newErrors.email = "Email is required!";
-  //     formValid = false;
-  //   }
-  //   if (!credentials.password) {
-  //     newErrors.password = "Password is required!";
-  //     formValid = false;
-  //   }
-
-  //   if (!formValid) {
-  //     setErrors(newErrors);
-  //     return;
-  //   }
-
-  //   const result = await dispatch(loginUser(credentials));
-  //   if (!result.error) {
-  //     const role = result.payload.roleId;
-  //     showNotification("success", "Login Successful", "Welcome back!");
-
-  //     switch (role) {
-  //       case 1:
-  //         navigate("/admin");
-  //         break;
-  //       case 2:
-  //         navigate("/staff/dashboard");
-  //         break;
-  //       case 3:
-  //         navigate("/manager/dashboard");
-  //         break;
-  //       case 4:
-  //         navigate("/trainer/dashboard");
-  //         break;
-  //       case 5:
-  //         navigate("/home");
-  //         break;
-  //       case 6:
-  //         navigate("/store/welcome");
-  //         break;
-  //       default:
-  //         navigate("/home");
-  //     }
-  //   }
-  // };
-
   // ✅ Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -116,7 +65,13 @@ const Login = () => {
           navigate("/manager/dashboard");
           break;
         case 4:
+          if (isActive === 1) {
+            navigate("/strainer/welcome");
+          } else if (isActive === 2) {
           navigate("/trainer/registerTrainer");
+        } else {
+          navigate("/home");
+        }
           break;
         case 5:
           navigate("/home");
