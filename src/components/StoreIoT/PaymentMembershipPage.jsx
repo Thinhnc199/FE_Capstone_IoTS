@@ -1,3 +1,98 @@
+// import { useEffect, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import { Button, Card, notification } from "antd";
+// import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
+// import {
+//   registerMembershipPackage,
+//   getWalletBalance,
+//   getMembershipOptions,
+// } from "../../redux/slices/storeRegistrationSlice";
+// import { useNavigate } from "react-router-dom";
+// const { Meta } = Card;
+
+// const PaymentMembershipPage = () => {
+//   const dispatch = useDispatch();
+//   const { walletBalance, membershipOptions, errorMessage } = useSelector(
+//     (state) => state.storeRegistration
+//   );
+//   const [selectedPackage, setSelectedPackage] = useState(null);
+//   const [userId, setUserId] = useState(null);
+//   const navigate = useNavigate();
+//   useEffect(() => {
+//     const id = localStorage.getItem("userId");
+//     if (id) {
+//       setUserId(id);
+//     } else {
+//       notification.error({ message: "User ID is not available." });
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (userId) {
+//       dispatch(getWalletBalance(userId));
+//       dispatch(getMembershipOptions());
+//     }
+//   }, [userId, dispatch]);
+
+//   const handlePackageSelect = (packageId) => {
+//     setSelectedPackage(packageId);
+//   };
+
+//   const handleSubmit = () => {
+//     if (selectedPackage === null) {
+//       notification.error({ message: "Please select a membership package." });
+//       return;
+//     }
+
+//     if (!Array.isArray(membershipOptions) || membershipOptions.length === 0) {
+//       notification.error({
+//         message: "Membership options are still loading...",
+//       });
+//       return;
+//     }
+
+//     const selectedOption = membershipOptions.find(
+//       (option) => option.id === selectedPackage
+//     );
+
+//     if (!selectedOption) {
+//       notification.error({
+//         message: "Selected membership package is invalid.",
+//       });
+//       return;
+//     }
+
+//     const data = {
+//       userId,
+//       membershipPackageId: selectedPackage,
+//     };
+
+//     dispatch(registerMembershipPackage(data))
+//       .unwrap()
+//       .then(() => {
+//         notification.success({
+//           message: "Membership registered successfully!",
+//         });
+//         navigate("/store/welcome");
+//       })
+//       .catch((error) => {
+//         notification.error({
+//           message: error?.message || "Failed to register membership package.",
+
+//         });
+//       });
+//   };
+
+//   // Show error message
+//   useEffect(() => {
+//     if (errorMessage) {
+//       notification.error({
+//         message: errorMessage,
+//         placement: "topright",
+//         duration: 3,
+//       });
+//     }
+//   }, [errorMessage]);
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Card, notification } from "antd";
@@ -8,6 +103,7 @@ import {
   getMembershipOptions,
 } from "../../redux/slices/storeRegistrationSlice";
 import { useNavigate } from "react-router-dom";
+
 const { Meta } = Card;
 
 const PaymentMembershipPage = () => {
@@ -17,7 +113,10 @@ const PaymentMembershipPage = () => {
   );
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
   const navigate = useNavigate();
+
+  // Lấy userId từ localStorage khi component mount
   useEffect(() => {
     const id = localStorage.getItem("userId");
     if (id) {
@@ -27,6 +126,7 @@ const PaymentMembershipPage = () => {
     }
   }, []);
 
+  // Fetch dữ liệu từ API khi userId thay đổi
   useEffect(() => {
     if (userId) {
       dispatch(getWalletBalance(userId));
@@ -34,11 +134,32 @@ const PaymentMembershipPage = () => {
     }
   }, [userId, dispatch]);
 
+  // Theo dõi lỗi từ Redux và hiển thị thông báo
+  useEffect(() => {
+    if (errorMessage) {
+      console.log("🛠 Redux Error Message:", errorMessage);
+      setToastMessage(errorMessage);
+    }
+  }, [errorMessage]);
+
+  // Hiển thị Toast khi có lỗi từ Redux
+  useEffect(() => {
+    if (toastMessage) {
+      notification.error({
+        message: "Error",
+        description: toastMessage,
+        placement: "topRight",
+        duration: 3,
+      });
+      setToastMessage(null); // Xóa lỗi sau khi hiển thị
+    }
+  }, [toastMessage]);
+
   const handlePackageSelect = (packageId) => {
     setSelectedPackage(packageId);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedPackage === null) {
       notification.error({ message: "Please select a membership package." });
       return;
@@ -67,31 +188,27 @@ const PaymentMembershipPage = () => {
       membershipPackageId: selectedPackage,
     };
 
-    dispatch(registerMembershipPackage(data))
-      .unwrap()
-      .then(() => {
-        notification.success({
-          message: "Membership registered successfully!",
-        });
-        navigate("/store/welcome");
-      })
-      .catch((error) => {
-        notification.error({
-          message: error?.message || "Failed to register membership package.",
-        });
+    try {
+      console.log("🔍 Sending request:", data);
+      const response = await dispatch(registerMembershipPackage(data)).unwrap();
+      console.log("✅ API Response:", response);
+      notification.success({
+        message: "Membership registered successfully!",
       });
-  };
+      navigate("/store/welcome");
+    } catch (error) {
+      // console.error("❌ API Error:", error);
 
-  // Show error message
-  useEffect(() => {
-    if (errorMessage) {
+      // 👉 Hiển thị thông báo lỗi từ API
       notification.error({
-        message: errorMessage,
-        placement: "top",
+        message: "Registration Failed",
+        description:
+          typeof error === "string" ? error : "An unexpected error occurred.",
+        placement: "topRight",
+        duration: 3, // Hiển thị 3 giây
       });
     }
-  }, [errorMessage]);
-
+  };
   return (
     <div className="bg-white shadow-lg rounded-lg p-8 mx-auto w-full max-w-[1000px]">
       <h2 className="text-3xl font-bold text-blue-600 text-center mb-8">

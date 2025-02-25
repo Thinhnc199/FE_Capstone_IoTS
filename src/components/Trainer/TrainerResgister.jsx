@@ -12,7 +12,7 @@ import {
   getTrainerBusinessLicenseDetails,
 } from "../../redux/slices/trainerSlice";
 import { useDispatch, useSelector } from "react-redux";
-
+import dayjs from "dayjs";
 const TrainerRegister = () => {
   const [documents, setDocuments] = useState({
     frontIdentification: null,
@@ -250,6 +250,26 @@ const TrainerRegister = () => {
     setIsModalVisible(false);
     setCurrentStep(0);
   };
+
+  const validateExpiredDate = (_, value) => {
+    const issueDate = formStep1.getFieldValue("issueDate");
+    const today = dayjs().startOf("day"); 
+    
+    if (!value) {
+      return Promise.reject("Please select an expired date.");
+    }
+    
+    if (dayjs(value).isBefore(today)) {
+      return Promise.reject("Expired Date must be in the future.");
+    }
+
+    if (issueDate && dayjs(value).isBefore(dayjs(issueDate))) {
+      return Promise.reject("Expired Date must be after Issue Date.");
+    }
+
+    return Promise.resolve();
+  };
+
   return (
     <div>
       {currentStep === 0 && (
@@ -603,12 +623,40 @@ const TrainerRegister = () => {
             </Form.Item>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <Form.Item label="Issue Date" name="issueDate">
+              {/* <Form.Item label="Issue Date" name="issueDate">
                 <Input type="date" />
               </Form.Item>
               <Form.Item label="Expired Date" name="expiredDate">
                 <Input type="date" />
-              </Form.Item>
+              </Form.Item> */}
+              
+      <Form.Item
+        label="Issue Date"
+        name="issueDate"
+        rules={[
+          {
+            required: true,
+            message: "Please select an issue date.",
+          },
+        ]}
+      >
+        <Input type="date" />
+      </Form.Item>
+
+      <Form.Item
+        label="Expired Date"
+        name="expiredDate"
+        dependencies={["issueDate"]}
+        rules={[
+          {
+            required: true,
+            message: "Please select an expired date.",
+          },
+          { validator: validateExpiredDate },
+        ]}
+      >
+        <Input type="date" />
+      </Form.Item>
             </div>
             <div className="flex justify-center mt-6">
               <Button

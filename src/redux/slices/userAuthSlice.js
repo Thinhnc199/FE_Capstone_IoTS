@@ -10,14 +10,34 @@ const showNotification = (type, message, description) => {
     placement: "topRight",
     duration: 3,
     style: {
+      backgroundColor: "#ffffff", // ✅ Nền trắng
+      color: "#333333", // ✅ Màu chữ tối để dễ đọc
+      borderRadius: "8px", // ✅ Bo tròn góc
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // ✅ Bóng đổ nhẹ
+      border: "1px solid #f0f0f0", // ✅ Viền nhẹ để nổi bật
       right: "20px",
-      top: "40px",
+      top: "50px",
       position: "fixed",
       zIndex: 10000,
-      width: "320px",
+      width: "380px",
     },
   });
 };
+// const showNotification = (type, message, description) => {
+//   notification[type]({
+//     message,
+//     description,
+//     placement: "topRight",
+//     duration: 3,
+//     style: {
+//       right: "20px",
+//       top: "50px",
+//       position: "fixed",
+//       zIndex: 10000,
+//       width: "350px",
+//     },
+//   });
+// };
 
 // Fetch user request details
 export const fetchUserRequest = async (userId) => {
@@ -68,8 +88,9 @@ export const loginUser = createAsyncThunk("auth/loginUser", async (credentials, 
     
     return { ...response.data.data, userDetails };
   } catch (error) {
-    showNotification("error", "Login Failed", error.response?.data?.message || "Invalid credentials");
-    return rejectWithValue(error.response?.data);
+    console.error("❌ Full API Error Login:", error);
+    showNotification("error", "Login Failed", error|| "Invalid credentials");
+    return rejectWithValue(error);
   }
 });
 

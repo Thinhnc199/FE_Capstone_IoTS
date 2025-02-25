@@ -37,6 +37,8 @@ import ListProductStore from "../components/StoreIoT/ListProductStore";
 import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
 import CheckStatus from "../components/StoreIoT/CheckStatus";
+import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
+import RegisterCustomer from "../pages/RegisterCustomer";
 
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -95,7 +97,11 @@ const publicRoute = [
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
   { path: "*", component: ErrorPage, layout: null },
   { path: "/Access-Restricted", component: AccessRestricted, layout: null },
-
+  {
+    path: "/register-Customer",
+    component: RegisterCustomer,
+    layout: MainLayout,
+  },
   { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
   { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
   {
@@ -207,6 +213,11 @@ const publicRoute = [
   {
     path: "/store/status",
     component: CheckStatus,
+    layout: StoreLayout,
+  },
+  {
+    path: "/store/submission-Success",
+    component: SubmissionSuccess,
     layout: StoreLayout,
   },
 ];

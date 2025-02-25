@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
 const PrivateRoute = ({ layout: Layout = Fragment }) => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state) => state.userAuth.isAuthenticated);
 
   return isAuthenticated ? (
     <Layout>
