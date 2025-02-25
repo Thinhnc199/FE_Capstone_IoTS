@@ -97,7 +97,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import api from "../../api/apiConfig";
 import { message } from 'antd';
 
-// ✅ Send OTP for Store/Trainer Registration
 export const sendOtp = createAsyncThunk(
   "store/sendOtp",
   async ({ email, role }, { rejectWithValue }) => {
@@ -106,19 +105,63 @@ export const sendOtp = createAsyncThunk(
         role === 4
           ? "/api/trainer/create-trainer-user-request-verify-otp"
           : "/api/store/create-store-user-request-verify-otp";
-      
+
       const response = await api.post(apiEndpoint, { email });
-      
+
       if (response.status !== 200) {
         return rejectWithValue("Failed to send OTP.");
       }
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.message || "Failed to send OTP.");
+      console.error("❌ Full API Error Object:", error);
+
+      // ✅ Nếu lỗi đã là string, trả về trực tiếp
+      if (typeof error === "string") {
+        return rejectWithValue(error);
+      }
+
+      // ✅ Nếu API trả về lỗi 400 có message, hiển thị message
+      if (error.response && error.response.status === 400 && error.response.data?.message) {
+        return rejectWithValue(error.response.data.message);
+      }
+
+      // Nếu API không phản hồi, trả về lỗi mạng
+      return rejectWithValue("No response from server. Please check your connection.");
     }
   }
 );
+
+
+// ✅ Send OTP for Store/Trainer Registration
+// export const sendOtp = createAsyncThunk(
+//   "store/sendOtp",
+//   async ({ email, role }, { rejectWithValue }) => {
+//     try {
+//       const apiEndpoint =
+//         role === 4
+//           ? "/api/trainer/create-trainer-user-request-verify-otp"
+//           : "/api/store/create-store-user-request-verify-otp";
+      
+//       const response = await api.post(apiEndpoint, { email });
+      
+//       if (response.status !== 200) {
+//         return rejectWithValue("Failed to send OTP.");
+//       }
+
+//       return response.data;
+//     } catch (error) {
+//       // Lấy thông báo từ API nếu có
+//       const errorMessage = error.response?.data?.message || "Failed to send OTP.";
+
+//       // Hiển thị lỗi trên giao diện
+//       message.error(errorMessage);
+//       console.error("API Error:", errorMessage); 
+
+//       return rejectWithValue(errorMessage);
+//     }
+//   }
+// );
 
 // ✅ Register User (Store or Trainer)
 export const registerUser = createAsyncThunk(

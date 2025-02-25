@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendOtp } from "../../redux/slices/storeSlice";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
-
+import { toast } from "react-toastify";
 const EmailOtpPage = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(6); // Default to Store
+  const [selectedRole, setSelectedRole] = useState(6);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.store);
@@ -28,19 +28,65 @@ const EmailOtpPage = () => {
   const handleRoleChange = (e) => {
     setSelectedRole(Number(e.target.value));
   };
-
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (!isValidEmail(email)) {
       message.error("Please enter a valid email address.");
       return;
     }
 
-    dispatch(sendOtp({ email, role: selectedRole })).then((res) => {
-      if (!res.error) {
-        navigate("/OtpRegister", { state: { email, role: selectedRole } });
-      }
-    });
+    try {
+      console.log("🔍 Sending OTP request:", { email, role: selectedRole });
+
+      await dispatch(sendOtp({ email, role: selectedRole })).unwrap();
+
+      toast.success("OTP has been sent successfully!", {
+        position: "top-right",
+      });
+
+      navigate("/OtpRegister", { state: { email, role: selectedRole } });
+    } catch (error) {
+      console.error("❌ API Error Message:", error);
+
+      // 🛠 Kiểm tra xem lỗi có phải là chuỗi không
+      const errorMessage =
+        typeof error === "string" ? error : "An unexpected error occurred.";
+
+      // ✅ Hiển thị lỗi từ API ra màn hình
+      toast.error(errorMessage, {
+        position: "top-right",
+      });
+
+      // message.error({
+      //   content: errorMessage,
+      //   duration: 3, // Hiển thị trong 3 giây
+      // });
+    }
   };
+
+  // const handleSendOtp = () => {
+  //   if (!isValidEmail(email)) {
+  //     message.error("Please enter a valid email address.");
+  //     return;
+  //   }
+  //   dispatch(sendOtp({ email, role: selectedRole }))
+  //     .unwrap()
+  //     .then(() => {
+  //       toast.success("OTP has been sent successfully!", {
+  //         position: "top-right",
+  //       });
+  //       navigate("/OtpRegister", { state: { email, role: selectedRole } });
+  //     })
+  //     .catch((error) => {
+  //       // Hiển thị lỗi từ API
+  //       toast.error(error, {
+  //         position: "top-right",
+  //       });
+  //       // dispatch(sendOtp({ email, role: selectedRole })).then((res) => {
+  //       //   if (!res.error) {
+  //       //     navigate("/OtpRegister", { state: { email, role: selectedRole } });
+  //       //   }
+  //     });
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">

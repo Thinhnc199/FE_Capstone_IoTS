@@ -100,13 +100,13 @@ const RegisterCustomer = () => {
       navigate("/login");
     } catch (error) {
       console.error("Error registering customer:", error);
-      const message =
-        error.response?.data?.message ||
-        "Registration failed. Please try again.";
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      // const message =
+      //   error.response?.data?.message ||
+      //   "Registration failed. Please try again.";
+      // toast.error(message, {
+      //   position: "top-right",
+      //   autoClose: 3000,
+      // });
     }
   };
 

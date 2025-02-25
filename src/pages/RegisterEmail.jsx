@@ -40,7 +40,7 @@ const RegisterEmail = () => {
 
       // ✅ Chuyển trang sau 3 giây để người dùng có thời gian đọc thông báo
       setTimeout(() => {
-        navigate("/registerCustomer");
+        navigate("/register-Customer");
       }, 3000);
       
     } catch (err) {

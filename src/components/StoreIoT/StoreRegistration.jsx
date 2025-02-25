@@ -12,7 +12,7 @@ import {
 } from "antd";
 import {
   UploadOutlined,
-  CheckCircleOutlined,
+  // CheckCircleOutlined,
   CloseCircleOutlined,
   EyeOutlined,
   ExclamationCircleOutlined,
@@ -28,15 +28,16 @@ import {
 } from "../../redux/slices/storeRegistrationSlice";
 import { useState, useEffect } from "react";
 import { uploadFiles, getUserRequestDetails } from "../../api/apiConfig";
-
+import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 const { Step } = Steps;
 
 const StoreRegistration = () => {
   const dispatch = useDispatch();
-  const { requestStatus, loading, status, remark } = useSelector(
+  const { loading, status, remark } = useSelector(
     (state) => state.storeRegistration
   );
+
   const [currentStep, setCurrentStep] = useState(0);
   const [storeLogo, setStoreLogo] = useState(null);
   const [storeAttachments, setStoreAttachments] = useState([]);
@@ -260,7 +261,8 @@ const StoreRegistration = () => {
         }
 
         if (userRequestStatus === "Pending to Approved") {
-          setCurrentStep(3);
+          // setCurrentStep(3);
+          navigate("/store/submission-success");
         }
         if (userRequestStatus === "Approved") {
           navigate("/store/payment-packages");
@@ -439,12 +441,14 @@ const StoreRegistration = () => {
     }
 
     try {
+      // 🛠 Gọi API lấy thông tin store
       const storeResponse = await dispatch(getStoreDetails(userId));
       if (storeResponse.payload && storeResponse.payload.data) {
         setStoreDetails(storeResponse.payload.data);
         setStoreId(storeResponse.payload.data.id);
       }
 
+      // 🛠 Gọi API lấy thông tin business license
       const businessLicenseResponse = await dispatch(
         getBusinessLicenseDetails(storeId)
       );
@@ -457,21 +461,23 @@ const StoreRegistration = () => {
         return;
       }
 
-      // Now proceed to submit the store for approval using the latest data
+      // 🛠 Gọi API lấy request ID
       const userRequestResponse = await getUserRequestDetails(userId);
-      const requestId = userRequestResponse.data.userRequestInfo.id;
-
+      const requestId = userRequestResponse.data.userRequestInfo?.id;
+     
       if (!requestId) {
         notification.error({
           message: "Request ID not found!",
         });
         return;
       }
+
       console.log(
         "Submitting store request approval for requestId:",
         requestId
       );
       await dispatch(submitStoreApproval(requestId));
+
       dispatch({
         type: "storeRegistration/setRequestStatus",
         payload: "Pending to Approved",
@@ -480,13 +486,95 @@ const StoreRegistration = () => {
       notification.success({
         message: "Store registration submitted for approval!",
       });
-      setCurrentStep(3);
+      // setCurrentStep(3);
+      // ✅ Chuyển hướng sang trang "/store/submission-success"
+      navigate("/store/submission-success");
+      
     } catch (error) {
       notification.error({
         message: "Submit Failed",
-        description: error.message,
+        description: error.message || "An error occurred during submission.",
       });
     }
+  };
+
+  // const handleSubmitApproval = async () => {
+  //   const userId = localStorage.getItem("userId");
+
+  //   if (!userId) {
+  //     notification.error({
+  //       message: "User ID not found!",
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const storeResponse = await dispatch(getStoreDetails(userId));
+  //     if (storeResponse.payload && storeResponse.payload.data) {
+  //       setStoreDetails(storeResponse.payload.data);
+  //       setStoreId(storeResponse.payload.data.id);
+  //     }
+
+  //     const businessLicenseResponse = await dispatch(
+  //       getBusinessLicenseDetails(storeId)
+  //     );
+  //     if (businessLicenseResponse.payload) {
+  //       setBusinessLicense(businessLicenseResponse.payload);
+  //     } else {
+  //       notification.error({
+  //         message: "Error fetching business license details",
+  //       });
+  //       return;
+  //     }
+
+  //     const userRequestResponse = await getUserRequestDetails(userId);
+  //     const requestId = userRequestResponse.data.userRequestInfo.id;
+
+  //     if (!requestId) {
+  //       notification.error({
+  //         message: "Request ID not found!",
+  //       });
+  //       return;
+  //     }
+  //     console.log(
+  //       "Submitting store request approval for requestId:",
+  //       requestId
+  //     );
+  //     await dispatch(submitStoreApproval(requestId));
+  //     dispatch({
+  //       type: "storeRegistration/setRequestStatus",
+  //       payload: "Pending to Approved",
+  //     });
+
+  //     notification.success({
+  //       message: "Store registration submitted for approval!",
+  //     });
+  //     setCurrentStep(3);
+  //   } catch (error) {
+  //     notification.error({
+  //       message: "Submit Failed",
+  //       description: error.message,
+  //     });
+  //   }
+  // };
+
+  const validateExpiredDate = (_, value) => {
+    const issueDate = formStep2.getFieldValue("issueDate");
+    const today = dayjs().startOf("day");
+
+    if (!value) {
+      return Promise.reject("Please select an expired date.");
+    }
+
+    if (dayjs(value).isBefore(today)) {
+      return Promise.reject("Expired Date must be in the future.");
+    }
+
+    if (issueDate && dayjs(value).isBefore(dayjs(issueDate))) {
+      return Promise.reject("Expired Date must be after Issue Date.");
+    }
+
+    return Promise.resolve();
   };
 
   return (
@@ -514,8 +602,8 @@ const StoreRegistration = () => {
       </div>
 
       <Steps current={currentStep} className="my-4">
-        <Step title="Store Details" onClick={() => setCurrentStep(0)} />
-        <Step title="Upload Documents" onClick={() => setCurrentStep(1)} />
+        <Step title="Store Details" />
+        <Step title="Upload Documents" />
         <Step title="Submit for Approval" />
       </Steps>
 
@@ -603,75 +691,6 @@ const StoreRegistration = () => {
                   />
                 </div>
               </Form.Item>
-
-              {/* <Form.Item
-                label="Upload Store Logo"
-                rules={[
-                  { required: true, message: "Please upload store logo!" },
-                ]}
-              >
-                <div className="flex flex-col items-center">
-                  <div className="relative">
-                    {storeLogo || storeDetails?.imageUrl ? (
-                      <img
-                        src={
-                          storeLogo
-                            ? URL.createObjectURL(storeLogo)
-                            : storeDetails.imageUrl
-                        }
-                        alt="Store Logo"
-                        className="w-44 h-44 object-cover border border-gray-300 rounded-full shadow-md cursor-pointer"
-                        onClick={() =>
-                          handleImagePreview(
-                            storeLogo
-                              ? URL.createObjectURL(storeLogo)
-                              : storeDetails.imageUrl
-                          )
-                        }
-                      />
-                    ) : (
-                      // <img
-                      //   src={
-                      //     storeLogo
-                      //       ? URL.createObjectURL(storeLogo)
-                      //       : storeDetails.imageUrl
-                      //   }
-                      //   alt="Store Logo"
-                      //   className="w-44 h-44 object-cover border border-gray-300 rounded-full shadow-md cursor-pointer"
-                      //   onClick={() =>
-                      //     handleImagePreview(
-                      //       storeLogo
-                      //         ? URL.createObjectURL(storeLogo)
-                      //         : storeDetails.imageUrl
-                      //     )
-                      //   }
-                      // />
-                      <div className="flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                        <UploadOutlined className="text-blue-500 text-4xl" />
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2">
-                      <Button
-                        icon={<UploadOutlined />}
-                        onClick={() =>
-                          document.getElementById("upload-input").click()
-                        }
-                        className="bg-white-500 text-blue rounded-full"
-                      ></Button>
-                    </div>
-                  </div>
-                  <input
-                    id="upload-input"
-                    type="file"
-                    style={{ display: "none" }}
-                    onChange={(e) => {
-                      if (e.target.files[0]) {
-                        setStoreLogo(e.target.files[0]);
-                      }
-                    }}
-                  />
-                </div>
-              </Form.Item> */}
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               {/* Store Name */}
@@ -1010,69 +1029,6 @@ const StoreRegistration = () => {
               </div>
             </Form.Item>
 
-            {/*          
-            <Form.Item label="Front Identification">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setDocuments((prev) => ({
-                    ...prev,
-                    frontIdentification: file,
-                  }));
-                  return false;
-                }}
-              >
-                <div className="flex justify-center items-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition ">
-                  <UploadOutlined className="text-blue-500 text-3xl" />
-                  <p className="text-gray-500">Click or drag files to upload</p>
-                </div>
-              </Upload>
-              <div className="mt-4 flex justify-center">
-                {documents.frontIdentification && (
-                  <img
-                    src={
-                      documents.frontIdentification instanceof File
-                        ? URL.createObjectURL(documents.frontIdentification)
-                        : documents.frontIdentification
-                    }
-                    alt="Front ID"
-                    className="w-64 h-40 object-cover rounded-lg border border-gray-600 mt-2"
-                  />
-                )}
-              </div>
-            </Form.Item>
-
-            <Form.Item label="Back Identification">
-              <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setDocuments((prev) => ({
-                    ...prev,
-                    backIdentification: file,
-                  }));
-                  return false;
-                }}
-              >
-                <div className="flex justify-center items-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                  <UploadOutlined className="text-blue-500 text-3xl" />
-                  <p className="text-gray-500">Click or drag files to upload</p>
-                </div>
-              </Upload>
-              <div className="mt-4 flex justify-center">
-                {documents.backIdentification && (
-                  <img
-                    src={
-                      documents.backIdentification instanceof File
-                        ? URL.createObjectURL(documents.backIdentification)
-                        : documents.backIdentification
-                    }
-                    alt="Back ID"
-                    className="w-64 h-40 object-cover rounded-lg border border-gray-600 mt-2"
-                  />
-                )}
-              </div>
-            </Form.Item> */}
-
             <Form.Item label="Business Licenses">
               <div className="flex justify-center">
                 <Upload
@@ -1135,12 +1091,40 @@ const StoreRegistration = () => {
                 <Input placeholder="Issuer of the license" />
               </Form.Item>
 
-              <Form.Item label="Issue Date" name="issueDate">
+              <Form.Item
+                label="Issue Date"
+                name="issueDate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select an issue date.",
+                  },
+                ]}
+              >
+                <Input type="date" />
+              </Form.Item>
+
+              <Form.Item
+                label="Expired Date"
+                name="expiredDate"
+                dependencies={["issueDate"]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select an expired date.",
+                  },
+                  { validator: validateExpiredDate },
+                ]}
+              >
+                <Input type="date" />
+              </Form.Item>
+
+              {/* <Form.Item label="Issue Date" name="issueDate">
                 <Input type="date" />
               </Form.Item>
               <Form.Item label="Expired Date" name="expiredDate">
                 <Input type="date" />
-              </Form.Item>
+              </Form.Item> */}
             </div>
 
             <div className="flex justify-between">
@@ -1259,7 +1243,7 @@ const StoreRegistration = () => {
         </div>
       )}
 
-      {currentStep === 3 && requestStatus === "Pending to Approved" && (
+      {/* {currentStep === 3 && requestStatus === "Pending to Approved" && (
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold text-blue-600 text-center mb-6">
             🎉 Submission Successful!
@@ -1296,7 +1280,7 @@ const StoreRegistration = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

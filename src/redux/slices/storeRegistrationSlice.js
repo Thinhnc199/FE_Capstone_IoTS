@@ -8,10 +8,9 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem('token')}`,
   },
 });
-
-
 
 // Upload Image Action
 export const uploadImage = createAsyncThunk(
@@ -148,48 +147,35 @@ export const getWalletBalance = createAsyncThunk(
 
 // Fetch Membership Options
 export const getMembershipOptions = createAsyncThunk(
-  'storeRegistration/getMembershipOptions',
+  "storeRegistration/getMembershipOptions",
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/api/account-membership-package/get-all-membership-package-options');
-      return Array.isArray(response.data) ? response.data : [];
+      console.log("🔍 API Response:", response.data); // Debug API response
+      return Array.isArray(response.data.data) ? response.data.data : []; 
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch membership options');
     }
   }
 );
 
-// Register Membership Package
+
 export const registerMembershipPackage = createAsyncThunk(
   "storeRegistration/registerMembershipPackage",
   async (data, { rejectWithValue }) => {
     try {
-      console.log("Sending request with data:", data);
+      console.log("🚀 Sending request:", data);
       const response = await api.post("/api/account-membership-package/register-membership-package", data);
-      console.log("API Response:", response.data);
+      console.log("✅ API Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("API Error:", error);
-      return rejectWithValue(error.response?.data || error.message);
+      console.error("❌ API Error:", error.response?.data); // Debug lỗi API
+      
+      // Trả về lỗi từ API message
+      return rejectWithValue(error.response?.data?.message || "An error occurred.");
     }
   }
 );
-
-// export const registerMembershipPackage = createAsyncThunk(
-//   "storeRegistration/registerMembershipPackage",
-//   async (data, { rejectWithValue }) => {
-//     try {
-//       console.log('Sending request with data:', data); 
-//       const response = await api.post('/api/account-membership-package/register-membership-package', data);
-//       console.log('API Response:', response.data); 
-//       return response.data;
-//     } catch (error) {
-//       console.error('API Error:', error); 
-//       // Assuming the error message is in error.response.data.message
-//       return rejectWithValue(error.response?.data?.message || "Failed to register membership package");
-//     }
-//   }
-// );
 
 
 // Store Slice
@@ -242,7 +228,9 @@ const storeRegistrationSlice = createSlice({
       .addCase(submitStoreApproval.fulfilled, (state) => {
         state.loading = false;
         state.requestStatus = "Pending to Approved"; 
-        state.storeInfo = null;// ✅ Update requestStatus when approved
+        state.requestStatus = "Approved"; 
+        state.requestStatus = "Rejected"; 
+        state.storeInfo = null;
       })
       .addCase(submitStoreInfo.rejected, (state, action) => {
         state.error = action.payload;

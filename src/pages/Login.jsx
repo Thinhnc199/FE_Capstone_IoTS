@@ -21,7 +21,9 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
-
+  const requestStatus = useSelector(
+    (state) => state.storeRegistration.requestStatus
+  );
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
@@ -68,23 +70,40 @@ const Login = () => {
           if (isActive === 1) {
             navigate("/strainer/welcome");
           } else if (isActive === 2) {
-          navigate("/trainer/registerTrainer");
-        } else {
-          navigate("/home");
-        }
-          break;
-        case 5:
-          navigate("/home");
-          break;
-        case 6:
-          if (isActive === 1) {
-            navigate("/store/welcome");
-          } else if (isActive === 2) {
-            navigate("/store/registerStore");
+            navigate("/trainer/registerTrainer");
           } else {
             navigate("/home");
           }
           break;
+        case 5:
+          navigate("/home");
+          break;
+
+        case 6:
+          if (isActive === 1) {
+            navigate("/store/welcome");
+          } else if (isActive === 2) {
+            if (requestStatus === "Approved") {
+              navigate("/store/payment-packages");
+            } else if (requestStatus === "Pending to Approved") {
+              navigate("/store/submission-success");
+            } else {
+              navigate("/store/registerStore");
+            }
+          } else {
+            navigate("/home");
+          }
+          break;
+
+        // case 6:
+        //   if (isActive === 1) {
+        //     navigate("/store/welcome");
+        //   } else if (isActive === 2) {
+        //     navigate("/store/registerStore");
+        //   } else {
+        //     navigate("/home");
+        //   }
+        //   break;
         default:
           navigate("/home");
       }

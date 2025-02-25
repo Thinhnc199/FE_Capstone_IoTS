@@ -2,89 +2,48 @@
 import axios from "axios";
 import { notification } from "antd";
 
-
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("token")}`,
   },
 });
 
-const isTokenExpired = (token) => {
-  try {
-    // Decode the token and get the payload
-    const payload = JSON.parse(atob(token.split('.')[1]));
+// const isTokenExpired = (token) => {
+//   try {
+//     // Decode the token and get the payload
+//     const payload = JSON.parse(atob(token.split('.')[1]));
     
-    // Check if the expiration time exists
-    if (!payload.exp) {
-      console.error("Token doesn't have an expiration time.");
-      return true; // Treat as expired if no expiration exists
-    }
+//     // Check if the expiration time exists
+//     if (!payload.exp) {
+//       console.error("Token doesn't have an expiration time.");
+//       return true; // Treat as expired if no expiration exists
+//     }
     
-    // Convert the expiration time to milliseconds and compare it with current time
-    const expirationTime = payload.exp * 1000;
-    return expirationTime < Date.now();
-  } catch (error) {
-    console.error("Error decoding token:", error); // Log the error for debugging
-    return true; // If token decoding fails, assume expired
-  }
-};
-
-
-
-
-api.interceptors.request.use(
-  (config) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        if (isTokenExpired(token)) {
-          localStorage.removeItem("token"); // Remove expired token
-          showNotification("error", "Session Expired", "Please log in again.");
-          window.location.href = "/login"; // Redirect to login
-          return Promise.reject("Token expired, redirecting to login.");
-        }
-        config.headers["Authorization"] = `Bearer ${token}`;
-      }
-      console.log("Request Headers:", config.headers);
-    } catch (error) {
-      console.error("Request Interceptor Error:", error);
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error("API Error:", error);
-    
-    if (error.response?.status === 401) {
-      console.error("Unauthorized error:", error.response?.data);
-      localStorage.clear();
-      showNotification("warning", "Session Expired", "Redirecting to login...");
-
-      setTimeout(() => {
-        window.location.href = "/login"; // Redirect after 2 seconds
-      }, 2000);
-
-      return Promise.reject("Session expired. Please log in again.");
-    }
-
-    return Promise.reject(error.response?.data?.message || "An error occurred, please try again.");
-  }
-);
-
+//     // Convert the expiration time to milliseconds and compare it with current time
+//     const expirationTime = payload.exp * 1000;
+//     return expirationTime < Date.now();
+//   } catch (error) {
+//     console.error("Error decoding token:", error); // Log the error for debugging
+//     return true; // If token decoding fails, assume expired
+//   }
+// };
 
 // api.interceptors.request.use(
 //   (config) => {
 //     try {
 //       const token = localStorage.getItem("token");
 //       if (token) {
+//         if (isTokenExpired(token)) {
+//           localStorage.removeItem("token"); // Remove expired token
+//           showNotification("error", "Session Expired", "Please log in again.");
+//           window.location.href = "/login"; // Redirect to login
+//           return Promise.reject("Token expired, redirecting to login.");
+//         }
 //         config.headers["Authorization"] = `Bearer ${token}`;
 //       }
-//       console.log('Request Headers:', config.headers);
+//       console.log("Request Headers:", config.headers);
 //     } catch (error) {
 //       console.error("Request Interceptor Error:", error);
 //     }
@@ -97,15 +56,14 @@ api.interceptors.response.use(
 //   (response) => response,
 //   (error) => {
 //     console.error("API Error:", error);
-
+    
 //     if (error.response?.status === 401) {
 //       console.error("Unauthorized error:", error.response?.data);
 //       localStorage.clear();
 //       showNotification("warning", "Session Expired", "Redirecting to login...");
 
-//       // ✅ Delay redirect to prevent instant UI refresh
 //       setTimeout(() => {
-//         window.location.href = "/login";
+//         window.location.href = "/login"; 
 //       }, 2000);
 
 //       return Promise.reject("Session expired. Please log in again.");
@@ -115,15 +73,78 @@ api.interceptors.response.use(
 //   }
 // );
 
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers["Authorization"] = `Bearer ${token}`;
+//     } else {
+//       console.warn("⚠ Token is missing!");
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+
+api.interceptors.request.use(
+  (config) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      console.log('Request Headers:', config.headers);
+    } catch (error) {
+      console.error("Request Interceptor Error:", error);
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error);
+
+    if (error.response?.status === 401) {
+      console.error("Unauthorized error:", error.response?.data);
+      localStorage.clear();
+      showNotification("warning", "Session Expired", "Redirecting to login...");
+
+      // ✅ Delay redirect to prevent instant UI refresh
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+
+      return Promise.reject("Session expired. Please log in again.");
+    }
+
+    return Promise.reject(error.response?.data?.message || "An error occurred, please try again.");
+  }
+);
+
 // ✅ Helper function for toast notifications
+// 🔹 Function to show notifications
 const showNotification = (type, message, description) => {
   notification[type]({
     message,
     description,
     placement: "topRight",
     duration: 3,
+    style: { right: "20px", top: "40px", position: "fixed", zIndex: 10000, width: "320px" },
   });
 };
+
+// const showNotification = (type, message, description) => {
+//   notification[type]({
+//     message,
+//     description,
+//     placement: "topRight",
+//     duration: 3,
+//   });
+// };
 
 // ✅ Error Handling
 const handleApiError = (error) => {
