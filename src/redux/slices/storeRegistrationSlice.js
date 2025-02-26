@@ -169,9 +169,7 @@ export const registerMembershipPackage = createAsyncThunk(
       console.log("✅ API Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ API Error:", error.response?.data); // Debug lỗi API
-      
-      // Trả về lỗi từ API message
+      // console.error("❌ API Error:", error.response?.data); // Debug lỗi API
       return rejectWithValue(error.response?.data?.message || "An error occurred.");
     }
   }
