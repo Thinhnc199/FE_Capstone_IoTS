@@ -1,8 +1,9 @@
-import Titles from "../../components/common/Titles";
-import CountdownTimer from "./components/CountdownTimer";
-import ProductCard from "./components/ProductCard";
+import Titles from "../../../components/common/Titles";
+import CountdownTimer from "../components/CountdownTimer";
+import ProductCard from "../components/ProductCard";
 import { Carousel } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import "./ContextHome.css";
 export default function ContextHome() {
   const carouselSettings = {
     arrows: true,
@@ -36,9 +37,10 @@ export default function ContextHome() {
     ],
   };
   return (
-    <div className="px-4 md:px-6 lg:px-10 py-6">
+    <div className=" md:px-6 lg:px-10 py-6  ">
       {/* Phần Flash Sales */}
-      <div className="mb-8 bg-white">
+      <div></div>
+      <div className="mb-8 p-4 rounded-md space-y-4 bgGradient">
         <Titles titleText="Today" colorText="text-headerBg" />
         <div className=" gap-4 items-end flex justify-start space-x-20">
           <p className="text-2xl md:text-3xl font-semibold">Flash Sales</p>
@@ -61,14 +63,27 @@ export default function ContextHome() {
         {/* </div> */}
       </div>
 
-      <div className="mb-8 bg-white">
-        <Titles titleText="Category" colorText="text-headerBg" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-          <p className="text-2xl md:text-3xl font-semibold">
-            Browse By Category
-          </p>
+      <div className="mb-8 p-4 rounded-md space-y-4 bgGradient">
+        <Titles titleText="Today" colorText="text-headerBg" />
+        <div className=" gap-4 items-end flex justify-start space-x-20">
+          <p className="text-2xl md:text-3xl font-semibold">Flash Sales</p>
+          <CountdownTimer />
         </div>
-        <ProductCard />
+        {/* <div className="flex flex-wrap gap-4 py-4"> */}
+        <Carousel {...carouselSettings}>
+          {" "}
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+        </Carousel>
+        {/* </div> */}
       </div>
     </div>
   );

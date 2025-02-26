@@ -66,7 +66,11 @@ const items2 = [
     label: "Products",
     children: [
       { key: "lp", label: <Link to="/admin/list-product">List products</Link> },
-      { key: "5", label: <Link to="/add-device">Add Device</Link> },
+      { key: "ad", label: <Link to="/admin/add-device">Add Device</Link> },
+      {
+        key: "cm",
+        label: <Link to="/admin/category-management">Category Management</Link>,
+      },
     ],
   },
   {

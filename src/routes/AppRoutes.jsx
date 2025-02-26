@@ -6,7 +6,7 @@ import VerifyOtp from "../pages/VerifyOtp";
 import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../components/Admin/AdminLayout";
 import ListAccount from "../components/Admin/ListAccount";
-import ListProduct from "../components/Admin/ListProduct";
+import ListProducts from "../components/Admin/ProductsManageAdmin/ListProducts";
 import DashBoard from "../components/Admin/DashBoard";
 import Profile from "../components/Admin/Profile";
 import ContactPage from "../pages/ContactPage";
@@ -39,7 +39,7 @@ import AccessRestricted from "../pages/AccessRestricted";
 import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
-
+import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
 //   { path: "/home", component: Test, layout: MainLayout },
@@ -150,7 +150,12 @@ const publicRoute = [
   },
   {
     path: "/admin/list-product",
-    component: ListProduct,
+    component: ListProducts,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/category-management",
+    component: CategoryManagement,
     layout: AdminLayout,
   },
 
