@@ -21,8 +21,16 @@ const Navbar = () => {
       disabled: true,
     },
     { type: "divider" },
-    { key: "2", label: <Link to="/login">Login</Link>, icon: <UserAddOutlined /> },
-    { key: "3", label: <Link to="/emailcustomer">Register</Link>, icon: <UserAddOutlined /> },
+    {
+      key: "2",
+      label: <Link to="/login">Login</Link>,
+      icon: <UserAddOutlined />,
+    },
+    {
+      key: "3",
+      label: <Link to="/emailcustomer">Register</Link>,
+      icon: <UserAddOutlined />,
+    },
   ];
 
   return (
@@ -70,7 +78,7 @@ const Navbar = () => {
               to="/StoreEmail"
               className="hover:text-[#007AFF] cursor-pointer text-blue-500 "
             >
-            <b>Become Store & Trainer</b> 
+              <b className="font-semibold">Become Store & Trainer</b>
             </Link>
           </li>
         </ul>

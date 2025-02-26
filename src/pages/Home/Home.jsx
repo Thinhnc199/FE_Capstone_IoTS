@@ -4,7 +4,7 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { RightOutlined } from "@ant-design/icons";
-import ContextHome from "./ContextHome";
+import ContextHome from "./ContextHome/ContextHome";
 const Home = () => {
   // Product categories
   const categories = [
@@ -48,10 +48,10 @@ const Home = () => {
     lazyLoad: "ondemand",
   };
   return (
-    <div className="flex justify-center flex-col">
-      <div className="container mx-auto grid grid-cols-10 pb-8 px-4 md:px-6 lg:px-10 gap-x-6 md:gap-x-8 lg:gap-x-10 items-start">
+    <div className="flex justify-center flex-col bg-[#f1f9fc] py-6">
+      <div className="container mx-auto grid grid-cols-10 pb-8 px-4 md:px-6 lg:px-10 gap-x-6 md:gap-x-8 lg:gap-x-10 items-start ">
         {/* Left-side categories (3 phần) */}
-        <div className="col-span-3 bg-white w-full p-6 md:p-8">
+        <div className="col-span-3 bg-white w-full p-6 md:p-8 rounded-sm shadow-sm">
           <h2 className="text-xl font-semibold mb-4 text-gray-700">
             Categories
           </h2>
@@ -68,19 +68,19 @@ const Home = () => {
           </ul>
         </div>
         {/* Right-side carousel (7 phần) */}
-        <div className="col-span-7 flex justify-center items-center">
+        <div className="col-span-7 flex justify-center items-center rounded-m bg-[#f1f9fc]d">
           <div className="w-full">
             <Slider {...sliderSettings}>
               {banners.map((banner) => (
                 <div
                   key={banner.id}
-                  className="w-full flex justify-center items-center"
+                  className="w-full flex justify-center items-center rounded-md"
                 >
                   <LazyLoadImage
                     src={banner.image}
                     alt={banner.alt}
                     effect="blur"
-                    className="w-full h-auto object-cover rounded-sm"
+                    className="w-full h-auto object-cover rounded-md"
                   />
                 </div>
               ))}
