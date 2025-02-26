@@ -1,98 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import { Button, Card, notification } from "antd";
-// import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
-// import {
-//   registerMembershipPackage,
-//   getWalletBalance,
-//   getMembershipOptions,
-// } from "../../redux/slices/storeRegistrationSlice";
-// import { useNavigate } from "react-router-dom";
-// const { Meta } = Card;
-
-// const PaymentMembershipPage = () => {
-//   const dispatch = useDispatch();
-//   const { walletBalance, membershipOptions, errorMessage } = useSelector(
-//     (state) => state.storeRegistration
-//   );
-//   const [selectedPackage, setSelectedPackage] = useState(null);
-//   const [userId, setUserId] = useState(null);
-//   const navigate = useNavigate();
-//   useEffect(() => {
-//     const id = localStorage.getItem("userId");
-//     if (id) {
-//       setUserId(id);
-//     } else {
-//       notification.error({ message: "User ID is not available." });
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     if (userId) {
-//       dispatch(getWalletBalance(userId));
-//       dispatch(getMembershipOptions());
-//     }
-//   }, [userId, dispatch]);
-
-//   const handlePackageSelect = (packageId) => {
-//     setSelectedPackage(packageId);
-//   };
-
-//   const handleSubmit = () => {
-//     if (selectedPackage === null) {
-//       notification.error({ message: "Please select a membership package." });
-//       return;
-//     }
-
-//     if (!Array.isArray(membershipOptions) || membershipOptions.length === 0) {
-//       notification.error({
-//         message: "Membership options are still loading...",
-//       });
-//       return;
-//     }
-
-//     const selectedOption = membershipOptions.find(
-//       (option) => option.id === selectedPackage
-//     );
-
-//     if (!selectedOption) {
-//       notification.error({
-//         message: "Selected membership package is invalid.",
-//       });
-//       return;
-//     }
-
-//     const data = {
-//       userId,
-//       membershipPackageId: selectedPackage,
-//     };
-
-//     dispatch(registerMembershipPackage(data))
-//       .unwrap()
-//       .then(() => {
-//         notification.success({
-//           message: "Membership registered successfully!",
-//         });
-//         navigate("/store/welcome");
-//       })
-//       .catch((error) => {
-//         notification.error({
-//           message: error?.message || "Failed to register membership package.",
-
-//         });
-//       });
-//   };
-
-//   // Show error message
-//   useEffect(() => {
-//     if (errorMessage) {
-//       notification.error({
-//         message: errorMessage,
-//         placement: "topright",
-//         duration: 3,
-//       });
-//     }
-//   }, [errorMessage]);
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Card, notification } from "antd";
@@ -108,7 +13,7 @@ const { Meta } = Card;
 
 const PaymentMembershipPage = () => {
   const dispatch = useDispatch();
-  const { walletBalance, membershipOptions, errorMessage } = useSelector(
+  const { walletBalance, membershipOptions } = useSelector(
     (state) => state.storeRegistration
   );
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -135,12 +40,12 @@ const PaymentMembershipPage = () => {
   }, [userId, dispatch]);
 
   // Theo dõi lỗi từ Redux và hiển thị thông báo
-  useEffect(() => {
-    if (errorMessage) {
-      console.log("🛠 Redux Error Message:", errorMessage);
-      setToastMessage(errorMessage);
-    }
-  }, [errorMessage]);
+  // useEffect(() => {
+  //   if (errorMessage) {
+  //     console.log("🛠 Redux Error Message:", errorMessage);
+  //     setToastMessage(errorMessage);
+  //   }
+  // }, [errorMessage]);
 
   // Hiển thị Toast khi có lỗi từ Redux
   useEffect(() => {
@@ -210,7 +115,7 @@ const PaymentMembershipPage = () => {
     }
   };
   return (
-    <div className="bg-white shadow-lg rounded-lg p-8 mx-auto w-full max-w-[1000px]">
+    <div className="bg-white shadow-lg rounded-lg p-8 mx-auto w-full max-w-[1300px]">
       <h2 className="text-3xl font-bold text-blue-600 text-center mb-8">
         🎉 Payment Memberships
       </h2>

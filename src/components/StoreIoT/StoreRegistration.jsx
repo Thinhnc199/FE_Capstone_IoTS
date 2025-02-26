@@ -464,7 +464,7 @@ const StoreRegistration = () => {
       // 🛠 Gọi API lấy request ID
       const userRequestResponse = await getUserRequestDetails(userId);
       const requestId = userRequestResponse.data.userRequestInfo?.id;
-     
+
       if (!requestId) {
         notification.error({
           message: "Request ID not found!",
@@ -489,7 +489,6 @@ const StoreRegistration = () => {
       // setCurrentStep(3);
       // ✅ Chuyển hướng sang trang "/store/submission-success"
       navigate("/store/submission-success");
-      
     } catch (error) {
       notification.error({
         message: "Submit Failed",
@@ -1162,7 +1161,7 @@ const StoreRegistration = () => {
       {currentStep === 2 && (
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold text-blue-600 text-center mb-6">
-            Review Your Information
+            Review Store Information
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -1231,7 +1230,17 @@ const StoreRegistration = () => {
             </div>
           </div>
 
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-between mt-6">
+            {/* Nút Back sát bên trái */}
+            <Button
+              type="default"
+              onClick={() => setCurrentStep(0)}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+            >
+              Edit Information
+            </Button>
+
+            {/* Nút Submit Registration ở giữa */}
             <Button
               type="primary"
               onClick={handleSubmitApproval}
@@ -1240,6 +1249,23 @@ const StoreRegistration = () => {
               ✅ Submit Registration
             </Button>
           </div>
+
+          {/* <div className="flex justify-center mt-6">
+          <Button
+                type="default"
+                onClick={() => setCurrentStep(1)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+              >
+                Back
+              </Button>
+            <Button
+              type="primary"
+              onClick={handleSubmitApproval}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md transition"
+            >
+              ✅ Submit Registration
+            </Button>
+          </div> */}
         </div>
       )}
 

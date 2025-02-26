@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/slices/storeSlice";
@@ -29,10 +27,10 @@ const OtpUserInfoPage = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
- // Handle gender change
- const handleGenderChange = (e) => {
-  setFormData({ ...formData, gender: Number(e.target.value) });
-};
+  // Handle gender change
+  const handleGenderChange = (e) => {
+    setFormData({ ...formData, gender: Number(e.target.value) });
+  };
 
   // Handle gender change from select dropdown
   // const handleGenderChange = (value) => {
@@ -112,7 +110,7 @@ const OtpUserInfoPage = () => {
           </div>
 
           {/* Phone Number & Gender in one row */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 items-center">
             <div className="flex-1">
               <label className="text-gray-600 text-sm font-medium">
                 Phone Number
@@ -124,41 +122,24 @@ const OtpUserInfoPage = () => {
                 className="py-2 px-3 rounded-lg"
               />
             </div>
+
             <div className="flex-1">
-      <label className="text-gray-600 text-sm font-medium mb-2 block">
-        Gender
-      </label>
-      <select
-        value={formData.gender}
-        onChange={handleGenderChange}
-        className="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00a8e8] transition-all text-gray-700 bg-white"
-      >
-        <option value={1} className="text-gray-700">
-          Male
-        </option>
-        <option value={2} className="text-gray-700">
-          Female
-        </option>
-      </select>
-    </div>
-            {/* <div className="flex-1">
-              <label className="text-gray-600 text-sm font-medium">
+              <label className="text-gray-600 text-sm font-medium ">
                 Gender
               </label>
-              <Select
+              <select
                 value={formData.gender}
                 onChange={handleGenderChange}
-                className="w-full py-2 px-3 rounded-lg border focus:ring-2 focus:ring-[#00a8e8] transition-all"
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "500",
-                  borderColor: "#00a8e8",
-                }}
+                className="w-full py-2 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00a8e8] transition-all text-gray-700 bg-white"
               >
-                <Select.Option value={1}>Male</Select.Option>
-                <Select.Option value={2}>Female</Select.Option>
-              </Select>
-            </div> */}
+                <option value={1} className="text-gray-700">
+                  Male
+                </option>
+                <option value={2} className="text-gray-700">
+                  Female
+                </option>
+              </select>
+            </div>
           </div>
 
           {/* Address */}

@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { sendOtpRequest } from "../api/apiConfig"; 
+import { sendOtpRequest } from "../api/apiConfig";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,7 +12,7 @@ const RegisterEmail = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const { success } = useSelector((state) => state.auth); 
+  const { success } = useSelector((state) => state.auth);
 
   // Handle success from redux or navigate directly from the API response
   useEffect(() => {
@@ -42,7 +41,6 @@ const RegisterEmail = () => {
       setTimeout(() => {
         navigate("/register-Customer");
       }, 3000);
-      
     } catch (err) {
       console.error("Failed to send OTP:", err);
       setError("Failed to send OTP. Please try again.");
