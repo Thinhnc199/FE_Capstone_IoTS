@@ -6,6 +6,10 @@ export const Roles = {
   CUSTOMER: 5,
   STORE: 6,
 };
+export const TypeDevice = {
+  NEWPRICE: 1,
+  OLDPRICE: 2,
+};
 
 // export const Status = {
 //   ACTIVE: 1,

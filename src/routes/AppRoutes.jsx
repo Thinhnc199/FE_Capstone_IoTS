@@ -40,6 +40,7 @@ import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
+import DetailProducts from "../components/Customer/DetailProducts";
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
 //   { path: "/home", component: Test, layout: MainLayout },
@@ -109,7 +110,11 @@ const publicRoute = [
     component: ContactPage,
     layout: MainLayout,
   },
-
+  {
+    path: "/:id",
+    component: DetailProducts,
+    layout: MainLayout,
+  },
   // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
@@ -177,8 +182,9 @@ const publicRoute = [
   {
     path: "/admin/user-request/:id",
     component: DetailUserRequest,
-    layout: AdminLayout,
+    layout: MainLayout,
   },
+
   // Store
   {
     path: "/store/registerStore",

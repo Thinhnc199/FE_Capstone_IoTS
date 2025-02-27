@@ -8,8 +8,7 @@ import userAuthReducer from "./slices/userAuthSlice";
 import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
 import userRequest from "./slices/userRequestSlice";
-import trainerSlice from './slices/trainerSlice';
-
+import trainerSlice from "./slices/trainerSlice";
 
 const store = configureStore({
   reducer: {
