@@ -7,7 +7,7 @@ const MainLayout = ({ children }) => {
   return (
     <div className="bg-white">
       <Navbar></Navbar>
-      <main className="  ">{children}</main>
+      <main className=" bg-[#f1f9fc]  ">{children}</main>
       <ToastContainer />
       <Footer></Footer>
     </div>

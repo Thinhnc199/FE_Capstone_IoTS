@@ -44,10 +44,10 @@ export default {
         headerBg: "#007AFF",
       },
 
-      // fontFamily: {
-      //   sans: ["Inter", "sans-serif"],
-      //   sans22: ["sans-serif"],
-      // },
+      fontFamily: {
+        Mainfont: ["Quicksand", "sans-serif"],
+        sans22: ["sans-serif"],
+      },
     },
   },
   plugins: [],
