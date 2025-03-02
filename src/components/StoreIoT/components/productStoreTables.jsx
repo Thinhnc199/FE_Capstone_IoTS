@@ -13,7 +13,7 @@ import {
   deactiveProducts,
 } from "../../../redux/slices/productSlice";
 
-const ProductStoreTable = ({
+const ProductStoreTables = ({
   items,
   pageSize,
   pageIndex,
@@ -41,13 +41,13 @@ const ProductStoreTable = ({
 
   const handleActive = () => {
     dispatch(activeProducts({ id: selectedUser.id }));
-    message.success("Items activated successfully");
+    message.success("Item activated successfully");
     handleCloseModal();
   };
 
   const handleDeActive = () => {
     dispatch(deactiveProducts({ id: selectedUser.id }));
-    message.success("Items deactivated successfully");
+    message.success("Item deactivated successfully");
     handleCloseModal();
   };
 
@@ -213,7 +213,7 @@ const ProductStoreTable = ({
   );
 };
 
-ProductStoreTable.propTypes = {
+ProductStoreTables.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -234,4 +234,4 @@ ProductStoreTable.propTypes = {
   onPageSizeChange: PropTypes.func.isRequired,
 };
 
-export default ProductStoreTable;
+export default ProductStoreTables;
