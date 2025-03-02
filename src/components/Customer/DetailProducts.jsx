@@ -128,17 +128,51 @@ export default function DetailProducts() {
         <div className="col-span-2 space-y-2">
           <div className="border border-headerBg rounded-md ">
             <h1 className="text-white bg-headerBg p-2 ">Cam kết</h1>
-
-            <p className="p-2">
-              Kiểm tra sản phẩm trước khi bánKiểm tra sản phẩm trước khi bán Tư
-              vấn tận tâmTư vấn tận tâm Vận chuyển nhanh chóngVận chuyển nhanh
-              chóng Bảo hành trách nhiệmBảo hành trách nhiệm
-            </p>
+            <div className="">
+              <ul className=" p-3 space-y-2">
+                <li className=" flex space-x-2">
+                  <img
+                    width="20"
+                    height="20"
+                    src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_1.png?1740416909712"
+                    alt="Kiểm tra sản phẩm trước khi bán"
+                  />
+                  <p> Kiểm tra sản phẩm trước khi bán </p>
+                </li>
+                <li className=" flex space-x-2">
+                  <img
+                    width="20"
+                    height="20"
+                    src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_2.png?1740416909712"
+                    alt="Tư vấn tận tâm"
+                  />
+                  <p>Tư vấn tận tâm </p>
+                </li>
+                <li className=" flex space-x-2">
+                  <img
+                    width="20"
+                    height="20"
+                    src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_3.png?1740416909712"
+                    alt="Vận chuyển nhanh chóng"
+                  />
+                  <p>Vận chuyển nhanh chóng</p>
+                </li>
+                <li className=" flex space-x-2">
+                  <img
+                    width="20"
+                    height="20"
+                    src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_4.png?1740416909712"
+                    alt="Bảo hành trách nhiệm"
+                  />
+                  <p> Bảo hành trách nhiệm</p>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="border border-headerBg rounded-md ">
             <h1 className="text-white bg-headerBg p-2">Khuyến mại</h1>
 
-            <p className="p-2">
+            <p className="p-3">
               Miễn phí Giao hàng thông thường (3-5 ngày) cho các đơn hàng thanh
               toán chuyển khoản trước, có trị giá lớn hơn 2tr trên Toàn Quốc
               (ngoại trừ các đơn hàng nặng trên 500g)

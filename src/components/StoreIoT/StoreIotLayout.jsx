@@ -3,7 +3,7 @@ import HeaderStore from "./components/headerStore";
 import SidebarStore from "./components/sideBarStore";
 import { Layout } from "antd";
 import { useSelector } from "react-redux";
-import CheckStoreStatus from "./components/CheckStoreStatus"; 
+import CheckStoreStatus from "./components/CheckStoreStatus";
 const { Sider, Header, Content } = Layout;
 
 export default function StoreIotLayout({ children }) {
@@ -21,7 +21,7 @@ export default function StoreIotLayout({ children }) {
       >
         <SidebarStore />
       </Sider>
-      <Layout className="site-layout">
+      <Layout className="site-layout bg-bgColer">
         <Header className="site-layout-background" style={{ padding: 0 }}>
           <HeaderStore />
         </Header>

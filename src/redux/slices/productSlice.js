@@ -50,6 +50,66 @@ export const fetchProductDetails = createAsyncThunk(
     }
   }
 );
+export const createProducts = createAsyncThunk(
+  "products/createProducts",
+  async (productData, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/iot-device/create-iot-device`, {
+        ...productData,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const activeProducts = createAsyncThunk(
+  "products/activeProducts",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `/api/iot-device/activate-iot-device/${id}`
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const deactiveProducts = createAsyncThunk(
+  "products/deactiveProducts",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `/api/iot-device/deactivate-iot-device/${id}`
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const getUrlImg = createAsyncThunk(
+  "products/getUrlImg",
+  async (file, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await api.post("/api/file/upload-files", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.data.isSuccess) {
+        return response.data.data.id;
+      } else {
+        return rejectWithValue(response.data.message || "Upload failed");
+      }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Upload error");
+    }
+  }
+);
 const initialState = {
   items: [],
   loading: false,
@@ -58,10 +118,58 @@ const initialState = {
   searchKeyword: "",
   startFilterDate: null,
   endFilterDate: null,
+  error: null,
+  totalCount: 0,
   ProductsDetail: {
     data: null,
     loading: false,
     error: null,
+  },
+  ProductDatas: {
+    name: "",
+    deviceType: 1,
+    isHardwareInformation: 0,
+    mcU_MPU: "",
+    memory: "",
+    wirelessConnection: "",
+    connectivity: "",
+    sensor: "",
+    isNetworkConnection: 0,
+    protocol: "",
+    dataTransmissionStandard: "",
+    networkSecurity: "",
+    isSoftwareOrOperations: 0,
+    firmware: "",
+    firmwareVersion: 0,
+    embeddedEperatingSystem: "",
+    cloudservice: "",
+    firmwareOTASupport: 0,
+    isPowerSource: 0,
+    operatingVoltage: "",
+    powerConsumption: "",
+    powerSource: "",
+    isSecurity: 0,
+    dataEncryption: "",
+    deviceAuthentication: "",
+    connectionDelay: "",
+    processingSpeed: "",
+    serviceLife: "",
+    durability: "",
+    summary: "",
+    description: "",
+    categoryId: 0,
+    manufacturer: "",
+    model: "",
+    serialNumber: "",
+    specifications: "",
+    notes: "",
+    price: 0,
+    quantity: 0,
+    storeId: 0,
+    imageUrl: "",
+    secondHandPrice: 0,
+    secondhandQualityPercent: 0,
+    attachments: [],
   },
 };
 const productSlice = createSlice({
@@ -74,9 +182,18 @@ const productSlice = createSlice({
     setPageSize: (state, action) => {
       state.pageSize = action.payload;
     },
+    // setsearchKeyword: (state, action) => {
+    //   const { tab, keyword } = action.payload;
+    //   state.filters[tab].searchKeyword = keyword;
+    // },
     setsearchKeyword: (state, action) => {
-      const { tab, keyword } = action.payload;
-      state.filters[tab].searchKeyword = keyword;
+      state.searchKeyword = action.payload;
+    },
+    setStartFilterDate: (state, action) => {
+      state.startFilterDate = action.payload;
+    },
+    setEndFilterDate: (state, action) => {
+      state.endFilterDate = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -88,7 +205,37 @@ const productSlice = createSlice({
       state.ProductsDetail.loading = false;
       state.ProductsDetail.error = null;
     });
+    handleAsyncState(builder, createProducts, (state, action) => {
+      state.ProductDatas.data = action.payload;
+      state.ProductDatas.loading = false;
+      state.ProductDatas.error = null;
+    });
+    handleAsyncState(builder, activeProducts, (state, action) => {
+      // const updatedUser = action.payload;
+      // const index = state.users.findIndex((user) => user.id === updatedUser.id);
+      // if (index !== -1) {
+      //   state.users[index] = updatedUser;
+      // }
+      state.items = state.items.map((item) =>
+        item.id === action.payload.id ? action.payload : item
+      );
+    });
+    handleAsyncState(builder, deactiveProducts, (state, action) => {
+      const updatedProduct = action.payload;
+      const index = state.items.findIndex(
+        (item) => item.id === updatedProduct.id
+      );
+      if (index !== -1) {
+        state.items[index] = updatedProduct;
+      }
+    });
   },
 });
-
+export const {
+  setPageIndex,
+  setPageSize,
+  setsearchKeyword,
+  setEndFilterDate,
+  setStartFilterDate,
+} = productSlice.actions;
 export default productSlice.reducer;

@@ -15,15 +15,15 @@ const ProductCard = ({ product }) => {
       <Card
         key={product.id}
         hoverable
-        className="max-w-72 bg-white shadow-md rounded-lg  group "
+        className=" w-64 h-96 bg-white shadow-md rounded-lg m-2 group flex flex-col "
         cover={
-          <div className="relative ">
+          <div className="relative flex-shrink-0 ">
             {product.deviceType === TypeDevice.NEWPRICE ? (
               <Badge.Ribbon text="New" color="red">
                 <img
                   alt={product.name}
                   src={product.imageUrl || "/placeholder.jpg"}
-                  className="w-full   rounded-t-lg scale-100 transition-all duration-300 group-hover:scale-90 "
+                  className="w-full h-48  rounded-t-lg scale-100 transition-all duration-300 group-hover:scale-90 p-3 "
                 />
               </Badge.Ribbon>
             ) : (
@@ -34,7 +34,7 @@ const ProductCard = ({ product }) => {
                 <img
                   alt={product.name}
                   src={product.imageUrl || "/placeholder.jpg"}
-                  className="w-[99%] rounded-t-lg  scale-100 transition-all duration-300 group-hover:scale-90 "
+                  className="w-full h-48 rounded-t-lg  scale-100 transition-all duration-300 group-hover:scale-90 p-3"
                 />
               </Badge.Ribbon>
             )}
@@ -54,12 +54,18 @@ const ProductCard = ({ product }) => {
           </div>
         }
       >
-        <div className="space-y-2">
-          <Text strong className="text-lg font-bold  group-hover:text-headerBg">
-            {product.name}
-          </Text>
+        {/* context card */}
+        <div className=" flex flex-col flex-grow space-y-2">
+          <div className="h-14 overflow-hidden">
+            <Text
+              strong
+              className="text-lg font-bold group-hover:text-headerBg line-clamp-2 overflow-ellipsis overflow-hidden"
+            >
+              {product.name}
+            </Text>
+          </div>
           {product.product}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ">
             {product.deviceType === TypeDevice.NEWPRICE ? (
               <Text strong className="text-xl text-red-500">
                 ${product.price}
