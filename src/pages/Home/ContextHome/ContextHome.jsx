@@ -1,13 +1,13 @@
 import Titles from "../../../components/common/Titles";
 import CountdownTimer from "../components/CountdownTimer";
 import ProductCard from "../components/ProductCard";
-import { Carousel } from "antd";
+import { Carousel, Divider } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchProducts } from "../../../redux/slices/productSlice";
 import "./ContextHome.css";
-
+import { Link } from "react-router-dom";
 export default function ContextHome() {
   const dispatch = useDispatch();
   const {
@@ -53,17 +53,29 @@ export default function ContextHome() {
   return (
     <div className=" md:px-6 lg:px-10   ">
       <div className="flex justify-center items-center pb-6">
-        <p className=" font-semibold uppercase text-2xl">Recomment products</p>
+        {/* <p className=" font-semibold uppercase text-2xl">Recomment products</p> */}
+        <Divider
+          style={{
+            borderColor: "#007AFF",
+          }}
+          className="font-semibold uppercase"
+        >
+          Recomment products
+        </Divider>
       </div>
       {/* Phần Flash Sales */}
       <div className="mb-8 p-4 rounded-md space-y-4 bgGradient">
-        <Titles titleText="Today" colorText="text-headerBg" />
+        <Titles
+          titleText="Today"
+          colorText="text-headerBg"
+          strongText="font-semibold"
+        />
         <div className=" gap-4 items-end flex justify-start space-x-20">
           <p className="text-2xl md:text-3xl font-semibold ">Flash Sales</p>
           <CountdownTimer />
         </div>
 
-        <Carousel {...carouselSettings}>
+        <Carousel className="" {...carouselSettings}>
           {items && items.length > 0 ? (
             items.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -77,7 +89,11 @@ export default function ContextHome() {
 
       {/* Browse By Category */}
       <div className="mb-8 p-4 rounded-md space-y-4 bg-white ">
-        <Titles titleText="Categories" colorText="text-headerBg" />
+        <Titles
+          titleText="Categories"
+          colorText="text-headerBg"
+          strongText="font-semibold"
+        />
         <div className=" gap-4 items-end flex justify-start space-x-20">
           <p className="text-2xl md:text-3xl font-semibold">
             Browse By Category
@@ -132,12 +148,18 @@ export default function ContextHome() {
 
       {/* Browse By Category */}
       <div className="mb-8 p-4 rounded-md space-y-4 bg-white ">
-        <Titles titleText="Today" colorText="text-headerBg" />
+        <Titles
+          titleText="Today"
+          colorText="text-headerBg"
+          strongText="font-semibold"
+        />
         <div className=" gap-4 items-end flex justify-between space-x-20">
           <p className="text-2xl md:text-3xl font-semibold">Flash Sales</p>
-          <a className="text-blue-700 text-xl text-shadow drop-shadow-[0_2px_2px_rgba(0,122,255,0.5)] px-4">
-            View all
-          </a>
+          <Link to="/view-all">
+            <a className="text-blue-700 text-xl text-shadow drop-shadow-[0_2px_2px_rgba(0,122,255,0.5)] px-4">
+              View all
+            </a>
+          </Link>
         </div>
         <Carousel {...carouselSettings}>
           {items && items.length > 0 ? (

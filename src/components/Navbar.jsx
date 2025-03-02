@@ -1,19 +1,34 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/icons/3.svg";
 import {
   HeartOutlined,
   ShoppingCartOutlined,
   UserOutlined,
   UserAddOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
-import { Badge, Input, Dropdown, Space } from "antd";
+import { Badge, Input, Dropdown, Space, Modal } from "antd";
 
 const { Search } = Input;
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const navigate = useNavigate();
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("requestId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("imageUrl");
+    navigate("/login");
+  };
   const menuItems = [
     {
       key: "1",
@@ -30,6 +45,13 @@ const Navbar = () => {
       key: "3",
       label: <Link to="/emailcustomer">Register</Link>,
       icon: <UserAddOutlined />,
+    },
+    {
+      key: "3",
+      label: "Logout",
+      icon: <LogoutOutlined />,
+
+      onClick: showModal,
     },
   ];
 
@@ -113,6 +135,16 @@ const Navbar = () => {
           </Dropdown>
         </div>
       </div>
+      <Modal
+        title="Confirm Logout"
+        open={isModalVisible}
+        onOk={handleLogout}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Logout"
+        cancelText="Cancel"
+      >
+        <p>Are you sure you want to logout?</p>
+      </Modal>
     </nav>
   );
 };
