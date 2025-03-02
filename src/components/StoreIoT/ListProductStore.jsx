@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { DatePicker, Space } from "antd";
 import SearchAndFilterProducts from "./components/SearchAndFilterProducts";
-import ProductStoreTable from "./components/productStoreTable";
+import ProductStoreTables from "./components/productStoreTables";
 const { RangePicker } = DatePicker;
 export default function ListProductStore() {
   const dispatch = useDispatch();
@@ -80,7 +80,7 @@ export default function ListProductStore() {
           </div>
         </Space>
 
-        <ProductStoreTable
+        <ProductStoreTables
           items={items}
           pageSize={pageSize}
           pageIndex={pageIndex}
