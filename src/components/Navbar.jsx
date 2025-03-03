@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCarts, resetCart } from "../redux/slices/cartSlice";
 import Logo from "../assets/icons/3.svg";
 import {
   HeartOutlined,
@@ -7,18 +9,24 @@ import {
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
+  LoginOutlined,
 } from "@ant-design/icons";
-import { Badge, Input, Dropdown, Space, Modal } from "antd";
+import { Badge, Input, Dropdown, Space, Modal, Empty } from "antd";
 
 const { Search } = Input;
 
 const Navbar = () => {
+  const { cart } = useSelector((state) => state.carts);
+  const dispatch = useDispatch();
+  const { pageIndex, pageSize } = useSelector((state) => state.carts);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const showModal = () => {
     setIsModalVisible(true);
   };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -27,7 +35,20 @@ const Navbar = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
+    setIsModalVisible(false);
     navigate("/login");
+  };
+
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchCarts({ pageIndex, pageSize }));
+    } else {
+      dispatch(resetCart()); // Xóa cart khi chưa đăng nhập hoặc logout
+    }
+  }, [token, dispatch]);
+  const handleTotalProduct = () => {
+    if (!Array.isArray(cart)) return 0;
+    return cart.reduce((total, item) => total + item.quantity, 0);
   };
   const menuItems = [
     {
@@ -39,13 +60,27 @@ const Navbar = () => {
     {
       key: "2",
       label: <Link to="/login">Login</Link>,
-      icon: <UserAddOutlined />,
+      icon: <LoginOutlined />,
     },
     {
       key: "3",
       label: <Link to="/emailcustomer">Register</Link>,
       icon: <UserAddOutlined />,
     },
+  ];
+  const menuItemsLogin = [
+    {
+      key: "1",
+      label: <p className="font-semibold text-gray-700 text-sm">My Account</p>,
+      disabled: true,
+    },
+    { type: "divider" },
+    {
+      key: "2",
+      label: <Link to="/profile">Profile</Link>,
+      icon: <UserAddOutlined />,
+    },
+
     {
       key: "3",
       label: "Logout",
@@ -54,6 +89,34 @@ const Navbar = () => {
       onClick: showModal,
     },
   ];
+  const menuCart =
+    cart.length > 0
+      ? cart.map((item, index) => ({
+          key: index,
+          label: (
+            <div className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded-md">
+              <img
+                src={item.imageUrl}
+                alt={item.productName}
+                className="w-10 h-10 object-cover rounded"
+              />
+              <div>
+                <p className="font-semibold hover:text-head erBg">
+                  {item.productName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Số lượng: {item.quantity}
+                </p>
+              </div>
+            </div>
+          ),
+        }))
+      : [
+          {
+            key: "empty",
+            label: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+          },
+        ];
 
   return (
     <nav className="bg-white border-b border-b-gray-300 ">
@@ -115,24 +178,55 @@ const Navbar = () => {
           <Link to="/wishlist">
             <HeartOutlined className="text-gray-700 text-[25px] hover:text-red-500" />
           </Link>
-          <Badge count={2}>
-            <ShoppingCartOutlined className="text-gray-700 text-[25px] hover:text-headerBg" />
-          </Badge>
+          {/* cart */}
           <Dropdown
-            menu={{ items: menuItems }}
+            menu={{ items: menuCart }}
             overlayStyle={{
-              width: "10vw",
+              width: "25vw",
               borderRadius: "10px",
               border: "1px solid #f0f0f0",
             }}
           >
-            <Space>
-              <UserOutlined
-                className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              />
+            <Space className="cursor-pointer" onClick={() => navigate("/cart")}>
+              <Badge count={handleTotalProduct()}>
+                <ShoppingCartOutlined className="text-gray-700 text-[25px] hover:text-headerBg" />
+              </Badge>
             </Space>
           </Dropdown>
+          {/* user */}
+          {!token ? (
+            <Dropdown
+              menu={{ items: menuItems }}
+              overlayStyle={{
+                width: "10vw",
+                borderRadius: "10px",
+                border: "1px solid #f0f0f0",
+              }}
+            >
+              <Space>
+                <UserOutlined
+                  className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                />
+              </Space>
+            </Dropdown>
+          ) : (
+            <Dropdown
+              menu={{ items: menuItemsLogin }}
+              overlayStyle={{
+                width: "10vw",
+                borderRadius: "10px",
+                border: "1px solid #f0f0f0",
+              }}
+            >
+              <Space>
+                <UserOutlined
+                  className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer "
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                />
+              </Space>
+            </Dropdown>
+          )}
         </div>
       </div>
       <Modal

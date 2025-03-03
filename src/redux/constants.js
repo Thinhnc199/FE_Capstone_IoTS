@@ -10,7 +10,11 @@ export const TypeDevice = {
   NEWPRICE: 1,
   OLDPRICE: 2,
 };
-
+export const ProductType = {
+  DEVICE: 1,
+  COMBO: 2,
+  LAB: 3,
+};
 // export const Status = {
 //   ACTIVE: 1,
 //   INACTIVE: 0,
