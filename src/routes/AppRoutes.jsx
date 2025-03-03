@@ -40,8 +40,9 @@ import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
-import DetailProducts from "../components/Customer/DetailProducts";
+import DetailProducts from "../pages/DetailProducts";
 import ViewAllProduct from "../pages/ViewAllProduct";
+import CartProducts from "../pages/CartProducts";
 // const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -116,6 +117,11 @@ const publicRoute = [
   {
     path: "/view-all",
     component: ViewAllProduct,
+    layout: MainLayout,
+  },
+  {
+    path: "/cart",
+    component: CartProducts,
     layout: MainLayout,
   },
   {

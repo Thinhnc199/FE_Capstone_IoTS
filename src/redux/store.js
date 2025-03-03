@@ -9,9 +9,10 @@ import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
 import userRequest from "./slices/userRequestSlice";
 import trainerSlice from "./slices/trainerSlice";
-
+import cartSlice from "./slices/cartSlice";
 const store = configureStore({
   reducer: {
+    carts: cartSlice,
     products: productReducer,
     accounts: accountReducer,
     sidebar: sidebarReducer,

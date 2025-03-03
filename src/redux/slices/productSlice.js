@@ -120,11 +120,13 @@ const initialState = {
   endFilterDate: null,
   error: null,
   totalCount: 0,
+
   ProductsDetail: {
     data: null,
     loading: false,
     error: null,
   },
+
   ProductDatas: {
     name: "",
     deviceType: 1,

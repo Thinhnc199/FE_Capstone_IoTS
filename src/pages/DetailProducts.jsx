@@ -1,31 +1,64 @@
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { fetchProductDetails } from "../../redux/slices/productSlice";
-import { Tabs, InputNumber, Button } from "antd";
+import { fetchProductDetails } from "../redux/slices/productSlice";
+import { Tabs, InputNumber, Button, message } from "antd";
 import { StarOutlined } from "@ant-design/icons";
-
+import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
+import { ProductType } from "../redux/constants";
 export default function DetailProducts() {
-  const onChange = (value) => {
-    console.log("changed", value);
-  };
   const { id } = useParams();
   const dispatch = useDispatch();
   const productDetail = useSelector((state) => state.products.ProductsDetail);
   const product = productDetail.data;
   const [selectedImage, setSelectedImage] = useState(null);
+  const [numCart, setNumCart] = useState(1);
+  const { pageIndex, pageSize } = useSelector((state) => state.carts);
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price);
   };
+
   useEffect(() => {
     dispatch(fetchProductDetails({ id }));
   }, [dispatch, id]);
+  // useEffect(() => {
+  //   dispatch(fetchCarts({ pageIndex, pageSize }));
+  // }, [dispatch, id]);
 
   useEffect(() => {
     if (product?.attachments?.length) {
       setSelectedImage(product.attachments[0].imageUrl);
     }
   }, [product]);
+
+  const onChange = (value) => {
+    setNumCart(value);
+  };
+  const HandleAddToCart = async () => {
+    if (product.quantity <= 0) {
+      message.warning("Sản phẩm đã hết hàng.");
+      return;
+    }
+
+    try {
+      const result = await dispatch(
+        fetchAddCarts({
+          productId: id,
+          productType: ProductType.DEVICE,
+          quantity: numCart,
+        })
+      );
+
+      if (fetchAddCarts.fulfilled.match(result)) {
+        message.success("Sản phẩm đã được thêm vào giỏ hàng!");
+        dispatch(fetchCarts({ pageIndex, pageSize }));
+      } else {
+        throw new Error(result.payload || "Lỗi không xác định");
+      }
+    } catch (error) {
+      message.error(`Lỗi khi thêm vào giỏ hàng: ${error.message}`);
+    }
+  };
 
   if (productDetail.loading) return <p>Loading...</p>;
   if (!product) return <p>Không tìm thấy sản phẩm.</p>;
@@ -111,8 +144,11 @@ export default function DetailProducts() {
                 className="w-16 h-10 flex justify-center items-center"
               />
             </div>
-            <Button className="h-10 w-full bg-yellow-500 text-white font-semibold uppercase hover:scale-101">
-              Add to card
+            <Button
+              onClick={HandleAddToCart}
+              className="h-10 w-full bg-yellow-500 text-white font-semibold uppercase hover:scale-101"
+            >
+              Add to cart
             </Button>
             <div className="flex justify-center items-center space-x-2 ">
               <Button className="w-[50%] h-10 bg-headerBg text-white font-semibold uppercase hover:scale-101">
@@ -184,31 +220,36 @@ export default function DetailProducts() {
       {/* Tabs & Viewed Products Section */}
       <div className="grid grid-cols-10 gap-4 p-4 rounded-md">
         <div className="col-span-7 p-4 bg-white border shadow-md rounded-md">
-          <Tabs defaultActiveKey="1" className="font-bold">
-            <Tabs.TabPane
-              className="font-Mainfont font-normal"
-              tab="Mô tả"
-              key="1"
-            >
-              <p>{product.description || "Không có mô tả."}</p>
-            </Tabs.TabPane>
-            <Tabs.TabPane tab="Nhận xét sản phẩm" key="2">
-              {product.reviews?.length > 0 ? (
-                product.reviews.map((review, index) => (
-                  <div key={index} className="p-2 border-b">
-                    <p className="font-semibold">{review.user}</p>
-                    <p>{review.comment}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">
-                  Hiện tại sản phẩm chưa có đánh giá nào, bạn hãy trở thành
-                  người đầu tiên đánh giá cho sản phẩm này. Gửi đánh giá của
-                  bạn.
-                </p>
-              )}
-            </Tabs.TabPane>
-          </Tabs>
+          <Tabs
+            defaultActiveKey="1"
+            className="font-bold"
+            items={[
+              {
+                key: "1",
+                label: "Mô tả",
+                children: <p>{product.description || "Không có mô tả."}</p>,
+              },
+              {
+                key: "2",
+                label: "Nhận xét sản phẩm",
+                children:
+                  product.reviews?.length > 0 ? (
+                    product.reviews.map((review, index) => (
+                      <div key={index} className="p-2 border-b">
+                        <p className="font-semibold">{review.user}</p>
+                        <p>{review.comment}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 italic">
+                      Hiện tại sản phẩm chưa có đánh giá nào, bạn hãy trở thành
+                      người đầu tiên đánh giá cho sản phẩm này. Gửi đánh giá của
+                      bạn.
+                    </p>
+                  ),
+              },
+            ]}
+          />
         </div>
         <div className="col-span-3  bg-white border shadow-md rounded-md p-4">
           <div className="flex justify-start items-center space-x-3 rounded-md bg-headerBg text-white p-2 m-1">
