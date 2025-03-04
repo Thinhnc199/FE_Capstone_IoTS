@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const CountdownTimer = () => {
   // Thời gian đích: 7:00 ngày 01/03/2025
-  const targetDate = new Date("2025-03-01T07:00:00").getTime();
+  const targetDate = new Date("2025-04-01T07:00:00").getTime();
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
 
   function getTimeRemaining() {

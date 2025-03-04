@@ -5,9 +5,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const MainLayout = ({ children }) => {
   return (
-    <div className="bg-white">
+    <div className="bg-[#f1f9fc]">
       <Navbar></Navbar>
-      <main className="  ">{children}</main>
+      <main className=" bg-[#f1f9fc]  ">{children}</main>
       <ToastContainer />
       <Footer></Footer>
     </div>

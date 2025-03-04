@@ -1,10 +1,9 @@
-import Slider from "react-slick";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { RightOutlined } from "@ant-design/icons";
 import ContextHome from "./ContextHome/ContextHome";
+import { Carousel } from "antd";
 const Home = () => {
   // Product categories
   const categories = [
@@ -36,17 +35,6 @@ const Home = () => {
     },
   ];
 
-  // Slider settings
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    lazyLoad: "ondemand",
-  };
   return (
     <div className="flex justify-center flex-col bg-[#f1f9fc] py-6">
       <div className="container mx-auto grid grid-cols-10 pb-8 px-4 md:px-6 lg:px-10 gap-x-6 md:gap-x-8 lg:gap-x-10 items-start ">
@@ -59,7 +47,7 @@ const Home = () => {
             {categories.map((category, index) => (
               <li
                 key={index}
-                className="text-lg font-medium text-gray-700 hover:text-[#007AFF] cursor-pointer flex justify-between items-center"
+                className="text-lg font-Mainfont font-medium text-gray-700 hover:text-[#007AFF] cursor-pointer flex justify-between items-center"
               >
                 {category}
                 <RightOutlined className="text-gray-600 text-sm" />
@@ -67,25 +55,19 @@ const Home = () => {
             ))}
           </ul>
         </div>
-        {/* Right-side carousel (7 phần) */}
-        <div className="col-span-7 flex justify-center items-center rounded-m bg-[#f1f9fc]d">
-          <div className="w-full">
-            <Slider {...sliderSettings}>
-              {banners.map((banner) => (
-                <div
-                  key={banner.id}
-                  className="w-full flex justify-center items-center rounded-md"
-                >
-                  <LazyLoadImage
-                    src={banner.image}
-                    alt={banner.alt}
-                    effect="blur"
-                    className="w-full h-auto object-cover rounded-md"
-                  />
-                </div>
-              ))}
-            </Slider>
-          </div>
+
+        <div className="w-full col-span-7 rounded-md">
+          <Carousel className="rounded-md" autoplaySpeed={5000} dots={true}>
+            {banners.map((banner) => (
+              <div
+                id={banner.id}
+                key={banner.id}
+                className="w-full h-auto rounded-md"
+              >
+                <img src={banner.image} alt="img" className="rounded-md" />
+              </div>
+            ))}
+          </Carousel>
         </div>
       </div>
       <div className=" container mx-auto">

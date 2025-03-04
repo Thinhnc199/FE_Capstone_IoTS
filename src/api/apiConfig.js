@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
 });
 
@@ -17,7 +17,7 @@ api.interceptors.request.use(
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
       }
-      console.log('Request Headers:', config.headers);
+      // console.log('Request Headers:', config.headers);
     } catch (error) {
       console.error("Request Interceptor Error:", error);
     }
@@ -44,7 +44,9 @@ api.interceptors.response.use(
       return Promise.reject("Session expired. Please log in again.");
     }
 
-    return Promise.reject(error.response?.data?.message || "An error occurred, please try again.");
+    return Promise.reject(
+      error.response?.data?.message || "An error occurred, please try again."
+    );
   }
 );
 
@@ -56,7 +58,13 @@ const showNotification = (type, message, description) => {
     description,
     placement: "topRight",
     duration: 3,
-    style: { right: "20px", top: "40px", position: "fixed", zIndex: 10000, width: "320px" },
+    style: {
+      right: "20px",
+      top: "40px",
+      position: "fixed",
+      zIndex: 10000,
+      width: "320px",
+    },
   });
 };
 
@@ -93,11 +101,15 @@ export const login = async (data) => {
 //  Register Customer
 export const registerCustomer = async (data) => {
   try {
-    const response = await api.post("/api/customer/register-customer-user", data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await api.post(
+      "/api/customer/register-customer-user",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     return handleApiError(error);
@@ -107,7 +119,10 @@ export const registerCustomer = async (data) => {
 // ✅ Send OTP for Store Registration
 export const sendOtpStore = async (email) => {
   try {
-    const response = await api.post("/api/store/create-store-user-request-verify-otp", { email });
+    const response = await api.post(
+      "/api/store/create-store-user-request-verify-otp",
+      { email }
+    );
     return response.data;
   } catch (error) {
     return handleApiError(error);
@@ -131,7 +146,10 @@ export const registerStoreUser = async (userInfo, otp, password) => {
 // ✅ Send OTP for Trainer Registration
 export const sendOtpTrainer = async (email) => {
   try {
-    const response = await api.post("/api/trainer/create-trainer-user-request-verify-otp", { email });
+    const response = await api.post(
+      "/api/trainer/create-trainer-user-request-verify-otp",
+      { email }
+    );
     return response.data;
   } catch (error) {
     return handleApiError(error);
@@ -159,7 +177,10 @@ export const registerTrainerUser = async (userInfo, otp, password) => {
 // ✅ Send OTP Request for Customer
 export const sendOtpRequest = async (email) => {
   try {
-    const response = await api.post("/api/customer/create-customer-user-request-verify-otp", { email });
+    const response = await api.post(
+      "/api/customer/create-customer-user-request-verify-otp",
+      { email }
+    );
     return response.data;
   } catch (error) {
     return handleApiError(error);
@@ -176,11 +197,13 @@ export const getProducts = async () => {
   }
 };
 
-
 // Store API Calls
 export const submitStoreDetails = async (data) => {
   try {
-    const response = await api.post("/api/store/create-or-update-store/userId", data);
+    const response = await api.post(
+      "/api/store/create-or-update-store/userId",
+      data
+    );
     return response.data;
   } catch (error) {
     return handleApiError(error);
@@ -189,45 +212,55 @@ export const submitStoreDetails = async (data) => {
 
 export const submitDocuments = async (storeId, documentData) => {
   try {
-    const response = await api.post("/api/store/submit-pending-to-approve-store-request/requestId", {
-      storeId,
-      ...documentData,
-    });
+    const response = await api.post(
+      "/api/store/submit-pending-to-approve-store-request/requestId",
+      {
+        storeId,
+        ...documentData,
+      }
+    );
     return response.data;
   } catch (error) {
     return handleApiError(error);
   }
 };
 
-
 export const getUserRequestDetails = async (userId) => {
-  const response = await api.get(`/api/user-request/get-user-request-details-by-user-id/${userId}`);
+  const response = await api.get(
+    `/api/user-request/get-user-request-details-by-user-id/${userId}`
+  );
   return response.data;
 };
 
 export const createOrUpdateStore = async (userId, storeData) => {
-  const response = await api.post(`/api/store/create-or-update-store/${userId}`, storeData);
+  const response = await api.post(
+    `/api/store/create-or-update-store/${userId}`,
+    storeData
+  );
   return response.data;
 };
-
 
 // export const createOrUpdateBusinessLicense = async (licenseData) => {
 //   const response = await api.post("/api/store/create-or-update-business-license", licenseData);
 //   return response.data;
 // };
 export const createOrUpdateBusinessLicense = async (licenseData) => {
-  const response = await api.post("/api/store/create-or-update-business-license", licenseData, {
-    headers: {
-      "Content-Type": "application/json", 
-    },
-  });
+  const response = await api.post(
+    "/api/store/create-or-update-business-license",
+    licenseData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   return response.data;
 };
 
-
-
 export const submitStoreRegistration = async (requestId) => {
-  const response = await api.post(`/api/store/submit-pending-to-approve-store-request/${requestId}`);
+  const response = await api.post(
+    `/api/store/submit-pending-to-approve-store-request/${requestId}`
+  );
   return response.data;
 };
 
@@ -281,28 +314,34 @@ export const uploadFiles = async (file) => {
 export const getStoreDetailsByUserId = async (userId) => {
   try {
     // console.log("Calling API: GET /api/store/get-store-details-by-user-id/" + userId);
-    const response = await api.get(`/api/store/get-store-details-by-user-id/${userId}`);
-    // console.log("Store Details API Response:", response.data); 
-    return response.data; 
+    const response = await api.get(
+      `/api/store/get-store-details-by-user-id/${userId}`
+    );
+    // console.log("Store Details API Response:", response.data);
+    return response.data;
   } catch (error) {
     console.error("Store cannot be found:", error);
-    throw error; 
+    throw error;
   }
 };
 
 export const getBusinessLicenseByStoreId = async (storeId) => {
   try {
-    const response = await api.get(`/api/store/get-business-license/${storeId}`);
-    return response.data; 
+    const response = await api.get(
+      `/api/store/get-business-license/${storeId}`
+    );
+    return response.data;
   } catch (error) {
     console.error("Error fetching business license:", error);
-    throw error; 
+    throw error;
   }
 };
 
 export const getTrainerBusinessLicense = async (trainerId) => {
   try {
-    const response = await api.get(`/api/trainer/get-trainer-business-license/${trainerId}`);
+    const response = await api.get(
+      `/api/trainer/get-trainer-business-license/${trainerId}`
+    );
     console.log("Trainer Business License API Response:", response.data);
     return response.data;
   } catch (error) {
@@ -310,7 +349,5 @@ export const getTrainerBusinessLicense = async (trainerId) => {
     throw error;
   }
 };
-
-
 
 export default api;

@@ -1,18 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Spin, Avatar, Card } from "antd";
 import { fetchUserRequest } from "../../redux/slices/userAuthSlice";
 import { UserOutlined } from "@ant-design/icons";
 import DefaultAvatar from "../../assets/logo2.png";
+import { useNavigate } from "react-router-dom";
 
 const WelcomeStore = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading } = useSelector((state) => state.userAuth);
 
   const userId = localStorage.getItem("userId");
   const fullname = localStorage.getItem("username") || "User";
   const email = localStorage.getItem("email") || "No email provided";
   const imageUrl = localStorage.getItem("imageUrl");
+
+  const [countdown, setCountdown] = useState(3); // Đếm ngược 3 giây
 
   useEffect(() => {
     if (!userId) return;
@@ -27,6 +31,15 @@ const WelcomeStore = () => {
 
     fetchData();
   }, [dispatch, userId]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      navigate("/store/dashboard"); // Chuyển hướng sau khi đếm ngược kết thúc
+    }
+  }, [countdown, navigate]);
 
   if (loading || !userId) {
     return (
@@ -55,7 +68,9 @@ const WelcomeStore = () => {
           Welcome, {fullname}!
         </h1>
         <p className="text-gray-700">{email}</p>
-        <p className="text-gray-500 mt-2">Your store dashboard is ready.</p>
+        <p className="text-gray-500 mt-2">
+          Your store dashboard is ready. Redirecting in {countdown}...
+        </p>
       </Card>
     </div>
   );

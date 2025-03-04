@@ -33,15 +33,21 @@ import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
-// const allowedroles = localStorage.getItem("userAllowedRoles");
+import CreateProducts from "../components/StoreIoT/CreateProducts";
 import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
 import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
+
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
+
+import DetailProducts from "../pages/DetailProducts";
+import ViewAllProduct from "../pages/ViewAllProduct";
+import CartProducts from "../pages/CartProducts";
+// const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
 //   { path: "/home", component: Test, layout: MainLayout },
@@ -90,8 +96,9 @@ import Teststore from "../components/StoreIoT/Teststore";
 // export { publicRoute, privateRoute };
 
 const publicRoute = [
+  { path: "/test", component: Test, layout: MainLayout },
   { path: "/", component: Home, layout: MainLayout },
-  { path: "/home", component: Test, layout: MainLayout },
+  { path: "/home", component: Home, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
@@ -109,6 +116,21 @@ const publicRoute = [
   {
     path: "/contact",
     component: ContactPage,
+    layout: MainLayout,
+  },
+  {
+    path: "/view-all",
+    component: ViewAllProduct,
+    layout: MainLayout,
+  },
+  {
+    path: "/cart",
+    component: CartProducts,
+    layout: MainLayout,
+  },
+  {
+    path: "/:id",
+    component: DetailProducts,
     layout: MainLayout,
   },
 
@@ -181,7 +203,13 @@ const publicRoute = [
     component: DetailUserRequest,
     layout: AdminLayout,
   },
+
   // Store
+  {
+    path: "/store",
+    component: DashBoardStore,
+    layout: StoreIotLayout,
+  },
   {
     path: "/store/registerStore",
     component: StoreRegistration,
@@ -218,6 +246,11 @@ const publicRoute = [
     layout: StoreIotLayout,
   },
   {
+    path: "/store/add-device",
+    component: CreateProducts,
+    layout: StoreIotLayout,
+  },
+  {
     path: "/store/status",
     component: CheckStatus,
     layout: StoreLayout,
@@ -239,15 +272,31 @@ const publicRoute = [
   },
 ];
 
-// if (allowedroles == "ADMIN") {
+const privateRoute = [];
+// if (allowedroles === Roles.ADMIN ) {
 //   publicRoute.push({
 //     path: "/admin",
 //     component: AccountList,
 //     layout: AdminPage,
 //   });
 // }
+// if (allowedroles == Roles.STORE) {
+//   publicRoute.push({
+//     path: "/admin",
+//     component: AccountList,
+//     layout: AdminPage,
+//   });
+// }
+// const privateRoute = [
+//   // Admin Routes
+//   {
+//     path: "/admin",
+//     component: DashBoard,
+//     layout: AdminLayout,
 
-const privateRoute = [];
+//     allowedRoles: ["ADMIN"],
+//   },
+
 export { publicRoute, privateRoute };
 // { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout, allowedroless: [6] },
 //   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout, allowedroless: [6] }
