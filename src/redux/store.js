@@ -9,6 +9,8 @@ import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
 import userRequest from "./slices/userRequestSlice";
 import trainerSlice from './slices/trainerSlice';
+import materialCategorySlice from './slices/materialCategorySlice';
+import comboSlice from './slices/comboSlice';
 
 
 const store = configureStore({
@@ -23,6 +25,8 @@ const store = configureStore({
     storeRegistration: storeRegistrationSlice,
     userrequest: userRequest,
     trainerRegister: trainerSlice,
+    materialCategory: materialCategorySlice,
+    combo: comboSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

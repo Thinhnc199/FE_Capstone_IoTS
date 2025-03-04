@@ -40,7 +40,7 @@ const RegisterEmail = () => {
       // ✅ Chuyển trang sau 3 giây để người dùng có thời gian đọc thông báo
       setTimeout(() => {
         navigate("/register-Customer");
-      }, 3000);
+      }, 2000);
     } catch (err) {
       console.error("Failed to send OTP:", err);
       setError("Failed to send OTP. Please try again.");

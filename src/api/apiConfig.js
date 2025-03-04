@@ -10,83 +10,6 @@ const api = axios.create({
   },
 });
 
-// const isTokenExpired = (token) => {
-//   try {
-//     // Decode the token and get the payload
-//     const payload = JSON.parse(atob(token.split('.')[1]));
-    
-//     // Check if the expiration time exists
-//     if (!payload.exp) {
-//       console.error("Token doesn't have an expiration time.");
-//       return true; // Treat as expired if no expiration exists
-//     }
-    
-//     // Convert the expiration time to milliseconds and compare it with current time
-//     const expirationTime = payload.exp * 1000;
-//     return expirationTime < Date.now();
-//   } catch (error) {
-//     console.error("Error decoding token:", error); // Log the error for debugging
-//     return true; // If token decoding fails, assume expired
-//   }
-// };
-
-// api.interceptors.request.use(
-//   (config) => {
-//     try {
-//       const token = localStorage.getItem("token");
-//       if (token) {
-//         if (isTokenExpired(token)) {
-//           localStorage.removeItem("token"); // Remove expired token
-//           showNotification("error", "Session Expired", "Please log in again.");
-//           window.location.href = "/login"; // Redirect to login
-//           return Promise.reject("Token expired, redirecting to login.");
-//         }
-//         config.headers["Authorization"] = `Bearer ${token}`;
-//       }
-//       console.log("Request Headers:", config.headers);
-//     } catch (error) {
-//       console.error("Request Interceptor Error:", error);
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-// api.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     console.error("API Error:", error);
-    
-//     if (error.response?.status === 401) {
-//       console.error("Unauthorized error:", error.response?.data);
-//       localStorage.clear();
-//       showNotification("warning", "Session Expired", "Redirecting to login...");
-
-//       setTimeout(() => {
-//         window.location.href = "/login"; 
-//       }, 2000);
-
-//       return Promise.reject("Session expired. Please log in again.");
-//     }
-
-//     return Promise.reject(error.response?.data?.message || "An error occurred, please try again.");
-//   }
-// );
-
-// api.interceptors.request.use(
-//   (config) => {
-//     const token = localStorage.getItem("token");
-//     if (token) {
-//       config.headers["Authorization"] = `Bearer ${token}`;
-//     } else {
-//       console.warn("⚠ Token is missing!");
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-
 api.interceptors.request.use(
   (config) => {
     try {
@@ -308,6 +231,31 @@ export const submitStoreRegistration = async (requestId) => {
   return response.data;
 };
 
+// export const uploadFiles = async (file) => {
+//   try {
+//     const formData = new FormData();
+//     formData.append("file", file);
+
+//     const response = await api.post("/api/file/upload-files", formData, {
+//       headers: { "Content-Type": "multipart/form-data" },
+//     });
+
+//     console.log("Upload Success:", response.data); // Debug dữ liệu trả về
+
+//     if (response.data && response.data.data && response.data.data.imageUrl) {
+//       return {
+//         id: response.data.data.id,
+//         imageUrl: response.data.data.imageUrl, // ✅ Trả về cả imageUrl
+//       };
+//     } else {
+//       throw new Error("Invalid response format: No image URL found");
+//     }
+//   } catch (error) {
+//     console.error("Upload Error:", error);
+//     throw new Error("Upload image failed");
+//   }
+// };
+
 export const uploadFiles = async (file) => {
   try {
     const formData = new FormData();
@@ -330,16 +278,6 @@ export const uploadFiles = async (file) => {
   }
 };
 
-// // Function to get store details by user ID
-// export const getStoreDetailsByUserId = async (userId) => {
-//   try {
-//     const response = await api.get(`/api/store/get-store-details-by-user-id/${userId}`);
-//     return response.data; 
-//   } catch (error) {
-//     console.error("Error fetching store details:", error);
-//     throw error; 
-//   }
-// };
 export const getStoreDetailsByUserId = async (userId) => {
   try {
     // console.log("Calling API: GET /api/store/get-store-details-by-user-id/" + userId);

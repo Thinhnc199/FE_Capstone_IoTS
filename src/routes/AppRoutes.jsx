@@ -40,6 +40,8 @@ import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
+import ComboTable from "../components/StoreIoT/components/ComboTable";
+import Teststore from "../components/StoreIoT/Teststore";
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
 //   { path: "/home", component: Test, layout: MainLayout },
@@ -223,6 +225,16 @@ const publicRoute = [
   {
     path: "/store/submission-Success",
     component: SubmissionSuccess,
+    layout: StoreLayout,
+  },
+  {
+    path: "/store/combo-managerment",
+    component: ComboTable,
+    layout: StoreLayout,
+  },
+  {
+    path: "/store/test-managerment",
+    component: Teststore,
     layout: StoreLayout,
   },
 ];
