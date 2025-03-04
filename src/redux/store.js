@@ -8,8 +8,11 @@ import userAuthReducer from "./slices/userAuthSlice";
 import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
 import userRequest from "./slices/userRequestSlice";
-import trainerSlice from "./slices/trainerSlice";
+import trainerSlice from './slices/trainerSlice';
+import materialCategorySlice from './slices/materialCategorySlice';
+import comboSlice from './slices/comboSlice';
 import cartSlice from "./slices/cartSlice";
+
 const store = configureStore({
   reducer: {
     carts: cartSlice,
@@ -23,6 +26,8 @@ const store = configureStore({
     storeRegistration: storeRegistrationSlice,
     userrequest: userRequest,
     trainerRegister: trainerSlice,
+    materialCategory: materialCategorySlice,
+    combo: comboSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

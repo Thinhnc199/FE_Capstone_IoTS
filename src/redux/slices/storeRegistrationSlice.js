@@ -64,32 +64,42 @@ export const submitStoreDocuments = createAsyncThunk(
   }
 );
 
-// // Fetch Store Details
 // export const getStoreDetails = createAsyncThunk(
 //   "storeRegistration/getStoreDetails",
 //   async (userId, { rejectWithValue }) => {
 //     try {
-//       const response = await getStoreDetailsByUserId(userId); // Call the API function
-//       return response; // Store details data
+//       const response = await getStoreDetailsByUserId(userId);
+//       console.log("Store API Response:", response); 
+//       return response; 
 //     } catch (error) {
+//       console.error("Error fetching store details:", error);
 //       return rejectWithValue(error.message || "Failed to fetch store details");
 //     }
 //   }
 // );
-// Fetch Store Details
 export const getStoreDetails = createAsyncThunk(
   "storeRegistration/getStoreDetails",
   async (userId, { rejectWithValue }) => {
     try {
       const response = await getStoreDetailsByUserId(userId);
-      console.log("Store API Response:", response); 
-      return response; 
+      console.log("📡 Store API Response:", response);
+
+      if (response?.data?.id) {
+        const storeId = response.data.id;
+        localStorage.setItem("storeId", storeId); // ✅ Lưu vào localStorage
+        console.log("✅ Store ID saved to localStorage:", storeId);
+      } else {
+        console.error("❌ Store ID not found in response!");
+      }
+
+      return response;
     } catch (error) {
-      console.error("Error fetching store details:", error);
+      console.error("❌ Error fetching store details:", error);
       return rejectWithValue(error.message || "Failed to fetch store details");
     }
   }
 );
+
 
 // Fetch Business License Details
 export const getBusinessLicenseDetails = createAsyncThunk(
