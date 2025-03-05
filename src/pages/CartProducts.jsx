@@ -1,21 +1,40 @@
-import { Empty, Table, Button } from "antd";
+import { Empty, Table, Button, Checkbox } from "antd";
 import QuantityInput from "../components/common/QuantityInput";
 import { useSelector, useDispatch } from "react-redux";
 import { DeleteFilled } from "@ant-design/icons";
-import { deleteCarts } from "../redux/slices/cartSlice";
-import { fetchCarts } from "../redux/slices/cartSlice";
+import { Link } from "react-router-dom";
+import {
+  fetchCarts,
+  deleteCarts,
+  selectCarts,
+  unselectCarts,
+  fetchGetTotalPrice,
+} from "../redux/slices/cartSlice";
 export default function CartProducts() {
   const dispatch = useDispatch();
-  const { cart, totalCount, pageIndex, pageSize } = useSelector(
-    (state) => state.carts
-  );
+  const { cart, totalCount, pageIndex, pageSize, totalSelectedItemsPrice } =
+    useSelector((state) => state.carts);
 
   const handleDelete = async (cartId) => {
     try {
       await dispatch(deleteCarts({ cartId })).unwrap();
-      dispatch(fetchCarts({ pageIndex, pageSize }));
     } catch (error) {
       console.error("Failed to delete cart item:", error);
+    }
+    dispatch(fetchGetTotalPrice());
+    dispatch(fetchCarts({ pageIndex, pageSize }));
+  };
+  const handleCheckBox = async (cartId, isChecked) => {
+    try {
+      if (isChecked) {
+        await dispatch(selectCarts({ cartId })).unwrap();
+      } else {
+        await dispatch(unselectCarts({ cartId })).unwrap();
+      }
+      dispatch(fetchGetTotalPrice());
+      dispatch(fetchCarts({ pageIndex, pageSize }));
+    } catch (error) {
+      console.error("Failed to update cart selection:", error);
     }
   };
 
@@ -25,15 +44,22 @@ export default function CartProducts() {
       dataIndex: "product",
       render: (_, record) => (
         <div className="flex items-center gap-4">
+          <Checkbox
+            checked={record.isSelected}
+            onChange={(e) => handleCheckBox(record.id, e.target.checked)}
+          />
+
           <img
             src={record.imageUrl}
             alt={record.productName}
             className="w-16 h-16 rounded-md"
           />
           <span className="flex justify-between items-start flex-col">
-            <span className="font-medium line-clamp-2 overflow-ellipsis">
-              {record.productName}
-            </span>
+            <Link to={`/detail/${record.productId}`}>
+              <span className="font-medium line-clamp-2 overflow-ellipsis h-12">
+                {record.productName}
+              </span>
+            </Link>
 
             <DeleteFilled
               className="hover:text-red-500 cursor-pointer"
@@ -86,15 +112,8 @@ export default function CartProducts() {
           <div className="border p-4 rounded-sm shadow-sm bg-gray-50">
             <div className="flex justify-between items-center mb-4">
               <p className="text-lg font-medium">Total price:</p>
-
               <p className="text-lg font-semibold text-headerBg">
-                {cart
-                  .reduce(
-                    (total, item) => total + item.price * item.quantity,
-                    0
-                  )
-                  .toLocaleString()}
-                ₫
+                {totalSelectedItemsPrice.toLocaleString()}₫
               </p>
             </div>
             <Button className="bg-headerBg text-white w-full">Payment</Button>
@@ -102,10 +121,9 @@ export default function CartProducts() {
           <div className=" border p-4 rounded-sm shadow-sm bg-gray-50">
             <p className="font-semibold text-lg text-yellow-500">Note !</p>
             <p>
-              Quý khách xin lưu ý các đơn hàng đặt sau 15h00 IOTSHOP sẽ gửi hàng
-              vào ngày hôm sau, cửa hàng nghỉ vào ngày Chủ Nhật, các yêu cầu
-              giao hàng đặc biệt xin Quý Khách liên hệ bộ phận bán hàng qua
-              Zalo.
+              Please note that orders placed after 3:00 PM will be shipped the
+              following day. Our store is closed on Sundays. For special
+              delivery requests, please contact our sales department via Zalo.
             </p>
           </div>
         </div>

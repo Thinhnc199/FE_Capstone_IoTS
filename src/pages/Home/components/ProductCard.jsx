@@ -11,7 +11,7 @@ const ProductCard = ({ product }) => {
   const discountPercentage =
     ((product.price - product.secondHandPrice) / product.price) * 100;
   return (
-    <Link to={`/${product.id}`}>
+    <Link to={`/detail/${product.id}`}>
       <Card
         key={product.id}
         hoverable

@@ -2,29 +2,35 @@ import { InputNumber, Button } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAddCarts } from "../../redux/slices/cartSlice";
-import { fetchCarts } from "../../redux/slices/cartSlice";
+import {
+  updateAddCarts,
+  fetchGetTotalPrice,
+  fetchCarts,
+} from "../../redux/slices/cartSlice";
+
 const QuantityInput = ({ cartId, quantity, min = 0, max = 100 }) => {
   const dispatch = useDispatch();
   const { pageIndex, pageSize } = useSelector((state) => state.carts);
+
   const handleChange = async (newQuantity) => {
     if (newQuantity < min || newQuantity > max) return;
 
     await dispatch(updateAddCarts({ cartId, quantity: newQuantity }));
+    dispatch(fetchGetTotalPrice());
     dispatch(fetchCarts({ pageIndex, pageSize }));
   };
 
   return (
-    <div className="flex items-center gap-2 border border-headerBg rounded-lg px-2 py-1 w-fit">
+    <div className="flex items-center gap-1  rounded-md  w-fit">
       <Button
-        icon={<MinusOutlined />}
+        icon={<MinusOutlined className="text-xs" />}
         size="small"
         onClick={() => handleChange(quantity - 1)}
         disabled={quantity <= min}
-        className="bg-headerBg text-white"
+        className="bg-headerBg text-white p-0 w-6 h-6 flex items-center justify-center"
       />
       <InputNumber
-        className="w-10 text-center"
+        className="w-9 text-center border-none text-xs px-0 py-0"
         min={min}
         max={max}
         value={quantity}
@@ -32,11 +38,11 @@ const QuantityInput = ({ cartId, quantity, min = 0, max = 100 }) => {
         controls={false}
       />
       <Button
-        icon={<PlusOutlined />}
+        icon={<PlusOutlined className="text-xs" />}
         size="small"
         onClick={() => handleChange(quantity + 1)}
         disabled={quantity >= max}
-        className="bg-headerBg text-white"
+        className="bg-headerBg text-white p-0 w-6 h-6 flex items-center justify-center"
       />
     </div>
   );
