@@ -163,7 +163,9 @@ export default function DetailProducts() {
         {/* cam ket */}
         <div className="col-span-2 space-y-2">
           <div className="border border-headerBg rounded-md ">
-            <h1 className="text-white bg-headerBg p-2 ">Cam kết</h1>
+            <h1 className="text-white bg-headerBg p-2 font-semibold ">
+              Your Trust, Our Commitment.
+            </h1>
             <div className="">
               <ul className=" p-3 space-y-2">
                 <li className=" flex space-x-2">
@@ -173,7 +175,8 @@ export default function DetailProducts() {
                     src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_1.png?1740416909712"
                     alt="Kiểm tra sản phẩm trước khi bán"
                   />
-                  <p> Kiểm tra sản phẩm trước khi bán </p>
+                  {/* <p> Kiểm tra sản phẩm trước khi bán </p> */}
+                  <p> Check products before selling </p>
                 </li>
                 <li className=" flex space-x-2">
                   <img
@@ -182,7 +185,8 @@ export default function DetailProducts() {
                     src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_2.png?1740416909712"
                     alt="Tư vấn tận tâm"
                   />
-                  <p>Tư vấn tận tâm </p>
+                  {/* <p>Tư vấn tận tâm </p> */}
+                  <p>Dedicated advice </p>
                 </li>
                 <li className=" flex space-x-2">
                   <img
@@ -191,7 +195,8 @@ export default function DetailProducts() {
                     src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_3.png?1740416909712"
                     alt="Vận chuyển nhanh chóng"
                   />
-                  <p>Vận chuyển nhanh chóng</p>
+                  {/* <p>Vận chuyển nhanh chóng</p> */}
+                  <p>Fast shipping</p>
                 </li>
                 <li className=" flex space-x-2">
                   <img
@@ -200,18 +205,20 @@ export default function DetailProducts() {
                     src="//bizweb.dktcdn.net/100/522/662/themes/958202/assets/camket_4.png?1740416909712"
                     alt="Bảo hành trách nhiệm"
                   />
-                  <p> Bảo hành trách nhiệm</p>
+                  {/* <p> Bảo hành trách nhiệm</p> */}
+                  <p>Responsible warranty</p>
                 </li>
               </ul>
             </div>
           </div>
           <div className="border border-headerBg rounded-md ">
-            <h1 className="text-white bg-headerBg p-2">Khuyến mại</h1>
+            <h1 className="text-white bg-headerBg p-2 font-semibold">
+              Promotion
+            </h1>
 
-            <p className="p-3">
-              Miễn phí Giao hàng thông thường (3-5 ngày) cho các đơn hàng thanh
-              toán chuyển khoản trước, có trị giá lớn hơn 2tr trên Toàn Quốc
-              (ngoại trừ các đơn hàng nặng trên 500g)
+            <p className="p-3 indent-2 break-normal">
+              Free Standard Shipping (3-5 days) for prepaid orders over 2
+              million VND nationwide (excluding orders weighing over 500g).
             </p>
           </div>
         </div>

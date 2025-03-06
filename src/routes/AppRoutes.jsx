@@ -129,7 +129,7 @@ const publicRoute = [
     layout: MainLayout,
   },
   {
-    path: "/:id",
+    path: "/detail/:id",
     component: DetailProducts,
     layout: MainLayout,
   },

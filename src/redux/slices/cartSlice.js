@@ -100,6 +100,60 @@ export const deleteCarts = createAsyncThunk(
     }
   }
 );
+export const selectCarts = createAsyncThunk(
+  "carts/selectCarts",
+  async ({ cartId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/cart/select-cart-item/${cartId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(
+          error.response.data.errors ||
+            error.response.data.message ||
+            "Something went wrong"
+        );
+      }
+      return rejectWithValue(error.message || "Unknown error");
+    }
+  }
+);
+export const unselectCarts = createAsyncThunk(
+  "carts/unselectCarts",
+  async ({ cartId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/cart/unselect-cart-item/${cartId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(
+          error.response.data.errors ||
+            error.response.data.message ||
+            "Something went wrong"
+        );
+      }
+      return rejectWithValue(error.message || "Unknown error");
+    }
+  }
+);
+export const fetchGetTotalPrice = createAsyncThunk(
+  "carts/fetchGetTotalPrice",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/cart/get-cart-total-information`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(
+          error.response.data.errors ||
+            error.response.data.message ||
+            "Something went wrong"
+        );
+      }
+      return rejectWithValue(error.message || "Unknown error");
+    }
+  }
+);
 const initialState = {
   cart: [],
   loading: false,
@@ -111,6 +165,8 @@ const initialState = {
   error: null,
   totalCount: 0,
   messages: null,
+  totalSelectedItemsPrice: 0,
+  isDropdownOpen: false,
 };
 const cartSlice = createSlice({
   name: "carts",
@@ -138,6 +194,10 @@ const cartSlice = createSlice({
     resetCart: (state) => {
       state.cart = [];
       state.totalCount = 0;
+      state.totalSelectedItemsPrice = 0;
+    },
+    setIsOpenDropdown: (state, action) => {
+      state.isOpenDropdown = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -149,6 +209,10 @@ const cartSlice = createSlice({
       state.cart = action.payload?.data || [];
       state.messages = action.payload?.message || null;
       state.error = action.payload?.errors || action.payload || "Unknown error";
+    });
+    handleAsyncState(builder, fetchGetTotalPrice, (state, action) => {
+      state.totalSelectedItemsPrice =
+        action.payload.data.totalSelectedItemsPrice;
     });
     // handleAsyncState(builder, updateAddCarts, (state, action) => {
     //   const { cartId, quantity } = action.meta.arg; // Lấy dữ liệu từ request gốc
@@ -175,5 +239,6 @@ export const {
   setEndFilterDate,
   setStartFilterDate,
   resetCart,
+  setIsOpenDropdown,
 } = cartSlice.actions;
 export default cartSlice.reducer;

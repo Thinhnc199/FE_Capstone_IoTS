@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCarts, resetCart } from "../redux/slices/cartSlice";
+import {
+  fetchCarts,
+  deleteCarts,
+  selectCarts,
+  unselectCarts,
+  fetchGetTotalPrice,
+  resetCart,
+  setIsOpenDropdown,
+} from "../redux/slices/cartSlice";
 import Logo from "../assets/icons/3.svg";
 import {
   HeartOutlined,
@@ -10,17 +18,30 @@ import {
   UserAddOutlined,
   LogoutOutlined,
   LoginOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
-import { Badge, Input, Dropdown, Space, Modal, Empty } from "antd";
-
+import {
+  Badge,
+  Input,
+  Dropdown,
+  Space,
+  Modal,
+  Empty,
+  Checkbox,
+  Button,
+} from "antd";
+import QuantityInput from "./common/QuantityInput";
 const { Search } = Input;
 
 const Navbar = () => {
-  const { cart } = useSelector((state) => state.carts);
   const dispatch = useDispatch();
-  const { pageIndex, pageSize } = useSelector((state) => state.carts);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const isDropdownOpen = useSelector((state) => state.carts.isOpenDropdown);
+  const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
+    (state) => state.carts
+  );
+
   const [isModalVisible, setIsModalVisible] = useState(false);
+
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const showModal = () => {
@@ -42,13 +63,39 @@ const Navbar = () => {
   useEffect(() => {
     if (token) {
       dispatch(fetchCarts({ pageIndex, pageSize }));
+      dispatch(fetchGetTotalPrice());
     } else {
-      dispatch(resetCart()); // Xóa cart khi chưa đăng nhập hoặc logout
+      dispatch(resetCart());
     }
   }, [token, dispatch]);
   const handleTotalProduct = () => {
     if (!Array.isArray(cart)) return 0;
     return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+  const handleDelete = async (cartId) => {
+    try {
+      await dispatch(deleteCarts({ cartId })).unwrap();
+    } catch (error) {
+      console.error("Failed to delete cart item:", error);
+    }
+    dispatch(fetchGetTotalPrice());
+    dispatch(fetchCarts({ pageIndex, pageSize }));
+  };
+  const handleCheckBox = async (cartId, isChecked) => {
+    try {
+      if (isChecked) {
+        dispatch(setIsOpenDropdown(true));
+        await dispatch(selectCarts({ cartId })).unwrap();
+      } else {
+        dispatch(setIsOpenDropdown(true));
+        await dispatch(unselectCarts({ cartId })).unwrap();
+      }
+
+      dispatch(fetchGetTotalPrice());
+      dispatch(fetchCarts({ pageIndex, pageSize }));
+    } catch (error) {
+      console.error("Failed to update cart selection:", error);
+    }
   };
   const menuItems = [
     {
@@ -91,26 +138,66 @@ const Navbar = () => {
   ];
   const menuCart =
     cart.length > 0
-      ? cart.map((item, index) => ({
-          key: index,
-          label: (
-            <div className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded-md">
-              <img
-                src={item.imageUrl}
-                alt={item.productName}
-                className="w-10 h-10 object-cover rounded"
-              />
-              <div>
-                <p className="font-semibold hover:text-head erBg">
-                  {item.productName}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Số lượng: {item.quantity}
-                </p>
+      ? [
+          ...cart.map((item, index) => ({
+            key: index,
+            label: (
+              <div className="h-50vw relative flex gap-4 items-center justify-between p-2 hover:bg-gray-100 border-b border-gray-300">
+                {/* Checkbox và hình ảnh */}
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    checked={item.isSelected}
+                    onChange={(e) => handleCheckBox(item.id, e.target.checked)}
+                  />
+                  <img
+                    src={item.imageUrl}
+                    alt={item.productName}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                </div>
+
+                {/* Thông tin sản phẩm */}
+                <div className="flex-1 min-w-0">
+                  <Link to={`/detail/${item.productId}`}>
+                    <span className="font-medium truncate h-12">
+                      {item.productName}
+                    </span>
+                  </Link>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <QuantityInput quantity={item.quantity} cartId={item.id} />
+                  </div>
+                </div>
+
+                {/* Giá tiền */}
+                <span className="font-medium whitespace-nowrap text-red-500">
+                  {item.price.toLocaleString()}₫
+                </span>
+
+                {/* Nút xóa */}
+                <CloseOutlined
+                  className=" font-bold absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
+                  onClick={() => handleDelete(item.id)}
+                />
               </div>
-            </div>
-          ),
-        }))
+            ),
+          })),
+          {
+            key: "total",
+            label: (
+              <div className=" p-2 rounded-sm ">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-lg font-medium">Total price:</p>
+                  <p className="text-lg font-semibold text-red-400">
+                    {totalSelectedItemsPrice.toLocaleString()}₫
+                  </p>
+                </div>
+                <Button className="bg-headerBg text-white w-full">
+                  Payment
+                </Button>
+              </div>
+            ),
+          },
+        ]
       : [
           {
             key: "empty",
@@ -182,10 +269,15 @@ const Navbar = () => {
           <Dropdown
             menu={{ items: menuCart }}
             overlayStyle={{
-              width: "25vw",
+              width: "23vw",
+              height: "5vw",
               borderRadius: "10px",
               border: "1px solid #f0f0f0",
+              overflowY: "auto",
             }}
+            trigger={["hover"]}
+            open={isDropdownOpen}
+            onOpenChange={(open) => dispatch(setIsOpenDropdown(open))}
           >
             <Space className="cursor-pointer" onClick={() => navigate("/cart")}>
               <Badge count={handleTotalProduct()}>
@@ -193,6 +285,7 @@ const Navbar = () => {
               </Badge>
             </Space>
           </Dropdown>
+
           {/* user */}
           {!token ? (
             <Dropdown
@@ -206,7 +299,7 @@ const Navbar = () => {
               <Space>
                 <UserOutlined
                   className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => dispatch(setIsOpenDropdown(!isDropdownOpen))}
                 />
               </Space>
             </Dropdown>
@@ -218,11 +311,12 @@ const Navbar = () => {
                 borderRadius: "10px",
                 border: "1px solid #f0f0f0",
               }}
+              getPopupContainer={() => document.body}
             >
               <Space>
                 <UserOutlined
                   className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer "
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => dispatch(setIsOpenDropdown(!isDropdownOpen))}
                 />
               </Space>
             </Dropdown>
