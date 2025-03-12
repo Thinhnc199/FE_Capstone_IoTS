@@ -13,7 +13,7 @@ import ConfirmModal from "./components/ConfirmModal.jsx";
 
 const DetailUserRequest = () => {
   const img =
-    "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2F8cebdcfd-470f-4e27-8694-4506a4284063.png.png?alt=media&token=03119b0a-da59-42e1-9414-f0122a075a20";
+    "https://i.postimg.cc/SxKL6YTm/Nature-HD-2560-x-1440-Image.jpg' border='0' alt='Nature-HD-2560-x-1440-Image";
   const { id } = useParams();
   const dispatch = useDispatch();
   const { userRequestDetail, storeDetail, confirmUserRequest } = useSelector(
@@ -28,6 +28,11 @@ const DetailUserRequest = () => {
   useEffect(() => {
     if (id) dispatch(fetchRequestDetails({ id }));
   }, [dispatch, id, confirmUserRequest.isSuccess]);
+
+  // console.log(
+  //   "yye",
+  //   userRequestDetail.data.userRequestInfo.userRequestStatus.label
+  // );
 
   const handleTabChange = (key) => {
     setActiveTab(key);
@@ -109,10 +114,24 @@ const DetailUserRequest = () => {
               </h5>
             </div>
             <div className="space-x-2">
-              <Button onClick={() => showModal("reject")}>Reject</Button>
-              <Button type="primary" onClick={() => showModal("approve")}>
-                Approve
-              </Button>
+              {userRequestDetail?.data?.userRequestInfo?.userRequestStatus
+                ?.label === "Approved" ? (
+                <></>
+              ) : (
+                <>
+                  <Button onClick={() => showModal("reject")}>Reject</Button>
+                  <Button type="primary" onClick={() => showModal("approve")}>
+                    Approve
+                  </Button>
+                </>
+              )}
+
+              {/* <>
+                <Button onClick={() => showModal("reject")}>Reject</Button>
+                <Button type="primary" onClick={() => showModal("approve")}>
+                  Approve
+                </Button>
+              </> */}
             </div>
           </div>
         </div>

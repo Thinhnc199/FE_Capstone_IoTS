@@ -6,6 +6,7 @@ import { Tabs, InputNumber, Button, message } from "antd";
 import { StarOutlined } from "@ant-design/icons";
 import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
 import { ProductType } from "../redux/constants";
+import ErrorProduct from "./ErrorProduct";
 export default function DetailProducts() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -61,7 +62,7 @@ export default function DetailProducts() {
   };
 
   if (productDetail.loading) return <p>Loading...</p>;
-  if (!product) return <p>Không tìm thấy sản phẩm.</p>;
+  if (!product) return <ErrorProduct />;
 
   const isNew = product.deviceType === 1;
 
@@ -233,12 +234,12 @@ export default function DetailProducts() {
             items={[
               {
                 key: "1",
-                label: "Mô tả",
+                label: "Describe",
                 children: <p>{product.description || "Không có mô tả."}</p>,
               },
               {
                 key: "2",
-                label: "Nhận xét sản phẩm",
+                label: "Reviews",
                 children:
                   product.reviews?.length > 0 ? (
                     product.reviews.map((review, index) => (
@@ -249,9 +250,8 @@ export default function DetailProducts() {
                     ))
                   ) : (
                     <p className="text-gray-500 italic">
-                      Hiện tại sản phẩm chưa có đánh giá nào, bạn hãy trở thành
-                      người đầu tiên đánh giá cho sản phẩm này. Gửi đánh giá của
-                      bạn.
+                      There are currently no reviews for this product. Be the
+                      first to review this product. Submit your review.
                     </p>
                   ),
               },
@@ -261,11 +261,10 @@ export default function DetailProducts() {
         <div className="col-span-3  bg-white border shadow-md rounded-md p-4">
           <div className="flex justify-start items-center space-x-3 rounded-md bg-headerBg text-white p-2 m-1">
             <StarOutlined className="text-2xl" />
-            <h2 className="text-md  font-semibold  ">Sản phẩm đã xem</h2>
+            <h2 className="text-md  font-semibold  ">Viewed products</h2>
           </div>
 
-          <p>vlus hong biet</p>
-          {/* Nội dung sản phẩm đã xem sẽ thêm sau */}
+          <p>none</p>
         </div>
       </div>
     </div>

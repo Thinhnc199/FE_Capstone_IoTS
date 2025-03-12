@@ -54,7 +54,7 @@ const RequestTable = ({
       dataIndex: "email",
       key: "email",
       render: (text, record) =>
-        record.role.id == Roles.STORE ? (
+        record.role.id == Roles.STORE || record.role.id == Roles.TRAINER ? (
           <Link to={`/admin/user-request/${record.id}`}>{text}</Link>
         ) : (
           <div key={record.id}>{text}</div>

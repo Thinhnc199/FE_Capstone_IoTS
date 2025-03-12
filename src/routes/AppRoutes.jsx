@@ -43,7 +43,7 @@ import CategoryManagement from "../components/Admin/ProductsManageAdmin/Category
 
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
-
+import Checkout from "../pages/Checkout";
 import DetailProducts from "../pages/DetailProducts";
 import ViewAllProduct from "../pages/ViewAllProduct";
 import CartProducts from "../pages/CartProducts";
@@ -127,6 +127,11 @@ const publicRoute = [
     path: "/cart",
     component: CartProducts,
     layout: MainLayout,
+  },
+  {
+    path: "/checkout",
+    component: Checkout,
+    layout: null,
   },
   {
     path: "/detail/:id",
