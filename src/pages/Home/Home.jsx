@@ -20,17 +20,20 @@ const Home = () => {
   const banners = [
     {
       id: 1,
-      image: "/src/assets/imgs/BgSlice.png",
+      image:
+        "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2Fd426ced6-6d15-48c7-bafe-410e4369c220.png.png?alt=media&token=bc7d6a94-9812-43e8-b105-7a0277d07962",
       alt: "Banner 1",
     },
     {
       id: 2,
-      image: "/src/assets/imgs/BgSlice2.png",
+      image:
+        "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2F57815bbf-b9d9-4e92-9a85-22c0bc4ae0d2.png.png?alt=media&token=3deb448c-5429-4b8c-a613-6b1e4e515708",
       alt: "Banner 2",
     },
     {
       id: 3,
-      image: "/src/assets/imgs/BgSlice.png",
+      image:
+        "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2Fd426ced6-6d15-48c7-bafe-410e4369c220.png.png?alt=media&token=bc7d6a94-9812-43e8-b105-7a0277d07962",
       alt: "Banner 3",
     },
   ];

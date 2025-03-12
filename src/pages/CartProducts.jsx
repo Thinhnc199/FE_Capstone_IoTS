@@ -116,7 +116,9 @@ export default function CartProducts() {
                 {totalSelectedItemsPrice.toLocaleString()}₫
               </p>
             </div>
-            <Button className="bg-headerBg text-white w-full">Payment</Button>
+            <Link to="/checkout">
+              <Button className="bg-headerBg text-white w-full">Payment</Button>
+            </Link>
           </div>
           <div className=" border p-4 rounded-sm shadow-sm bg-gray-50">
             <p className="font-semibold text-lg text-yellow-500">Note !</p>
