@@ -142,7 +142,7 @@ const Navbar = () => {
           ...cart.map((item, index) => ({
             key: index,
             label: (
-              <div className="h-50vw relative flex gap-4 items-center justify-between p-2 hover:bg-gray-100 border-b border-gray-300">
+              <div className="h-50vw   flex gap-4 items-center justify-between p-2 hover:bg-gray-100 border-b border-gray-300">
                 {/* Checkbox và hình ảnh */}
                 <div className="flex items-center gap-3">
                   <Checkbox
@@ -159,7 +159,7 @@ const Navbar = () => {
                 {/* Thông tin sản phẩm */}
                 <div className="flex-1 min-w-0">
                   <Link to={`/detail/${item.productId}`}>
-                    <span className="font-medium truncate h-12">
+                    <span className="font-medium line-clamp-2 break-words">
                       {item.productName}
                     </span>
                   </Link>
@@ -191,9 +191,11 @@ const Navbar = () => {
                     {totalSelectedItemsPrice.toLocaleString()}₫
                   </p>
                 </div>
-                <Button className="bg-headerBg text-white w-full">
-                  Payment
-                </Button>
+                <Link to="/checkout">
+                  <Button className="bg-headerBg text-white w-full">
+                    Payment
+                  </Button>
+                </Link>
               </div>
             ),
           },
@@ -297,10 +299,7 @@ const Navbar = () => {
               }}
             >
               <Space>
-                <UserOutlined
-                  className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer"
-                  onClick={() => dispatch(setIsOpenDropdown(!isDropdownOpen))}
-                />
+                <UserOutlined className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer" />
               </Space>
             </Dropdown>
           ) : (
@@ -314,10 +313,7 @@ const Navbar = () => {
               getPopupContainer={() => document.body}
             >
               <Space>
-                <UserOutlined
-                  className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer "
-                  onClick={() => dispatch(setIsOpenDropdown(!isDropdownOpen))}
-                />
+                <UserOutlined className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer " />
               </Space>
             </Dropdown>
           )}
