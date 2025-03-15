@@ -12,6 +12,7 @@ import trainerSlice from './slices/trainerSlice';
 import materialCategorySlice from './slices/materialCategorySlice';
 import comboSlice from './slices/comboSlice';
 import cartSlice from "./slices/cartSlice";
+import addressSlice from './slices/addressSlice';
 
 const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ const store = configureStore({
     trainerRegister: trainerSlice,
     materialCategory: materialCategorySlice,
     combo: comboSlice,
+    address: addressSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

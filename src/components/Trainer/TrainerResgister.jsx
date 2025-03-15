@@ -1,24 +1,39 @@
 import { useState, useEffect, useCallback } from "react";
-import { Button, Form, notification, Modal, Upload, Input } from "antd";
+import {
+  Button,
+  Form,
+  notification,
+  Modal,
+  Upload,
+  Input,
+  Tooltip,
+  Tag,
+} from "antd";
 import {
   UploadOutlined,
   CheckCircleOutlined,
   EyeOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { uploadFiles, getUserRequestDetails } from "../../api/apiConfig";
 import {
   submitTrainerDocuments,
   submitForApproval,
   getTrainerBusinessLicenseDetails,
+  fetchUserStatus,
 } from "../../redux/slices/trainerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
+
 const TrainerRegister = () => {
   const [documents, setDocuments] = useState({
     frontIdentification: null,
     backIdentification: null,
     businessLicences: null,
   });
+  const { remark } = useSelector((state) => state.trainerRegister);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [requestId, setRequestId] = useState(null);
@@ -31,6 +46,7 @@ const TrainerRegister = () => {
   const trainerId = localStorage.getItem("userId");
   const [previewImage, setPreviewImage] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handleImagePreview = (imageUrl) => {
     setPreviewImage(imageUrl);
@@ -238,13 +254,16 @@ const TrainerRegister = () => {
         if (userRequestStatus === "Rejected") {
           setCurrentStep(0);
         }
+        if (userRequestStatus === "Approved") {
+          navigate("/trainer/payment-packages");
+        }
       } catch (error) {
         console.error("Error fetching user request status:", error);
       }
     };
 
     checkUserStatus();
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   const handleCancelModal = () => {
     setIsModalVisible(false);
@@ -253,12 +272,12 @@ const TrainerRegister = () => {
 
   const validateExpiredDate = (_, value) => {
     const issueDate = formStep1.getFieldValue("issueDate");
-    const today = dayjs().startOf("day"); 
-    
+    const today = dayjs().startOf("day");
+
     if (!value) {
       return Promise.reject("Please select an expired date.");
     }
-    
+
     if (dayjs(value).isBefore(today)) {
       return Promise.reject("Expired Date must be in the future.");
     }
@@ -269,6 +288,56 @@ const TrainerRegister = () => {
 
     return Promise.resolve();
   };
+  const statusColors = {
+    "Pending to Approved": {
+      color: "gold",
+      background: "#fffbe6",
+      border: "#ffe58f",
+    },
+    Approved: { color: "green", background: "#f6ffed", border: "#b7eb8f" },
+    "Pending to Verify OTP": {
+      color: "gray",
+      background: "#f5f5f5",
+      border: "#d9d9d9",
+    },
+    Rejected: { color: "red", background: "#fff1f0", border: "#ffa39e" },
+  };
+  const getStatusTag = (requestStatus) => {
+    const statusInfo = statusColors[requestStatus?.trim()] || {
+      color: "black",
+      background: "#f0f0f0",
+      border: "#d9d9d9",
+    };
+    return (
+      <Tag
+        style={{
+          color: statusInfo.color,
+          backgroundColor: statusInfo.background,
+          borderColor: statusInfo.border,
+          fontWeight: "bold",
+          fontSize: "14px",
+          padding: "5px 10px",
+          borderRadius: "5px",
+        }}
+      >
+        {requestStatus}
+      </Tag>
+    );
+  };
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchUserStatus(userId));
+    }
+  }, [userId, dispatch]);
+  const showRemark = () => {
+    Modal.info({
+      title: "Remark Details",
+      content: <p>{remark || "No additional remarks available."}</p>,
+      okText: "Close",
+    });
+  };
 
   return (
     <div>
@@ -277,6 +346,32 @@ const TrainerRegister = () => {
           <h2 className="text-2xl font-semibold text-gray-700 text-center mb-5">
             📜 Upload Trainer Documents
           </h2>
+          <div
+            style={{
+              fontSize: "18px",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <span>Status: </span>
+            <span style={{ marginLeft: "10px" }}>
+              {getStatusTag(requestStatus)}
+            </span>
+
+            {requestStatus === "Rejected" && (
+              <Tooltip title="Click to view remark">
+                <ExclamationCircleOutlined
+                  style={{
+                    color: "red",
+                    marginLeft: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={showRemark}
+                />
+              </Tooltip>
+            )}
+          </div>
           <Form
             form={formStep1}
             onFinish={handleDocumentSubmit}
@@ -629,34 +724,34 @@ const TrainerRegister = () => {
               <Form.Item label="Expired Date" name="expiredDate">
                 <Input type="date" />
               </Form.Item> */}
-              
-      <Form.Item
-        label="Issue Date"
-        name="issueDate"
-        rules={[
-          {
-            required: true,
-            message: "Please select an issue date.",
-          },
-        ]}
-      >
-        <Input type="date" />
-      </Form.Item>
 
-      <Form.Item
-        label="Expired Date"
-        name="expiredDate"
-        dependencies={["issueDate"]}
-        rules={[
-          {
-            required: true,
-            message: "Please select an expired date.",
-          },
-          { validator: validateExpiredDate },
-        ]}
-      >
-        <Input type="date" />
-      </Form.Item>
+              <Form.Item
+                label="Issue Date"
+                name="issueDate"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select an issue date.",
+                  },
+                ]}
+              >
+                <Input type="date" />
+              </Form.Item>
+
+              <Form.Item
+                label="Expired Date"
+                name="expiredDate"
+                dependencies={["issueDate"]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select an expired date.",
+                  },
+                  { validator: validateExpiredDate },
+                ]}
+              >
+                <Input type="date" />
+              </Form.Item>
             </div>
             <div className="flex justify-center mt-6">
               <Button
@@ -701,6 +796,32 @@ const TrainerRegister = () => {
 
       {/* Success Message */}
       {currentStep === 1 && requestStatus === "Pending to Approved" && (
+  <div className="bg-white shadow-lg rounded-lg p-6">
+    <h2 className="text-2xl font-bold text-blue-600 text-center mb-6">
+      🎉 Submission Successful!
+    </h2>
+    <div className="flex justify-center">
+      <div className="bg-green-100 p-6 rounded-lg shadow-md text-center max-w-lg">
+        <div className="mb-4">
+          <CheckCircleOutlined className="text-4xl text-green-500" />
+        </div>
+        <h3 className="text-xl font-semibold text-green-700 mb-2">
+          Trainer Registration has been successfully submitted!
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Congratulations! Your application to become a trainer has been received. We’re thrilled to have you on board as we process your request.
+        </p>
+        <p className="text-gray-600 mb-4">
+          Our team is now reviewing your submission, and you’ll hear back from us soon with the next steps. In the meantime, feel free to explore the platform or prepare any additional materials you’d like to showcase!
+        </p>
+        <p className="text-sm text-gray-500 italic">
+          Note: Approval typically takes 1-3 business days. We’ll notify you via email once your status is updated.
+        </p>
+      </div>
+    </div>
+  </div>
+)}
+      {/* {currentStep === 1 && requestStatus === "Pending to Approved" && (
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold text-blue-600 text-center mb-6">
             🎉 Submission Successful!
@@ -716,7 +837,7 @@ const TrainerRegister = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

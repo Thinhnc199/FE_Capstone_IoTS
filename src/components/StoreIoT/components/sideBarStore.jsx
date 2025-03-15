@@ -26,6 +26,15 @@ const items2 = [
   },
   {
     key: "sub3",
+    icon: <ProductOutlined />,
+    label: "Combos",
+    children: [
+      { key: "3a", label: <Link to="/store/combo-managerment">Combos List</Link> },
+      // { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
+    ],
+  },
+  {
+    key: "sub4",
     icon: <WalletOutlined />,
     label: <Link to="/store/wallet">Wallet</Link>,
   },

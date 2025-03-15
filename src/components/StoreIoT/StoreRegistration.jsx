@@ -16,6 +16,7 @@ import {
   CloseCircleOutlined,
   EyeOutlined,
   ExclamationCircleOutlined,
+  ShopOutlined 
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -25,11 +26,12 @@ import {
   getStoreDetails,
   getBusinessLicenseDetails,
   fetchUserStatus,
-} from "../../redux/slices/storeRegistrationSlice";
+} from "./../../redux/slices/storeRegistrationSlice";
 import { useState, useEffect } from "react";
-import { uploadFiles, getUserRequestDetails } from "../../api/apiConfig";
+import { uploadFiles, getUserRequestDetails } from "./../../api/apiConfig";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import AddressSelector from "../StoreIoT/components/AddressSelector";
 const { Step } = Steps;
 
 const StoreRegistration = () => {
@@ -57,7 +59,10 @@ const StoreRegistration = () => {
   const [existingAttachments, setExistingAttachments] = useState([]);
   const [form] = Form.useForm();
   const [formStep2] = Form.useForm();
-
+  // State để lưu ID của tỉnh/thành phố, quận/huyện, phường/xã
+  const [selectedProvinceId, setSelectedProvinceId] = useState(null);
+  const [selectedDistrictId, setSelectedDistrictId] = useState(null);
+  const [selectedWardId, setSelectedWardId] = useState(null);
   const statusColors = {
     "Pending to Approved": {
       color: "gold",
@@ -94,6 +99,7 @@ const StoreRegistration = () => {
       </Tag>
     );
   };
+  const [fullAddress, setFullAddress] = useState("");
 
   const userId = localStorage.getItem("userId");
 
@@ -121,6 +127,14 @@ const StoreRegistration = () => {
           if (storeResponse.payload && storeResponse.payload.data) {
             setStoreDetails(storeResponse.payload.data);
             setStoreId(storeResponse.payload.data.id); // Set storeId
+            // Nếu đã có địa chỉ, gán ID vào state
+            setSelectedProvinceId(
+              storeResponse.payload.data.provinceId || null
+            );
+            setSelectedDistrictId(
+              storeResponse.payload.data.districtId || null
+            );
+            setSelectedWardId(storeResponse.payload.data.wardId || null);
 
             if (storeResponse.payload.data.id) {
               console.log(
@@ -159,6 +173,15 @@ const StoreRegistration = () => {
 
     fetchStoreDetails();
   }, [dispatch]);
+
+  // Xử lý khi chọn địa chỉ mới
+  const handleAddressChange = (newFullAddress, ids) => {
+    // form.setFieldsValue({ address: fullAddress });
+    setFullAddress(newFullAddress);
+    setSelectedProvinceId(ids.provinceId);
+    setSelectedDistrictId(ids.districtId);
+    setSelectedWardId(ids.wardId);
+  };
 
   useEffect(() => {
     if (currentStep === 2) {
@@ -201,6 +224,14 @@ const StoreRegistration = () => {
 
   useEffect(() => {
     if (storeDetails) {
+      setFullAddress(
+        `${storeDetails.wardName}, ${storeDetails.districtName}, ${storeDetails.provinceName}`
+      );
+
+      setSelectedProvinceId(storeDetails.provinceId);
+      setSelectedDistrictId(storeDetails.districtId);
+      setSelectedWardId(storeDetails.wardId);
+
       form.setFieldsValue({
         name: storeDetails.name,
         contactNumber: storeDetails.contactNumber,
@@ -341,6 +372,9 @@ const StoreRegistration = () => {
     const allAttachments = [...existingAttachments, ...newAttachmentsUrls];
     const storeData = {
       ...values,
+      provinceId: selectedProvinceId,
+      districtId: selectedDistrictId,
+      wardId: selectedWardId,
       imageUrl: logoUrl,
       storeAttachments: allAttachments.map((url) => ({ imageUrl: url })),
     };
@@ -497,65 +531,21 @@ const StoreRegistration = () => {
     }
   };
 
-  // const handleSubmitApproval = async () => {
-  //   const userId = localStorage.getItem("userId");
+  const validateIssueDate = (_, value) => {
+    const today = dayjs().startOf("day");
+    if (!value) {
+      return Promise.resolve();
+    }
+    const selectedDate = dayjs(value).startOf("day");
+    if (selectedDate.isAfter(today)) {
+      return Promise.reject(
+        new Error("Issue date cannot be later than today ")
+        // (" + today.format("DD/MM/YYYY") + ")
+      );
+    }
 
-  //   if (!userId) {
-  //     notification.error({
-  //       message: "User ID not found!",
-  //     });
-  //     return;
-  //   }
-
-  //   try {
-  //     const storeResponse = await dispatch(getStoreDetails(userId));
-  //     if (storeResponse.payload && storeResponse.payload.data) {
-  //       setStoreDetails(storeResponse.payload.data);
-  //       setStoreId(storeResponse.payload.data.id);
-  //     }
-
-  //     const businessLicenseResponse = await dispatch(
-  //       getBusinessLicenseDetails(storeId)
-  //     );
-  //     if (businessLicenseResponse.payload) {
-  //       setBusinessLicense(businessLicenseResponse.payload);
-  //     } else {
-  //       notification.error({
-  //         message: "Error fetching business license details",
-  //       });
-  //       return;
-  //     }
-
-  //     const userRequestResponse = await getUserRequestDetails(userId);
-  //     const requestId = userRequestResponse.data.userRequestInfo.id;
-
-  //     if (!requestId) {
-  //       notification.error({
-  //         message: "Request ID not found!",
-  //       });
-  //       return;
-  //     }
-  //     console.log(
-  //       "Submitting store request approval for requestId:",
-  //       requestId
-  //     );
-  //     await dispatch(submitStoreApproval(requestId));
-  //     dispatch({
-  //       type: "storeRegistration/setRequestStatus",
-  //       payload: "Pending to Approved",
-  //     });
-
-  //     notification.success({
-  //       message: "Store registration submitted for approval!",
-  //     });
-  //     setCurrentStep(3);
-  //   } catch (error) {
-  //     notification.error({
-  //       message: "Submit Failed",
-  //       description: error.message,
-  //     });
-  //   }
-  // };
+    return Promise.resolve();
+  };
 
   const validateExpiredDate = (_, value) => {
     const issueDate = formStep2.getFieldValue("issueDate");
@@ -660,7 +650,7 @@ const StoreRegistration = () => {
                       />
                     ) : (
                       <div className="flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                        <UploadOutlined className="text-blue-500 text-4xl" />
+                        <ShopOutlined  className="text-blue-500 text-4xl" />
                       </div>
                     )}
 
@@ -720,19 +710,6 @@ const StoreRegistration = () => {
                 />
               </Form.Item>
 
-              {/* Address */}
-              <Form.Item
-                label="Address"
-                name="address"
-                className="col-span-2"
-                rules={[{ required: true, message: "Please input address!" }]}
-              >
-                <Input
-                  placeholder="Enter store address"
-                  className="border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-                />
-              </Form.Item>
-
               {/* Summary */}
               <Form.Item
                 label="Summary"
@@ -753,7 +730,38 @@ const StoreRegistration = () => {
                 />
               </Form.Item>
             </div>
-            {/* Description */}
+
+            {/* Address Selector Component */}
+            <Form.Item name="address" rules={[{ required: true , message: "Please select all the address fields (Province, District, and Ward).",}]}>
+              <AddressSelector
+                onAddressChange={handleAddressChange}
+                defaultProvinceId={selectedProvinceId}
+                defaultDistrictId={selectedDistrictId}
+                defaultWardId={selectedWardId}
+              />
+              {fullAddress && (
+                <p
+                  style={{
+                    color: "#333",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <b>Sellector Address :</b> {fullAddress}
+                </p>
+              )}
+            </Form.Item>
+            {/* Address */}
+            <Form.Item
+              label="Address"
+              name="address"
+              className="col-span-2"
+              rules={[{ required: true, message: "Please input address!" }]}
+            >
+              <Input
+                placeholder="Enter store address"
+                className="border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+              />
+            </Form.Item>
             <Form.Item
               label="Description"
               name="description"
@@ -1098,6 +1106,7 @@ const StoreRegistration = () => {
                     required: true,
                     message: "Please select an issue date.",
                   },
+                  { validator: validateIssueDate },
                 ]}
               >
                 <Input type="date" />

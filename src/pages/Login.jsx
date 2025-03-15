@@ -24,6 +24,11 @@ const Login = () => {
   const requestStatus = useSelector(
     (state) => state.storeRegistration.requestStatus
   );
+  // const requestStatusTrainer = useSelector(
+  //   (state) => state.trainerRegister.requestStatus
+  // );
+
+
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
@@ -68,9 +73,14 @@ const Login = () => {
           break;
         case 4:
           if (isActive === 1) {
-            navigate("/strainer/welcome");
+            navigate("/trainer/welcome");
           } else if (isActive === 2) {
             navigate("/trainer/registerTrainer");
+            // if (requestStatusTrainer === "Approved") {
+            //   navigate("/trainer/payment-packages");
+            // } else if (requestStatusTrainer === "Pending to Approved") {
+            //   navigate("/trainer/registerTrainer");
+            // }
           } else {
             navigate("/home");
           }

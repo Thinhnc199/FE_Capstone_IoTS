@@ -43,24 +43,25 @@ import {
   setSearchKeyword,
   setStartFilterDate,
   setEndFilterDate,
-  updateCombo,
 } from "./../../../redux/slices/comboSlice";
 import { getStoreDetails } from "./../../../redux/slices/storeRegistrationSlice";
 import { uploadFiles } from "./../../../api/apiConfig";
 import DeviceSelectionTable from "./DeviceSelectionTable";
+import { useNavigate } from "react-router-dom";
 
 const ComboTable = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [selectedDevices, setSelectedDevices] = useState([]);
   const [selectedCombo, setSelectedCombo] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-  const { Text } = Typography;
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  const { Text } = Typography;
+
   const {
     combos,
     loading,
@@ -88,36 +89,25 @@ const ComboTable = () => {
     loading: state.combo.loading,
   }));
 
-  // 🛠 Fetch dữ liệu khi component mount
   useEffect(() => {
     dispatch(
       fetchCombos({
         pageIndex: 0,
         pageSize: 10,
         searchKeyword: "",
-        startFilterDate: startFilterDate,
-        endFilterDate: endFilterDate,
+        startFilterDate,
+        endFilterDate,
       })
     );
     dispatch(
       fetchIotDevices({ pageIndex: 0, pageSize: 10, searchKeyword: "" })
     );
-
     const storedUserId = localStorage.getItem("userId");
-
     if (storedUserId && !storeId) {
-      console.log("📡 Fetching store details for userId:", storedUserId);
-      dispatch(getStoreDetails(storedUserId)).then((res) => {
-        if (res.payload?.data?.id) {
-          console.log("✅ Store ID fetched & saved:", res.payload.data.id);
-        } else {
-          console.error("❌ Failed to fetch store ID!");
-        }
-      });
+      dispatch(getStoreDetails(storedUserId));
     }
   }, [dispatch, storeId, searchKeyword, startFilterDate, endFilterDate]);
 
-  // 🛠 Xử lý tìm kiếm
   const handleSearch = (values) => {
     dispatch(setSearchKeyword(values.searchKeyword));
     dispatch(setStartFilterDate(values.startFilterDate?.toISOString() || ""));
@@ -125,17 +115,15 @@ const ComboTable = () => {
     dispatch(setPageIndex(1));
   };
 
-  // 🛠 Xử lý upload file
   const handleFileUpload = async ({ file }) => {
     try {
       const imageUrl = await uploadFiles(file);
       setFileList((prevList) => [
         ...prevList,
-        { id: imageUrl, imageUrl: imageUrl, metaData: "" },
+        { id: imageUrl, imageUrl, metaData: "" },
       ]);
-      console.log("✅ Image uploaded:", imageUrl);
     } catch (error) {
-      console.error("❌ File upload failed:", error);
+      console.error("❌ File upload failed", error);
     }
   };
 
@@ -149,21 +137,11 @@ const ComboTable = () => {
     setIsDetailModalVisible(true);
   };
 
-  // Xử lý mở modal tạo combo
   const handleOpenModal = async () => {
     let currentStoreId = storeId || localStorage.getItem("storeId");
-
     if (!currentStoreId && userId) {
-      console.log("📡 Fetching storeId for user:", userId);
       const res = await dispatch(getStoreDetails(userId));
-
-      if (res.payload?.data?.id) {
-        currentStoreId = res.payload.data.id;
-        console.log("✅ Store ID fetched:", currentStoreId);
-      } else {
-        console.error("❌ Cannot open modal - Store ID is missing!");
-        return;
-      }
+      currentStoreId = res.payload?.data?.id;
     }
     setSelectedCombo(null);
     setFileList([]);
@@ -174,45 +152,31 @@ const ComboTable = () => {
 
   const handleCreateCombo = async (values) => {
     let currentStoreId = localStorage.getItem("storeId");
-
     if (!currentStoreId) {
-      console.error("❌ Store ID is missing! Fetching now...");
       const res = await dispatch(getStoreDetails(userId));
-
-      if (res.payload?.data?.id) {
-        currentStoreId = res.payload.data.id;
-        console.log("✅ Store ID fetched:", currentStoreId);
-      } else {
-        console.error("❌ Store ID is still missing! Cannot submit.");
-        notification.error({
-          message: "Store ID Error",
-          description: "Failed to fetch store ID. Please try again.",
-        });
-        return;
-      }
+      currentStoreId = res.payload?.data?.id;
     }
 
-    //  Xử lý ảnh đại diện
     let mainImageUrl =
       values.imageUrl?.trim() ||
       (fileList.length > 0 ? fileList[0].imageUrl : "");
-
-    if (!mainImageUrl) {
+    if (!mainImageUrl || !selectedDevices.length) {
       notification.warning({
-        message: "Image Required",
-        description: "Please provide an image URL or upload an image.",
+        message: "Validation Error",
+        description: "Image and devices are required.",
       });
       return;
     }
 
-    //  Kiểm tra nếu không có thiết bị
-    if (!selectedDevices.length) {
+    // Check if at least one device is selected
+    if (selectedDevices.length === 0) {
       notification.warning({
-        message: "Device Selection Required",
+        message: "Device Selection Error",
         description: "Please select at least one device for the combo.",
       });
       return;
     }
+
     const validAttachments = fileList
       .filter((file) => file.imageUrl !== mainImageUrl)
       .map((file) => ({
@@ -230,170 +194,22 @@ const ComboTable = () => {
       attachmentsList: validAttachments,
     };
 
-    console.log("📡 Sending Payload:", JSON.stringify(comboData, null, 2));
-
     try {
       await dispatch(createCombo(comboData)).unwrap();
       notification.success({
         message: "Combo Created",
-        description: "The combo has been successfully created.",
+        description: "Combo created successfully!",
       });
       setIsModalVisible(false);
       form.resetFields();
       setFileList([]);
     } catch (error) {
-      console.error("❌ Error creating combo:", error);
-      notification.error({
-        message: "Creation Failed",
-        description: error || "Failed to create combo. Please try again.",
-      });
+      notification.error({ message: "Creation Failed", description: error });
     }
   };
 
-  useEffect(() => {
-    if (selectedCombo?.deviceComboList) {
-      setSelectedDevices(selectedCombo.deviceComboList);
-    }
-  }, [selectedCombo]);
-
-  const handleOpenUpdateModal = async (comboId) => {
-    try {
-      const response = await dispatch(fetchComboDetails(comboId));
-      if (!response.payload?.data) {
-        notification.error({
-          message: "Error",
-          description: "Failed to fetch combo details.",
-        });
-        return;
-      }
-
-      const combo = response.payload.data;
-
-      //  Cập nhật form fields
-      form.setFieldsValue({
-        name: combo.name,
-        summary: combo.summary,
-        description: combo.description,
-        specifications: combo.specifications,
-        notes: combo.notes,
-        serialNumber: combo.serialNumber,
-        applicationSerialNumber: combo.applicationSerialNumber,
-        price: combo.price,
-        quantity: combo.quantity,
-      });
-
-      //  Load danh sách ảnh
-      setFileList([
-        { id: combo.imageUrl, imageUrl: combo.imageUrl },
-        ...(combo.attachmentsList || []).map((img) => ({
-          id: img.id,
-          imageUrl: img.imageUrl,
-        })),
-      ]);
-
-      //  Load danh sách thiết bị
-      setSelectedDevices(
-        (combo.deviceComboList || []).map((device) => ({
-          iotDeviceId: device.iotDeviceId,
-          id: device.iotDeviceId,
-          name: device.deviceName,
-          amount: device.amount,
-        }))
-      );
-      setSelectedCombo(combo);
-      setIsUpdateModalVisible(true);
-    } catch (error) {
-      console.error("❌ Error fetching combo details:", error);
-      notification.error({
-        message: "Fetch Error",
-        description: "Failed to load combo details. Please try again.",
-      });
-    }
-  };
-
-  const handleUpdateCombo = async (values) => {
-    if (!selectedCombo) {
-      notification.error({
-        message: "Update Error",
-        description: "No combo selected for update.",
-      });
-      return;
-    }
-
-    // Lấy imageUrl từ form hoặc danh sách fileList
-    let mainImageUrl =
-      values.imageUrl?.trim() ||
-      (fileList.length > 0 ? fileList[0].imageUrl : selectedCombo.imageUrl);
-
-    if (!mainImageUrl) {
-      notification.warning({
-        message: "Image Required",
-        description: "Please provide an image URL or upload an image.",
-      });
-      return;
-    }
-
-    //  Kiểm tra danh sách ảnh bổ sung
-    const validAttachments = fileList
-      .filter((file) => file.imageUrl !== mainImageUrl)
-      .map((file) => ({
-        imageUrl: file.imageUrl,
-        metaData: file.metaData || "",
-      }));
-
-    if (validAttachments.length === 0) {
-      notification.warning({
-        message: "Additional Images Required",
-        description: "Please upload at least one additional image.",
-      });
-      return;
-    }
-
-    // ✅ Kiểm tra danh sách thiết bị
-    if (!selectedDevices.length) {
-      notification.warning({
-        message: "Device Selection Required",
-        description: "Please select at least one device for the combo.",
-      });
-      return;
-    }
-
-    // ✅ Chuẩn bị dữ liệu gửi API
-    const comboData = {
-      ...values,
-      comboId: selectedCombo.id,
-      imageUrl: mainImageUrl,
-      attachmentsList: validAttachments,
-      deviceComboList: selectedDevices.map((device) => ({
-        iotDeviceId: device.iotDeviceId, // ✅ Đảm bảo có iotDeviceId
-        amount: device.amount,
-      })),
-    };
-
-    console.log(
-      "📡 Sending Update Payload:",
-      JSON.stringify(comboData, null, 2)
-    );
-
-    try {
-      await dispatch(
-        updateCombo({ comboId: selectedCombo.id, comboData })
-      ).unwrap();
-      notification.success({
-        message: "Update Successful",
-        description: "Combo updated successfully!",
-      });
-      setIsUpdateModalVisible(false);
-      dispatch(fetchCombos({ pageIndex: 0, pageSize: 10, searchKeyword: "" }));
-    } catch (error) {
-      console.error("❌ Update Combo Error:", error);
-      notification.error({
-        message: "Update Failed",
-        description:
-          error.message || "Failed to update combo. Please try again.",
-        duration: 3, // Hiển thị thông báo 5 giây
-      });
-    }
+  const handleNavigateToUpdate = (comboId) => {
+    navigate(`/store/combo/update/${comboId}`);
   };
 
   const columns = [
@@ -441,8 +257,8 @@ const ComboTable = () => {
                 ? {
                     key: "2",
                     label: (
-                      <span onClick={() => handleOpenModal(record, "deactive")}>
-                        <CloseCircleOutlined className="text-red-500 mr-2" />
+                      <span>
+                        <CloseCircleOutlined className="text-red-500 mr-2" />{" "}
                         Deactivate
                       </span>
                     ),
@@ -450,8 +266,8 @@ const ComboTable = () => {
                 : {
                     key: "1",
                     label: (
-                      <span onClick={() => handleOpenModal(record, "active")}>
-                        <CheckCircleOutlined className="text-green-500 mr-2" />
+                      <span>
+                        <CheckCircleOutlined className="text-green-500 mr-2" />{" "}
                         Activate
                       </span>
                     ),
@@ -459,9 +275,8 @@ const ComboTable = () => {
               {
                 key: "3",
                 label: (
-                  <span onClick={() => handleOpenUpdateModal(record.id)}>
-                    <EditOutlined className="text-black mr-2" />
-                    Update Product
+                  <span onClick={() => handleNavigateToUpdate(record.id)}>
+                    <EditOutlined className="text-black mr-2" /> Update Product
                   </span>
                 ),
               },
@@ -476,561 +291,374 @@ const ComboTable = () => {
   ];
 
   return (
-    <div>
-      <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
-        <h1 className="text-xl font-bold mb-4">Combo List</h1>
-        <div className="flex justify-between items-center mb-4">
-          <Form layout="inline" onFinish={handleSearch}>
-            <Form.Item name="searchKeyword">
-              <Input placeholder="Search by name" />
-            </Form.Item>
-            <Form.Item name="startFilterDate">
-              <DatePicker placeholder="Start Date" />
-            </Form.Item>
-            <Form.Item name="endFilterDate">
-              <DatePicker placeholder="End Date" />
-            </Form.Item>
-            <Form.Item></Form.Item>
-            <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-              Search
-            </Button>
-          </Form>
-          <div>
+    // <div className="p-6 bg-white min-h-screen">
+    <div className="bg-white rounded-lg p-6 shadow-md">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Combos List</h1>
+      <div className="flex justify-between items-center mb-6">
+        <Form layout="inline" onFinish={handleSearch}>
+          <Form.Item name="searchKeyword">
+            <Input placeholder="Search by name" />
+          </Form.Item>
+          <Form.Item name="startFilterDate">
+            <DatePicker placeholder="Start Date" />
+          </Form.Item>
+          <Form.Item name="endFilterDate">
+            <DatePicker placeholder="End Date" />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+            Search
+          </Button>
+        </Form>
+        <Button
+          type="primary"
+          onClick={handleOpenModal}
+          icon={<PlusOutlined />}
+        >
+          Create Combo
+        </Button>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={Array.isArray(combos) ? combos : []}
+        loading={loading}
+        rowKey="id"
+        pagination={false}
+        bordered
+        className="shadow-sm"
+      />
+      <div className="flex justify-between items-center mt-4">
+        <p className="text-gray-600">
+          Showing {(pageIndex - 1) * pageSize + 1} to{" "}
+          {Math.min(pageIndex * pageSize, totalCount)} of {totalCount}
+        </p>
+        <Pagination
+          current={pageIndex}
+          pageSize={pageSize}
+          total={totalCount}
+          showSizeChanger
+          pageSizeOptions={[10, 15, 30]}
+          onChange={(page) => {
+            dispatch(setPageIndex(page));
+            dispatch(fetchCombos({ pageIndex: page, pageSize }));
+          }}
+        />
+      </div>
+
+      <Modal
+        title="Create Combo"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width={900}
+      >
+        <Form form={form} layout="vertical" onFinish={handleCreateCombo}>
+          {/* Main Image Upload */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Form.Item label="Upload Main Image">
+                <Upload
+                  customRequest={handleFileUpload}
+                  fileList={
+                    fileList.length > 0
+                      ? [
+                          {
+                            uid: fileList[0].id,
+                            name: fileList[0].imageUrl,
+                            url: fileList[0].imageUrl,
+                            thumbUrl: fileList[0].imageUrl,
+                          },
+                        ]
+                      : []
+                  }
+                  listType="picture-card"
+                  onRemove={() => setFileList([])}
+                  maxCount={1}
+                  onPreview={(file) => {
+                    setPreviewImage(file.url || file.thumbUrl);
+                    setPreviewVisible(true);
+                  }}
+                >
+                  {fileList.length === 0 && <UploadOutlined />}
+                </Upload>
+              </Form.Item>
+
+              {/* Combo Name */}
+              <Form.Item
+                name="name"
+                label="Combo Name"
+                rules={[
+                  { required: true, message: "'Combo Name' is required" },
+                ]}
+              >
+                <Input placeholder="Enter combo name..." />
+              </Form.Item>
+
+              {/* Serial Number */}
+              <Form.Item
+                name="serialNumber"
+                label="Serial Number"
+                rules={[
+                  { required: true, message: "'Serial Number' is required" },
+                ]}
+              >
+                <Input placeholder="Enter serial number..." />
+              </Form.Item>
+
+              {/* Summary */}
+              <Form.Item
+                name="summary"
+                label="Summary"
+                rules={[{ required: true, message: "'Summary' is required" }]}
+              >
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Short description of the combo..."
+                />
+              </Form.Item>
+
+              {/* Description */}
+              <Form.Item
+                name="description"
+                label="Description"
+                rules={[
+                  { required: true, message: "'Description' is required" },
+                ]}
+              >
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Detailed description of the combo..."
+                />
+              </Form.Item>
+            </div>
+
+            <div>
+              {/* Specifications */}
+              <Form.Item name="specifications" label="Specifications">
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Enter specifications..."
+                />
+              </Form.Item>
+
+              {/* Notes */}
+              <Form.Item name="notes" label="Notes">
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Any additional notes..."
+                />
+              </Form.Item>
+
+              {/* Price and Quantity */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Form.Item
+                  name="price"
+                  label="Price"
+                  rules={[{ required: true, message: "'Price' is required" }]}
+                >
+                  <InputNumber
+                    min={0}
+                    className="w-full"
+                    placeholder="Enter price..."
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="quantity"
+                  label="Quantity"
+                  rules={[
+                    { required: true, message: "'Quantity' is required" },
+                  ]}
+                >
+                  <InputNumber
+                    min={1}
+                    className="w-full"
+                    placeholder="Enter quantity..."
+                  />
+                </Form.Item>
+              </div>
+
+              {/* Additional Images */}
+              <Form.Item label="Additional Images">
+                <Upload
+                  customRequest={handleFileUpload}
+                  fileList={fileList.slice(1).map((file) => ({
+                    uid: file.imageUrl,
+                    name: file.imageUrl,
+                    url: file.imageUrl,
+                  }))}
+                  listType="picture-card"
+                  onRemove={handleRemoveFile}
+                  onPreview={(file) => {
+                    setPreviewImage(file.url || file.thumbUrl);
+                    setPreviewVisible(true);
+                  }}
+                >
+                  <UploadOutlined />
+                </Upload>
+              </Form.Item>
+            </div>
+          </div>
+
+          {/* Device Selection Table */}
+          <DeviceSelectionTable
+            selectedDevices={selectedDevices}
+            setSelectedDevices={setSelectedDevices}
+            iotDevices={iotDevices}
+          />
+
+          {/* Submit Button */}
+          <Form.Item className="mt-6">
             <Button
               type="primary"
-              onClick={handleOpenModal}
-              icon={<PlusOutlined />}
+              htmlType="submit"
+              block
+              size="large"
+              className="bg-blue-600 hover:bg-blue-700"
             >
               Create Combo
             </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={selectedCombo?.name || "Loading..."}
+        visible={isDetailModalVisible}
+        onCancel={() => setIsDetailModalVisible(false)}
+        footer={null}
+        width={900}
+      >
+        {selectedCombo && (
+          <div className="flex gap-5">
+            <div className="flex-1">
+              <Image
+                width={300}
+                src={selectedCombo.imageUrl}
+                alt="combo"
+                className="rounded-lg"
+              />
+              {Array.isArray(selectedCombo.attachmentsList) &&
+                selectedCombo.attachmentsList.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedCombo.attachmentsList.map((attachment) => (
+                      <Image
+                        key={attachment.id}
+                        width={80}
+                        src={attachment.imageUrl}
+                        alt="attachment"
+                        className="rounded"
+                      />
+                    ))}
+                  </div>
+                )}
+            </div>
+            <div className="flex-2">
+              <Tabs defaultActiveKey="1">
+                <Tabs.TabPane
+                  tab={
+                    <span>
+                      <InfoCircleOutlined /> General Info
+                    </span>
+                  }
+                  key="1"
+                >
+                  <Card>
+                    <p>
+                      <ShopOutlined className="text-blue-500 mr-2" />
+                      <strong>Store:</strong>{" "}
+                      {selectedCombo.storeNavigationName}
+                    </p>
+                    <p>
+                      <strong>Summary:</strong> {selectedCombo.summary}
+                    </p>
+                    <p>
+                      <DollarCircleOutlined className="text-blue-500 mr-2" />
+                      <strong>Price:</strong>{" "}
+                      <Text className="text-blue-500 text-lg font-bold">
+                        {selectedCombo.price}
+                      </Text>
+                    </p>
+                    <Row gutter={[16, 16]}>
+                      <Col span={12}>
+                        <p>
+                          <strong>Quantity:</strong> {selectedCombo.quantity}
+                        </p>
+                      </Col>
+                      <Col span={12}>
+                        <p>
+                          <strong>Rating:</strong> {selectedCombo.rating} ⭐
+                        </p>
+                      </Col>
+                    </Row>
+                  </Card>
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  tab={
+                    <span>
+                      <FileTextOutlined /> Description
+                    </span>
+                  }
+                  key="2"
+                >
+                  <p>{selectedCombo.description}</p>
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  tab={
+                    <span>
+                      <TagsOutlined /> Specifications
+                    </span>
+                  }
+                  key="3"
+                >
+                  <p>{selectedCombo.specifications}</p>
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  tab={
+                    <span>
+                      <FileTextOutlined /> Notes
+                    </span>
+                  }
+                  key="4"
+                >
+                  <p>{selectedCombo.notes}</p>
+                </Tabs.TabPane>
+              </Tabs>
+            </div>
           </div>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={Array.isArray(combos) ? combos : []}
-          loading={loading}
-          rowKey="id"
-          pagination={false}
-          bordered
-        />
-        {/* <Pagination current={pageIndex} pageSize={pageSize} total={totalCount} onChange={(page) => dispatch(fetchCombos({ pageIndex: page, pageSize }))} /> */}
-        <div className="flex justify-between items-center mt-4 p-2">
-          <p>
-            <span className="font-medium">
-              {(pageIndex - 1) * pageSize + 1} to{" "}
-              {Math.min(pageIndex * pageSize, totalCount)} of {totalCount}
-            </span>
-          </p>
-          <Pagination
-            current={pageIndex}
-            pageSize={pageSize}
-            total={totalCount}
-            showSizeChanger={true}
-            pageSizeOptions={[10, 15, 30]}
-            onChange={(page) => {
-              dispatch(setPageIndex(page));
-              dispatch(fetchCombos({ pageIndex: page, pageSize }));
-            }}
+        )}
+        {selectedCombo?.deviceComboList?.length > 0 && (
+          <Table
+            title={() => "Device List"}
+            dataSource={selectedCombo.deviceComboList}
+            columns={[
+              {
+                title: "Device Name",
+                dataIndex: "deviceName",
+                key: "deviceName",
+              },
+              { title: "Amount", dataIndex: "amount", key: "amount" },
+              {
+                title: "Original Price",
+                dataIndex: "originalPrice",
+                key: "originalPrice",
+              },
+            ]}
+            rowKey="deviceComboId"
+            pagination={false}
           />
-        </div>
+        )}
+      </Modal>
 
-        {/* Detail Modal */}
-        <Modal
-          title={
-            <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>
-              {selectedCombo?.name || "Loading..."}
-            </h2>
-          }
-          visible={isDetailModalVisible}
-          onCancel={() => setIsDetailModalVisible(false)}
-          footer={null}
-          width={900}
-        >
-          {selectedCombo ? (
-            <div
-              style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}
-            >
-              {/* Khu vực Hình Ảnh */}
-              <div style={{ flex: "1", textAlign: "center" }}>
-                <Image
-                  width={300}
-                  src={selectedCombo.imageUrl}
-                  alt="combo"
-                  style={{ borderRadius: "8px" }}
-                />
-                {Array.isArray(selectedCombo.attachmentsList) &&
-                  selectedCombo.attachmentsList.length > 0 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "10px",
-                        marginTop: "10px",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {selectedCombo.attachmentsList.map((attachment) => (
-                        <Image
-                          key={attachment.id}
-                          width={80}
-                          src={attachment.imageUrl}
-                          alt="attachment"
-                          style={{ borderRadius: "4px", cursor: "pointer" }}
-                        />
-                      ))}
-                    </div>
-                  )}
-              </div>
-
-              {/* Khu vực Thông Tin & Tabs */}
-              <div style={{ flex: "2" }}>
-                <Tabs defaultActiveKey="1">
-                  <Tabs.TabPane
-                    tab={
-                      <span>
-                        <InfoCircleOutlined />
-                        General Info
-                      </span>
-                    }
-                    key="1"
-                  >
-                    <Card
-                      style={{
-                        borderRadius: "10px",
-                        boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
-                      }}
-                    >
-                      {/* Summary */}
-                      <p>
-                        <ShopOutlined
-                          style={{ color: "#1890ff", marginRight: 6 }}
-                        />
-                        <strong>Store:</strong>{" "}
-                        {selectedCombo.storeNavigationName}
-                      </p>
-                      <p style={{ marginTop: "16px" }}>
-                        <strong>Summary:</strong> {selectedCombo.summary}
-                      </p>
-
-                      <p>
-                        <DollarCircleOutlined
-                          style={{ color: "#1890ff", marginRight: 6 }}
-                        />
-                        <strong>Price:</strong>{" "}
-                        <Text
-                          style={{
-                            color: "#1890ff",
-                            fontSize: "18px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {selectedCombo.price}
-                        </Text>
-                      </p>
-                      <Row gutter={[16, 16]}>
-                        {/* Cột 1 */}
-                        <Col span={12}>
-                          <p>
-                            <strong>Quantity:</strong> {selectedCombo.quantity}
-                          </p>
-                          <p>
-                            <strong>Created By:</strong>{" "}
-                            {selectedCombo.createdBy}
-                          </p>
-                        </Col>
-
-                        {/* Cột 2 */}
-                        <Col span={12}>
-                          <p>
-                            <strong>Rating:</strong> {selectedCombo.rating} ⭐
-                          </p>
-                          <p>
-                            <strong>Updated By:</strong>{" "}
-                            {selectedCombo.updatedBy}
-                          </p>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Tabs.TabPane>
-
-                  {/* Tab Description */}
-                  <Tabs.TabPane
-                    tab={
-                      <span>
-                        <FileTextOutlined />
-                        Description
-                      </span>
-                    }
-                    key="2"
-                  >
-                    <p style={{ whiteSpace: "pre-wrap" }}>
-                      {selectedCombo.description}
-                    </p>
-                  </Tabs.TabPane>
-
-                  {/* Tab Specifications */}
-                  <Tabs.TabPane
-                    tab={
-                      <span>
-                        <TagsOutlined />
-                        Specifications
-                      </span>
-                    }
-                    key="3"
-                  >
-                    <p style={{ whiteSpace: "pre-wrap" }}>
-                      {selectedCombo.specifications}
-                    </p>
-                  </Tabs.TabPane>
-
-                  {/* Tab Notes */}
-                  <Tabs.TabPane
-                    tab={
-                      <span>
-                        <FileTextOutlined />
-                        Notes
-                      </span>
-                    }
-                    key="4"
-                  >
-                    <p style={{ whiteSpace: "pre-wrap" }}>
-                      {selectedCombo.notes}
-                    </p>
-                  </Tabs.TabPane>
-                </Tabs>
-              </div>
-            </div>
-          ) : (
-            <p>Loading details...</p>
-          )}
-
-          {/* Danh sách thiết bị */}
-          {selectedCombo?.deviceComboList?.length > 0 && (
-            <Table
-              title={() => "Device List"}
-              dataSource={selectedCombo.deviceComboList}
-              columns={[
-                {
-                  title: "Device Name",
-                  dataIndex: "deviceName",
-                  key: "deviceName",
-                },
-                { title: "Amount", dataIndex: "amount", key: "amount" },
-                {
-                  title: "Original Price",
-                  dataIndex: "originalPrice",
-                  key: "originalPrice",
-                },
-              ]}
-              rowKey="deviceComboId"
-              pagination={false}
-            />
-          )}
-        </Modal>
-
-        <Modal
-          title="Create Combo"
-          visible={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
-          footer={null}
-          width={900}
-        >
-          <Form form={form} layout="vertical" onFinish={handleCreateCombo}>
-            <Form.Item label="Upload Main Image">
-              <Upload
-                customRequest={handleFileUpload}
-                fileList={
-                  fileList.length > 0
-                    ? [
-                        {
-                          uid: fileList[0].id,
-                          name: fileList[0].imageUrl,
-                          url: fileList[0].imageUrl,
-                          thumbUrl: fileList[0].imageUrl,
-                        },
-                      ]
-                    : []
-                }
-                listType="picture-card"
-                onRemove={() => setFileList([])}
-                maxCount={1}
-                onPreview={(file) => {
-                  setPreviewImage(file.url || file.thumbUrl);
-                  setPreviewVisible(true);
-                }}
-              >
-                {fileList.length === 0 && <UploadOutlined />}
-              </Upload>
-            </Form.Item>
-
-            {/* Combo Name */}
-            <Form.Item
-              name="name"
-              label="Combo Name"
-              rules={[{ required: true, message: "'Combo Name' is required" }]}
-            >
-              <Input placeholder="Enter combo name..." />
-            </Form.Item>
-
-            {/* Serial Number */}
-            <Form.Item
-              name="serialNumber"
-              label="Serial Number"
-              rules={[
-                { required: true, message: "'Serial Number' is required" },
-              ]}
-            >
-              <Input placeholder="Enter serial number..." />
-            </Form.Item>
-
-            {/* Summary */}
-            <Form.Item
-              name="summary"
-              label="Summary"
-              rules={[{ required: true, message: "'Summary' is required" }]}
-            >
-              <Input.TextArea placeholder="Short description of the combo..." />
-            </Form.Item>
-
-            {/* Description */}
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[{ required: true, message: "'Description' is required" }]}
-            >
-              <Input.TextArea placeholder="Detailed description of the combo..." />
-            </Form.Item>
-
-            {/* Specifications */}
-            <Form.Item name="specifications" label="Specifications">
-              <Input.TextArea placeholder="Enter specifications..." />
-            </Form.Item>
-
-            {/* Notes */}
-            <Form.Item name="notes" label="Notes">
-              <Input.TextArea placeholder="Any additional notes..." />
-            </Form.Item>
-
-            {/* Price & Quantity (Side by Side) */}
-            <div style={{ display: "flex", gap: "10px" }}>
-              <Form.Item
-                name="price"
-                label="Price"
-                rules={[{ required: true, message: "'Price' is required" }]}
-                style={{ width: "50%" }}
-              >
-                <InputNumber
-                  min={0}
-                  style={{ width: "100%" }}
-                  placeholder="Enter price..."
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="quantity"
-                label="Quantity"
-                rules={[{ required: true, message: "'Quantity' is required" }]}
-                style={{ width: "50%" }}
-              >
-                <InputNumber
-                  min={1}
-                  style={{ width: "100%" }}
-                  placeholder="Enter quantity..."
-                />
-              </Form.Item>
-            </div>
-
-            {/* Upload Image */}
-            <Form.Item label="Additional Images">
-              <Upload
-                customRequest={handleFileUpload}
-                fileList={fileList.slice(1).map((file) => ({
-                  uid: file.imageUrl,
-                  name: file.imageUrl,
-                  url: file.imageUrl,
-                }))}
-                listType="picture-card"
-                onRemove={handleRemoveFile}
-                onPreview={(file) => {
-                  setPreviewImage(file.url || file.thumbUrl);
-                  setPreviewVisible(true);
-                }}
-              >
-                <UploadOutlined />
-              </Upload>
-            </Form.Item>
-
-            {/*  Sử dụng DeviceSelectionTable */}
-            <DeviceSelectionTable
-              selectedDevices={selectedDevices}
-              setSelectedDevices={setSelectedDevices}
-              iotDevices={iotDevices}
-            />
-
-            {/* Submit Button */}
-            <Form.Item className="mt-4">
-              <Button type="primary" htmlType="submit" block>
-                Create Combo
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
-
-        <Modal
-          title="Update Combo"
-          visible={isUpdateModalVisible}
-          onCancel={() => setIsUpdateModalVisible(false)}
-          footer={null}
-          width={900}
-        >
-          <Form form={form} layout="vertical" onFinish={handleUpdateCombo}>
-            <Form.Item label="Upload Main Image">
-              <Upload
-                customRequest={handleFileUpload}
-                fileList={
-                  fileList.length > 0
-                    ? [
-                        {
-                          uid: fileList[0].id,
-                          name: fileList[0].imageUrl,
-                          url: fileList[0].imageUrl,
-                          thumbUrl: fileList[0].imageUrl,
-                        },
-                      ]
-                    : []
-                }
-                listType="picture-card"
-                onRemove={() => setFileList([])}
-                maxCount={1}
-                onPreview={(file) => {
-                  setPreviewImage(file.url || file.thumbUrl);
-                  setPreviewVisible(true);
-                }}
-              >
-                {fileList.length === 0 && <UploadOutlined />}
-              </Upload>
-            </Form.Item>
-            {/* Combo Name */}
-            <Form.Item
-              name="name"
-              label="Combo Name"
-              rules={[{ required: true, message: "'Combo Name' is required" }]}
-            >
-              <Input placeholder="Enter combo name..." />
-            </Form.Item>
-
-            {/* Serial Number */}
-            <Form.Item
-              name="serialNumber"
-              label="Serial Number"
-              rules={[
-                { required: true, message: "'Serial Number' is required" },
-              ]}
-            >
-              <Input placeholder="Enter serial number..." />
-            </Form.Item>
-
-            {/* Summary */}
-            <Form.Item
-              name="summary"
-              label="Summary"
-              rules={[{ required: true, message: "'Summary' is required" }]}
-            >
-              <Input.TextArea placeholder="Short description of the combo..." />
-            </Form.Item>
-
-            {/* Description */}
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[{ required: true, message: "'Description' is required" }]}
-            >
-              <Input.TextArea placeholder="Detailed description of the combo..." />
-            </Form.Item>
-
-            {/* Specifications */}
-            <Form.Item name="specifications" label="Specifications">
-              <Input.TextArea placeholder="Enter specifications..." />
-            </Form.Item>
-
-            {/* Notes */}
-            <Form.Item name="notes" label="Notes">
-              <Input.TextArea placeholder="Any additional notes..." />
-            </Form.Item>
-
-            {/* Price & Quantity (Side by Side) */}
-            <div style={{ display: "flex", gap: "10px" }}>
-              <Form.Item
-                name="price"
-                label="Price"
-                rules={[{ required: true, message: "'Price' is required" }]}
-                style={{ width: "50%" }}
-              >
-                <InputNumber
-                  min={0}
-                  style={{ width: "100%" }}
-                  placeholder="Enter price..."
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="quantity"
-                label="Quantity"
-                rules={[{ required: true, message: "'Quantity' is required" }]}
-                style={{ width: "50%" }}
-              >
-                <InputNumber
-                  min={1}
-                  style={{ width: "100%" }}
-                  placeholder="Enter quantity..."
-                />
-              </Form.Item>
-            </div>
-
-            {/* Upload Image */}
-            <Form.Item label="Additional Images">
-              <Upload
-                customRequest={handleFileUpload}
-                fileList={fileList.slice(1).map((file) => ({
-                  uid: file.imageUrl,
-                  name: file.imageUrl,
-                  url: file.imageUrl,
-                }))}
-                listType="picture-card"
-                onRemove={handleRemoveFile}
-                onPreview={(file) => {
-                  setPreviewImage(file.url || file.thumbUrl);
-                  setPreviewVisible(true);
-                }}
-              >
-                <UploadOutlined />
-              </Upload>
-            </Form.Item>
-
-            {/* Sử dụng DeviceSelectionTable */}
-            <DeviceSelectionTable
-              selectedDevices={selectedDevices}
-              setSelectedDevices={setSelectedDevices}
-              iotDevices={iotDevices}
-            />
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block>
-                {" "}
-                Update Combo{" "}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
-        <Modal
-          visible={previewVisible}
-          title="Preview Image"
-          footer={null}
-          onCancel={() => setPreviewVisible(false)}
-        >
-          <img alt="preview" style={{ width: "100%" }} src={previewImage} />
-        </Modal>
-      </div>
+      <Modal
+        visible={previewVisible}
+        title="Preview Image"
+        footer={null}
+        onCancel={() => setPreviewVisible(false)}
+      >
+        <img alt="preview" className="w-full" src={previewImage} />
+      </Modal>
     </div>
+    // </div>
   );
 };
 

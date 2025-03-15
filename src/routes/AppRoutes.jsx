@@ -47,6 +47,10 @@ import Checkout from "../pages/Checkout";
 import DetailProducts from "../pages/DetailProducts";
 import ViewAllProduct from "../pages/ViewAllProduct";
 import CartProducts from "../pages/CartProducts";
+import ComboList from "../pages/Home/components/ComboList";
+import ComboDetail from "../pages/ComboDetail";
+import ComboUpdatePage from "../components/StoreIoT/components/ComboUpdatePage";
+import AddressSelector from "../components/StoreIoT/components/AddressSelector";
 // const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -138,7 +142,16 @@ const publicRoute = [
     component: DetailProducts,
     layout: MainLayout,
   },
-
+  {
+    path: "/combo-list",
+    component: ComboList,
+    layout: MainLayout,
+  },
+  {
+    path: "/detail-combo/:comboId",
+    component: ComboDetail,
+    layout: MainLayout,
+  },
   // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
@@ -231,6 +244,11 @@ const publicRoute = [
     layout: StoreLayout,
   },
   {
+    path: "/trainer/payment-packages",
+    component: PaymentMembershipPage,
+    layout: TrainerLayout,
+  },
+  {
     path: "/trainer/registerTrainer",
     component: TrainerRegister,
     layout: TrainerLayout,
@@ -268,11 +286,22 @@ const publicRoute = [
   {
     path: "/store/combo-managerment",
     component: ComboTable,
-    layout: StoreLayout,
+    layout: StoreIotLayout,
   },
   {
     path: "/store/test-managerment",
     component: Teststore,
+    layout: StoreLayout,
+  },
+  // /combo/update/${comboId}
+  {
+    path: "/store/combo/update/:comboId",
+    component: ComboUpdatePage,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/address",
+    component: AddressSelector,
     layout: StoreLayout,
   },
 ];

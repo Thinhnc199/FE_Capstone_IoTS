@@ -35,6 +35,7 @@ export default function DetailProducts() {
   const onChange = (value) => {
     setNumCart(value);
   };
+
   const HandleAddToCart = async () => {
     if (product.quantity <= 0) {
       message.warning("Sản phẩm đã hết hàng.");
