@@ -4,6 +4,20 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/apiConfig';
 import { getTrainerBusinessLicense } from "../../api/apiConfig";
 
+
+export const fetchUserStatus = createAsyncThunk(
+  "storeRegistration/fetchUserStatus",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/user-request/get-user-request-details-by-user-id/${userId}`);
+      return response.data.data.userRequestInfo; 
+    } catch (error) {
+      console.error("Error fetching user status:", error);
+      return rejectWithValue(error.response?.data || "Failed to fetch user status");
+    }
+  }
+);
+
 // Async Thunks để xử lý các yêu cầu API
 export const submitTrainerDocuments = createAsyncThunk(
   'trainerRegister/submitTrainerDocuments',
@@ -55,8 +69,10 @@ const trainerSlice = createSlice({
     currentStep: 0,
     requestStatus: "",
     requestId: null,
+    remark: "",
     loading: false,
     error: null,
+    userId: localStorage.getItem('userId'), 
   },
   reducers: {
     setDocuments: (state, action) => {
@@ -74,13 +90,26 @@ const trainerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    .addCase(fetchUserStatus.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(fetchUserStatus.fulfilled, (state, action) => {
+          state.loading = false;
+          state.status = action.payload?.userRequestStatus?.label || "No";
+          state.remark = action.payload?.remark || "";
+        })
+        .addCase(fetchUserStatus.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload;
+        })
       .addCase(submitTrainerDocuments.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(submitTrainerDocuments.fulfilled, (state, action) => {
         state.loading = false;
-        state.requestId = action.payload.requestId; // Cập nhật requestId sau khi thành công
+        state.requestId = action.payload.requestId; 
       })
       .addCase(submitTrainerDocuments.rejected, (state, action) => {
         state.loading = false;
@@ -92,7 +121,9 @@ const trainerSlice = createSlice({
       })
       .addCase(submitForApproval.fulfilled, (state) => {
         state.loading = false;
-        state.requestStatus = 'Pending to Approved';
+        state.requestStatus = "Pending to Approved";
+        state.requestStatus = "Approved";
+        state.requestStatus = "Rejected"; 
         state.currentStep = 1;
       })
       .addCase(submitForApproval.rejected, (state, action) => {

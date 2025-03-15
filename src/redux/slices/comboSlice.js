@@ -167,7 +167,7 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 
 export const fetchCombos = createAsyncThunk(
   "combo/fetchCombos",
-  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
+  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue, dispatch }) => {
     try {
       console.log("📡 Fetching Combos with params:", { pageIndex, pageSize, searchKeyword });
 
@@ -186,8 +186,9 @@ export const fetchCombos = createAsyncThunk(
         totalCount: response.data.data.totalCount
       };
     } catch (error) {
-      console.error("❌ API Error:", error.response?.data || error.message);
-      return rejectWithValue(error.response?.data?.message || error.message);
+      console.error("❌ Error creating combo:", error);
+      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to create combo."));
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to create combo.");
     }
   }
 );
@@ -208,7 +209,7 @@ export const fetchComboDetails = createAsyncThunk(
 // Create new combo
 export const createCombo = createAsyncThunk(
   "combo/createCombo",
-  async (comboData, { rejectWithValue }) => {
+  async (comboData, { rejectWithValue, dispatch }) => {
     try {
       const storeId = localStorage.getItem("storeId");
 
@@ -228,8 +229,10 @@ export const createCombo = createAsyncThunk(
       console.log("✅ Combo Created:", response.data);
       return response.data;
     } catch (error) {
-      // console.error("❌ Error creating combo:", error.response?.data || error.message);
-      return rejectWithValue(error.response?.data?.message || "Failed to create combo");
+      console.error("❌ Error creating combo:", error);
+      // Dispatch the error to Redux
+      dispatch(setComboError(error));
+      return rejectWithValue(error);
     }
   }
 );
@@ -237,12 +240,14 @@ export const createCombo = createAsyncThunk(
 // Update combo
 export const updateCombo = createAsyncThunk(
   "combo/updateCombo",
-  async ({ comboId, comboData }, { rejectWithValue }) => {
+  async ({ comboId, comboData }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.post(`/api/combo/update-combo/${comboId}`, comboData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      // return rejectWithValue(error.response?.data?.message || error.message);
+      dispatch(setComboError(error));
+      return rejectWithValue(error);
     }
   }
 );
@@ -321,6 +326,9 @@ const comboSlice = createSlice({
     setEndFilterDate: (state, action) => {
       state.filters.all.endFilterDate = action.payload;
     },
+    setComboError: (state, action) => {
+      state.error = action.payload; 
+    },
   },
   extraReducers: (builder) => {
     handleAsyncState(builder, fetchCombos, (state, action) => {
@@ -358,5 +366,5 @@ const comboSlice = createSlice({
 });
 
 // Export actions & reducer
-export const { setPageIndex, setPageSize, setSearchKeyword, setStartFilterDate, setEndFilterDate } = comboSlice.actions;
+export const { setPageIndex, setPageSize, setSearchKeyword, setStartFilterDate, setEndFilterDate, setSelectedCombo, setComboError  } = comboSlice.actions;
 export default comboSlice.reducer;
