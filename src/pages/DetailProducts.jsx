@@ -12,6 +12,7 @@ export default function DetailProducts() {
   const dispatch = useDispatch();
   const productDetail = useSelector((state) => state.products.ProductsDetail);
   const product = productDetail.data;
+  const [allImages, setAllImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [numCart, setNumCart] = useState(1);
   const { pageIndex, pageSize } = useSelector((state) => state.carts);
@@ -27,8 +28,13 @@ export default function DetailProducts() {
   // }, [dispatch, id]);
 
   useEffect(() => {
-    if (product?.attachments?.length) {
-      setSelectedImage(product.attachments[0].imageUrl);
+    if (product) {
+      const images = [
+        product.imageUrl,
+        ...(product.attachments?.map((img) => img.imageUrl) || []),
+      ].filter(Boolean); // Loại bỏ giá trị null/undefined
+      setAllImages(images);
+      setSelectedImage(images[0]); // Lấy ảnh đầu tiên làm ảnh chính
     }
   }, [product]);
 
@@ -82,13 +88,15 @@ export default function DetailProducts() {
             className="p-4 w-full h-64 object-cover rounded-lg transition-all duration-500 ease-in-out"
           />
           <div className="flex space-x-2 mt-2">
-            {product.attachments?.map((img, index) => (
+            {allImages.map((img, index) => (
               <img
                 key={index}
-                src={img.imageUrl}
-                alt="attachment"
-                className="w-16 h-16 object-cover cursor-pointer border rounded"
-                onClick={() => setSelectedImage(img.imageUrl)}
+                src={img}
+                alt={`attachment-${index}`}
+                className={`w-16 h-16 object-cover cursor-pointer border rounded ${
+                  selectedImage === img ? "border-blue-500" : ""
+                }`}
+                onClick={() => setSelectedImage(img)}
               />
             ))}
           </div>
