@@ -8,14 +8,15 @@ import userAuthReducer from "./slices/userAuthSlice";
 import storeAuthSlice from "./slices/storeAuthSlice";
 import storeRegistrationSlice from "./slices/storeRegistrationSlice";
 import userRequest from "./slices/userRequestSlice";
-import trainerSlice from './slices/trainerSlice';
-import materialCategorySlice from './slices/materialCategorySlice';
-import comboSlice from './slices/comboSlice';
+import trainerSlice from "./slices/trainerSlice";
+import materialCategorySlice from "./slices/materialCategorySlice";
+import comboSlice from "./slices/comboSlice";
 import cartSlice from "./slices/cartSlice";
-import addressSlice from './slices/addressSlice';
-
+import addressSlice from "./slices/addressSlice";
+import orderSlice from "./slices/orderSlice";
 const store = configureStore({
   reducer: {
+    orders: orderSlice,
     carts: cartSlice,
     products: productReducer,
     accounts: accountReducer,

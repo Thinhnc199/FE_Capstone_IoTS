@@ -43,7 +43,7 @@ import CategoryManagement from "../components/Admin/ProductsManageAdmin/Category
 
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
-import Checkout from "../pages/Checkout";
+import Checkout from "../pages/Checkout/Checkout";
 import DetailProducts from "../pages/DetailProducts";
 import ViewAllProduct from "../pages/ViewAllProduct";
 import CartProducts from "../pages/CartProducts";
@@ -51,6 +51,8 @@ import ComboList from "../pages/Home/components/ComboList";
 import ComboDetail from "../pages/ComboDetail";
 import ComboUpdatePage from "../components/StoreIoT/components/ComboUpdatePage";
 import AddressSelector from "../components/StoreIoT/components/AddressSelector";
+
+import CheckProcessOrder from "../pages/CheckProcessOrder";
 // const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -135,6 +137,11 @@ const publicRoute = [
   {
     path: "/checkout",
     component: Checkout,
+    layout: null,
+  },
+  {
+    path: "/checkout-process-order",
+    component: CheckProcessOrder,
     layout: null,
   },
   {

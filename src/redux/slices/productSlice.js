@@ -89,6 +89,26 @@ export const deactiveProducts = createAsyncThunk(
     }
   }
 );
+// export const updateProducts = createAsyncThunk(
+//   "products/updateProducts",
+//   async ({ id }, { rejectWithValue }) => {
+//     try {
+//       const response = await api.put(
+//         `/api/iot-device/update-iot-device/${id}`,
+//         {
+//           pageIndex,
+//           pageSize,
+//           searchKeyword,
+//           startFilterDate,
+//           endFilterDate,
+//         }
+//       );
+//       return response.data.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.message || error.message);
+//     }
+//   }
+// );
 export const getUrlImg = createAsyncThunk(
   "products/getUrlImg",
   async (file, { rejectWithValue }) => {
