@@ -10,8 +10,7 @@ import {
 } from "../../redux/slices/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { Select, Button } from "antd";
-import { Col, Drawer, Form, Input, Row, Space, message } from "antd";
+import { Select, Button, Modal, Form, Input, Row, Col, message } from "antd";
 import SearchAndFilter from "./components/SearchAndFilter";
 import AccountsTable from "./components/AccountsTable";
 import { PlusOutlined } from "@ant-design/icons";
@@ -19,21 +18,24 @@ import { Roles } from "../../redux/constants";
 const { Option } = Select;
 
 export default function StaffAccount() {
-  const [open, setOpen] = useState(false);
-  const showDrawer = () => {
-    setOpen(true);
-  };
-  const onClose = () => {
-    setOpen(false);
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const [form] = Form.useForm();
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const onFinish = async (values) => {
     try {
       await dispatch(createManagerStaffs(values)).unwrap();
       message.success("Staff created successfully!");
       form.resetFields();
-      setOpen(false);
+      setIsModalOpen(false);
     } catch (error) {
       message.error(`Error: ${error || "Something went wrong!"}`);
     }
@@ -42,6 +44,7 @@ export default function StaffAccount() {
   const { users, pageIndex, pageSize, roles, totalCount, filters } =
     useSelector((state) => state.accounts);
   const currentTab = "staff";
+
   useEffect(() => {
     dispatch(
       fetchUsers({
@@ -49,7 +52,7 @@ export default function StaffAccount() {
         pageSize,
         searchKeyword: filters[currentTab].searchKeyword,
         role: Roles.STAFF,
-        startFilterDate: filters[currentTab].startFilterDate, // Sử dụng filter của tab hiện tại
+        startFilterDate: filters[currentTab].startFilterDate,
         endFilterDate: filters[currentTab].endFilterDate,
       })
     );
@@ -57,9 +60,10 @@ export default function StaffAccount() {
     dispatch,
     pageIndex,
     pageSize,
-    filters[currentTab].searchKeyword, // Theo dõi thay đổi của filter trong tab hiện tại
+    filters[currentTab].searchKeyword,
     filters[currentTab].startFilterDate,
     filters[currentTab].endFilterDate,
+    totalCount,
   ]);
 
   useEffect(() => {
@@ -76,59 +80,50 @@ export default function StaffAccount() {
 
   return (
     <>
-      <div className="">
-        <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
-          <h1 className="text-xl font-bold mb-4">Staff List</h1>
-          <div className="flex justify-between items-center ">
-            <div className="mb-4">
-              <p className="font-semibold text-sm">Search by related</p>
-              <SearchAndFilter
-                setEndFilterDate={setEndFilterDate}
-                setStartFilterDate={setStartFilterDate}
-                setsearchKeyword={setsearchKeyword}
-                currentTab={currentTab}
-              />
-            </div>
-
-            <Button
-              className=" font-medium"
-              onClick={showDrawer}
-              icon={<PlusOutlined />}
-            >
-              {" "}
-              New Staff
-            </Button>
+      <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
+        <h1 className="text-xl font-bold mb-4">Staff List</h1>
+        <div className="flex justify-between items-center">
+          <div className="mb-4">
+            <p className="font-semibold text-sm">Search by related</p>
+            <SearchAndFilter
+              setEndFilterDate={setEndFilterDate}
+              setStartFilterDate={setStartFilterDate}
+              setsearchKeyword={setsearchKeyword}
+              currentTab={currentTab}
+            />
           </div>
-          <AccountsTable
-            users={users}
-            pageSize={pageSize}
-            pageIndex={pageIndex}
-            totalCount={totalCount}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-            roles={roles || []}
-          />
+          <Button
+            className="font-medium"
+            onClick={showModal}
+            icon={<PlusOutlined />}
+          >
+            New Staff
+          </Button>
         </div>
+        <AccountsTable
+          users={users}
+          pageSize={pageSize}
+          pageIndex={pageIndex}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          roles={roles || []}
+        />
       </div>
-      {/* new staff */}
-      <Drawer
-        title="Create Manager & Staff"
-        width={720}
-        onClose={onClose}
-        open={open}
-        styles={{
-          body: {
-            paddingBottom: 80,
-          },
-        }}
-        extra={
-          <Space>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button type="primary" onClick={() => form.submit()}>
-              Submit
-            </Button>
-          </Space>
-        }
+
+      {/* Modal thêm staff */}
+      <Modal
+        title={<div className="text-lg">Create Staff</div>}
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => form.submit()}>
+            Submit
+          </Button>,
+        ]}
       >
         <Form
           layout="vertical"
@@ -136,65 +131,65 @@ export default function StaffAccount() {
           onFinish={onFinish}
           hideRequiredMark
         >
+          <Form.Item
+            name="fullname"
+            label="Full Name"
+            rules={[{ required: true, message: "Please enter full name" }]}
+          >
+            <Input placeholder="Enter full name" />
+          </Form.Item>
+
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="email"
                 label="Email"
-                rules={[{ required: true, message: "Please enter email" }]}
+                rules={[
+                  { required: true, message: "Please enter email" },
+                  { type: "email", message: "Invalid email format" },
+                ]}
               >
                 <Input placeholder="Enter email" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="fullname"
-                label="Full Name"
-                rules={[{ required: true, message: "Please enter full name" }]}
-              >
-                <Input placeholder="Enter full name" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
+                type="phone"
                 name="phone"
                 label="Phone"
                 rules={[
                   { required: true, message: "Please enter phone number" },
+                  {
+                    pattern: /^[0-9]{10,11}$/,
+                    message: "Invalid phone number format",
+                  },
                 ]}
               >
                 <Input placeholder="Enter phone number" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                name="address"
-                label="Address"
-                rules={[{ required: true, message: "Please enter address" }]}
-              >
-                <Input placeholder="Enter address" />
-              </Form.Item>
-            </Col>
           </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="roleId"
-                label="Role"
-                rules={[{ required: true, message: "Please select a role" }]}
-                initialValue={Roles.STAFF}
-              >
-                <Select placeholder="Select a role">
-                  <Option value={Roles.STAFF}>Staff</Option>
-                  {/* <Option value="3">Manager</Option> */}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+
+          <Form.Item
+            name="address"
+            label="Address"
+            rules={[{ required: true, message: "Please enter address" }]}
+          >
+            <Input.TextArea rows={3} placeholder="Enter address" />
+          </Form.Item>
+
+          <Form.Item
+            name="roleId"
+            label="Role"
+            rules={[{ required: true, message: "Please select a role" }]}
+            initialValue={Roles.STAFF}
+          >
+            <Select placeholder="Select a role" disabled>
+              <Option value={Roles.STAFF}>Staff</Option>
+            </Select>
+          </Form.Item>
         </Form>
-      </Drawer>
+      </Modal>
     </>
   );
 }

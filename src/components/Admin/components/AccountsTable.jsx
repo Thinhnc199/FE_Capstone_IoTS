@@ -108,7 +108,7 @@ const AccountsTable = ({
       key: "roles",
       render: (text, record) => (
         <>
-          {record.roles.map((role) =>
+          {record.roles?.map((role) =>
             role && role.label ? (
               <Tag color={getRoleColor(role.label)} key={role.id}>
                 {role.label}
