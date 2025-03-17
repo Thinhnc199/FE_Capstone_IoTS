@@ -8,7 +8,8 @@ import {
 } from "../../redux/slices/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { DatePicker, Space } from "antd";
+import { DatePicker, Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import SearchAndFilterProducts from "./components/SearchAndFilterProducts";
 import ProductStoreTables from "./components/productStoreTables";
 const { RangePicker } = DatePicker;
@@ -64,21 +65,27 @@ export default function ListProductStore() {
     <div className="font-Mainfont">
       <div className="bg-white rounded-md p-4  min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Products List</h1>
-        <Space wrap>
-          <div className="mb-4">
-            <p className="font-semibold text-sm">Search by related</p>
-            <SearchAndFilterProducts
-              setEndFilterDate={setEndFilterDate}
-              setStartFilterDate={setStartFilterDate}
-              setsearchKeyword={setsearchKeyword}
-            />
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex gap-4">
+            <div>
+              <p className="font-semibold text-sm">Search by related</p>
+              <SearchAndFilterProducts
+                setEndFilterDate={setEndFilterDate}
+                setStartFilterDate={setStartFilterDate}
+                setsearchKeyword={setsearchKeyword}
+              />
+            </div>
+            <div className="flex flex-col items-start">
+              <p className="font-semibold text-sm">Filter date</p>
+              <RangePicker onChange={onDateChange} style={{ width: 300 }} />
+            </div>
           </div>
-          <div className="flex flex-col items-start mb-4 p-0">
-            {" "}
-            <p className="font-semibold text-sm">filer date</p>
-            <RangePicker onChange={onDateChange} style={{ width: 300 }} />
-          </div>
-        </Space>
+
+          {/* Button Create Product (Bên phải) */}
+          <Button className="font-medium" icon={<PlusOutlined />}>
+            New Product
+          </Button>
+        </div>
 
         <ProductStoreTables
           items={items}

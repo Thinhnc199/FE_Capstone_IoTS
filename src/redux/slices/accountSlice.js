@@ -119,7 +119,7 @@ export const createManagerStaffs = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
