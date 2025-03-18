@@ -53,6 +53,7 @@ import ComboUpdatePage from "../components/StoreIoT/components/ComboUpdatePage";
 import AddressSelector from "../components/StoreIoT/components/AddressSelector";
 
 import CheckProcessOrder from "../pages/CheckProcessOrder";
+import CreateLab from "../components/Trainer/CreateLab";
 // const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -310,6 +311,11 @@ const publicRoute = [
     path: "/store/address",
     component: AddressSelector,
     layout: StoreLayout,
+  },
+  {
+    path: "/trainer/create-lab",
+    component: CreateLab,
+    layout: TrainerLayout,
   },
 ];
 
