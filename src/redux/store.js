@@ -14,6 +14,7 @@ import comboSlice from "./slices/comboSlice";
 import cartSlice from "./slices/cartSlice";
 import addressSlice from "./slices/addressSlice";
 import orderSlice from "./slices/orderSlice";
+import labSlice from './slices/labSlice';
 const store = configureStore({
   reducer: {
     orders: orderSlice,
@@ -31,6 +32,7 @@ const store = configureStore({
     materialCategory: materialCategorySlice,
     combo: comboSlice,
     address: addressSlice,
+    lab: labSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

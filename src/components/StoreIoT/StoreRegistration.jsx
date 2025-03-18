@@ -16,7 +16,7 @@ import {
   CloseCircleOutlined,
   EyeOutlined,
   ExclamationCircleOutlined,
-  ShopOutlined 
+  ShopOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -63,6 +63,7 @@ const StoreRegistration = () => {
   const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
   const [selectedWardId, setSelectedWardId] = useState(null);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
   const statusColors = {
     "Pending to Approved": {
       color: "gold",
@@ -99,7 +100,6 @@ const StoreRegistration = () => {
       </Tag>
     );
   };
-  const [fullAddress, setFullAddress] = useState("");
 
   const userId = localStorage.getItem("userId");
 
@@ -127,7 +127,6 @@ const StoreRegistration = () => {
           if (storeResponse.payload && storeResponse.payload.data) {
             setStoreDetails(storeResponse.payload.data);
             setStoreId(storeResponse.payload.data.id); // Set storeId
-            // Nếu đã có địa chỉ, gán ID vào state
             setSelectedProvinceId(
               storeResponse.payload.data.provinceId || null
             );
@@ -135,6 +134,7 @@ const StoreRegistration = () => {
               storeResponse.payload.data.districtId || null
             );
             setSelectedWardId(storeResponse.payload.data.wardId || null);
+            setSelectedAddressId(storeResponse.payload.data.addressId || null);
 
             if (storeResponse.payload.data.id) {
               console.log(
@@ -177,10 +177,11 @@ const StoreRegistration = () => {
   // Xử lý khi chọn địa chỉ mới
   const handleAddressChange = (newFullAddress, ids) => {
     // form.setFieldsValue({ address: fullAddress });
-    setFullAddress(newFullAddress);
+    // setFullAddress(newFullAddress);
     setSelectedProvinceId(ids.provinceId);
     setSelectedDistrictId(ids.districtId);
     setSelectedWardId(ids.wardId);
+    setSelectedAddressId(ids.addressId);
   };
 
   useEffect(() => {
@@ -224,13 +225,10 @@ const StoreRegistration = () => {
 
   useEffect(() => {
     if (storeDetails) {
-      setFullAddress(
-        `${storeDetails.wardName}, ${storeDetails.districtName}, ${storeDetails.provinceName}`
-      );
-
       setSelectedProvinceId(storeDetails.provinceId);
       setSelectedDistrictId(storeDetails.districtId);
       setSelectedWardId(storeDetails.wardId);
+      setSelectedAddressId(storeDetails.addressId);
 
       form.setFieldsValue({
         name: storeDetails.name,
@@ -375,6 +373,9 @@ const StoreRegistration = () => {
       provinceId: selectedProvinceId,
       districtId: selectedDistrictId,
       wardId: selectedWardId,
+      // prowardId: selectedAddressId,
+      addressId: selectedAddressId,
+
       imageUrl: logoUrl,
       storeAttachments: allAttachments.map((url) => ({ imageUrl: url })),
     };
@@ -650,7 +651,7 @@ const StoreRegistration = () => {
                       />
                     ) : (
                       <div className="flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                        <ShopOutlined  className="text-blue-500 text-4xl" />
+                        <ShopOutlined className="text-blue-500 text-4xl" />
                       </div>
                     )}
 
@@ -732,23 +733,23 @@ const StoreRegistration = () => {
             </div>
 
             {/* Address Selector Component */}
-            <Form.Item name="address" rules={[{ required: true , message: "Please select all the address fields (Province, District, and Ward).",}]}>
+            <Form.Item
+              name="address"
+              rules={[
+                {
+                  required: true,
+                  message:
+                    "Please select all the address fields (Province, District, and Ward).",
+                },
+              ]}
+            >
               <AddressSelector
                 onAddressChange={handleAddressChange}
                 defaultProvinceId={selectedProvinceId}
                 defaultDistrictId={selectedDistrictId}
                 defaultWardId={selectedWardId}
+                defaultAddressId={selectedAddressId}
               />
-              {fullAddress && (
-                <p
-                  style={{
-                    color: "#333",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <b>Sellector Address :</b> {fullAddress}
-                </p>
-              )}
             </Form.Item>
             {/* Address */}
             <Form.Item
@@ -863,13 +864,6 @@ const StoreRegistration = () => {
                 Next
               </Button>
             </div>
-            {/* <Button
-              type="primary"
-              htmlType="submit"
-              className="bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-            >
-              Next
-            </Button> */}
           </Form>
         </div>
       )}
@@ -1258,64 +1252,8 @@ const StoreRegistration = () => {
               ✅ Submit Registration
             </Button>
           </div>
-
-          {/* <div className="flex justify-center mt-6">
-          <Button
-                type="default"
-                onClick={() => setCurrentStep(1)}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-              >
-                Back
-              </Button>
-            <Button
-              type="primary"
-              onClick={handleSubmitApproval}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md transition"
-            >
-              ✅ Submit Registration
-            </Button>
-          </div> */}
         </div>
       )}
-
-      {/* {currentStep === 3 && requestStatus === "Pending to Approved" && (
-        <div className="bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-bold text-blue-600 text-center mb-6">
-            🎉 Submission Successful!
-          </h2>
-          <div className="flex justify-center">
-            <div className="bg-green-100 p-6 rounded-lg shadow-md text-center">
-              <div className="mb-4">
-                <CheckCircleOutlined className="text-4xl text-green-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-green-700 mb-2">
-                Your Registration has been successfully submitted!
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Please wait for the admin team to review and approve your
-                application within the next 24 hours.
-              </p>
-              <p className="text-gray-700">
-                For any further queries or assistance, please contact our team
-                via our{" "}
-                <a href="/contact" className="text-blue-600 hover:underline">
-                  Contact Form
-                </a>
-              </p>
-              <div className="mt-6">
-                <Button
-                  type="primary"
-                  icon={<CheckCircleOutlined />}
-                  className="bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
-                  disabled
-                >
-                  Submitted Successfully
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };
