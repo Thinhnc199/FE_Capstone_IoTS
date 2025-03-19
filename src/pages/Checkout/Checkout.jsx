@@ -4,6 +4,7 @@ import Logo from "../../assets/icons/3.svg";
 import { useSelector, useDispatch } from "react-redux";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import AddressForm from "./components/AddressForm";
+import { getfeeShip } from "../../redux/slices/orderSlice";
 import {
   fetchCarts,
   fetchGetTotalPrice,
@@ -11,12 +12,14 @@ import {
 } from "../../redux/slices/cartSlice";
 import { createOrder } from "../../redux/slices/orderSlice";
 import FloatingInput from "../../components/common/FloatingInput";
-import { Badge, Divider, Button, Space, Form, message } from "antd";
+import { Badge, Divider, Button, Space, Form, message, Radio } from "antd";
 
 export default function Checkout() {
   const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
   const [selectedWardId, setSelectedWardId] = useState(null);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedDeliverOption, setSelectedDeliverOption] = useState("none");
   const [contactNumber, setContactNumber] = useState("");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
@@ -25,7 +28,7 @@ export default function Checkout() {
   const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
     (state) => state.carts
   );
-
+  const { fee } = useSelector((state) => state.orders);
   const token = localStorage.getItem("token");
   const isValidPhone = (value) => /^\d{10,11}$/.test(value);
   useEffect(() => {
@@ -37,7 +40,25 @@ export default function Checkout() {
     }
   }, [token, dispatch]);
 
+  useEffect(() => {
+    if (setSelectedAddressId) {
+      dispatch(
+        getfeeShip({
+          address,
+          provinceId: selectedProvinceId,
+          districtId: selectedDistrictId,
+          wardId: selectedWardId,
+          addressId: selectedAddressId,
+          deliver_option: selectedDeliverOption,
+        })
+      );
+      console.log("districtId", selectedDistrictId);
+    } else {
+      dispatch(resetCart());
+    }
+  }, [selectedDeliverOption, selectedAddressId]);
   //totalItems
+
   const totalItems = useMemo(() => {
     if (!Array.isArray(cart)) return 0;
     return cart.reduce((total, item) => total + (item.quantity || 0), 0);
@@ -47,6 +68,9 @@ export default function Checkout() {
     setSelectedProvinceId(ids.provinceId);
     setSelectedDistrictId(ids.districtId);
     setSelectedWardId(ids.wardId);
+    setSelectedAddressId(ids.addressId);
+
+    console.log("đ", ids);
   };
 
   const handleCreateOrder = async () => {
@@ -59,10 +83,10 @@ export default function Checkout() {
           provinceId: selectedProvinceId,
           districtId: selectedDistrictId,
           wardId: selectedWardId,
+          addressId: selectedAddressId,
+          deliver_option: selectedDeliverOption,
         })
       ).unwrap();
-
-      console.log("API Response:", result); // Kiểm tra phản hồi từ API
 
       if (!result?.data.paymentUrl) {
         message.error("Payment URL is missing!");
@@ -77,7 +101,7 @@ export default function Checkout() {
       );
     }
   };
-  console.log("cart", cart);
+  console.log("fee", typeof fee);
 
   return (
     <div className="mx-auto h-screen gap-2 bg-mainColer">
@@ -123,6 +147,17 @@ export default function Checkout() {
           </div>
 
           <div>
+            <p className="font-medium mb-2">Address:</p>
+            <FloatingInput
+              isTextarea={true}
+              label="Address"
+              value={address}
+              required
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div>
             <Form.Item
               name="address"
               rules={[
@@ -138,18 +173,27 @@ export default function Checkout() {
                 defaultProvinceId={selectedProvinceId}
                 defaultDistrictId={selectedDistrictId}
                 defaultWardId={selectedWardId}
+                defaultAddressId={selectedAddressId}
               />
             </Form.Item>
           </div>
           <div>
-            <p className="font-medium mb-2">Address:</p>
-            <FloatingInput
-              isTextarea={true}
-              label="Address"
-              value={address}
-              required
-              onChange={(e) => setAddress(e.target.value)}
-            />
+            <p className="font-medium mb-2">Shipping:</p>
+            {selectedAddressId ? (
+              <Radio.Group
+                defaultValue="none"
+                onChange={(e) => setSelectedDeliverOption(e.target.value)} // Sử dụng onChange của Radio.Group
+              >
+                <Radio value="none">Normal shipping</Radio>
+                <Radio value="xteam">Fast shipping</Radio>
+              </Radio.Group>
+            ) : (
+              <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
+                <p className="text-headerBg">
+                  Please enter shipping information
+                </p>
+              </div>
+            )}
           </div>
           <div>
             <p className="font-medium mb-2">Note:</p>

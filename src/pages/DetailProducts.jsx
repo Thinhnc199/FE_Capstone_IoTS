@@ -106,8 +106,9 @@ export default function DetailProducts() {
         <div className="col-span-2 ">
           <div className="grid grid-cols-2 md:grid-cols-2 gap-1  text-md font-medium">
             <div className="flex space-x-2">
-              <p>Type:</p>
-              <p className="text-headerBg">{isNew ? "New" : "Secondhand"}</p>
+              <p>Available:</p>
+              {/* <p className="text-headerBg">{isNew ? "New" : "Secondhand"}</p> */}
+              <p className="text-headerBg">{product.quantity}</p>
             </div>
             <div className="flex space-x-2">
               <p>Status:</p>
@@ -121,11 +122,11 @@ export default function DetailProducts() {
             </div>
             <div className="flex space-x-2">
               <p>Category:</p>
-              <p className="text-headerBg">{product.quantity || "N/A"}</p>
+              <p className="text-headerBg">{product.category.label || "N/A"}</p>
             </div>
             <div className="flex space-x-2">
               <p>Brand:</p>
-              <p className="text-headerBg">{product.quantity || "N/A"}</p>
+              <p className="text-headerBg">{product.manufacturer || "N/A"}</p>
             </div>
           </div>
 

@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 const { Text } = Typography;
 
 const ProductCard = ({ product }) => {
-  if (!product) return null;
+  if (!product || product.deviceTypeLabel !== "New") return null;
+  console.log("ổt", product.deviceTypeLabel);
 
   const discountPercentage =
     ((product.price - product.secondHandPrice) / product.price) * 100;

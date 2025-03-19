@@ -7,19 +7,18 @@ import {
   setsearchKeyword,
 } from "../../redux/slices/productSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import SearchAndFilterProducts from "./components/SearchAndFilterProducts";
 import ProductStoreTables from "./components/productStoreTables";
-import CreateProductModal from "./components/CreateProductModal";
 
 const { RangePicker } = DatePicker;
 
 export default function ListProductStore() {
   const dispatch = useDispatch();
-  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-
+  const navigate = useNavigate();
   const {
     items,
     totalCount,
@@ -67,17 +66,13 @@ export default function ListProductStore() {
   };
 
   const handleCreateProduct = () => {
-    setIsCreateModalVisible(true);
-  };
-
-  const handleCloseCreateModal = () => {
-    setIsCreateModalVisible(false);
+    navigate("/store/create-product");
   };
 
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="font-Mainfont">
+    <div className="">
       <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Products List</h1>
         <div className="flex justify-between items-center mb-4">
@@ -118,10 +113,6 @@ export default function ListProductStore() {
         />
 
         {/* Create Product Modal */}
-        <CreateProductModal
-          isVisible={isCreateModalVisible}
-          onClose={handleCloseCreateModal}
-        />
       </div>
     </div>
   );
