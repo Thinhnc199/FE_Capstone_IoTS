@@ -50,7 +50,7 @@ import ComboList from "../pages/Home/components/ComboList";
 import ComboDetail from "../pages/ComboDetail";
 import ComboUpdatePage from "../components/StoreIoT/components/ComboUpdatePage";
 import AddressSelector from "../components/StoreIoT/components/AddressSelector";
-
+import CreateProductPage from "../components/StoreIoT/CreateProductPage";
 import CheckProcessOrder from "../pages/CheckProcessOrder";
 import CreateLab from "../components/Trainer/CreateLab";
 // const allowedroles = localStorage.getItem("role");
@@ -273,6 +273,11 @@ const publicRoute = [
   {
     path: "/store/list-product",
     component: ListProductStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/create-product",
+    component: CreateProductPage,
     layout: StoreIotLayout,
   },
 

@@ -194,7 +194,9 @@ export default function ContextHome() {
     startFilterDate,
     endFilterDate,
   } = useSelector((state) => state.products);
-
+  const newProducts = items?.filter(
+    (product) => product.deviceTypeLabel === "New"
+  );
   useEffect(() => {
     dispatch(
       fetchProducts({
@@ -248,15 +250,16 @@ export default function ContextHome() {
           <p className="text-2xl md:text-3xl font-semibold">Flash Sales</p>
           <CountdownTimer />
         </div>
-        <Carousel {...carouselSettings}>
-          {items && items.length > 0 ? (
-            items.map((product) => (
+
+        {newProducts.length > 0 ? (
+          <Carousel {...carouselSettings}>
+            {newProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
-            ))
-          ) : (
-            <p>No products available</p>
-          )}
-        </Carousel>
+            ))}
+          </Carousel>
+        ) : (
+          <p className="text-center text-gray-500">No new products available</p>
+        )}
       </div>
 
       <hr className="p-4" />
@@ -303,15 +306,15 @@ export default function ContextHome() {
             View all
           </Link>
         </div>
-        <Carousel {...carouselSettings}>
-          {items && items.length > 0 ? (
-            items.map((product) => (
+        {newProducts.length > 0 ? (
+          <Carousel {...carouselSettings}>
+            {newProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
-            ))
-          ) : (
-            <p>No products available</p>
-          )}
-        </Carousel>
+            ))}
+          </Carousel>
+        ) : (
+          <p className="text-center text-gray-500">No new products available</p>
+        )}
       </div>
     </div>
   );

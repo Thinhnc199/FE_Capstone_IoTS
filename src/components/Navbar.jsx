@@ -19,6 +19,7 @@ import {
   LogoutOutlined,
   LoginOutlined,
   CloseOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -127,9 +128,14 @@ const Navbar = () => {
       label: <Link to="/profile">Profile</Link>,
       icon: <UserAddOutlined />,
     },
-
     {
       key: "3",
+      label: <Link to="/history-order">History order</Link>,
+      icon: <HistoryOutlined />,
+    },
+
+    {
+      key: "7",
       label: "Logout",
       icon: <LogoutOutlined />,
 

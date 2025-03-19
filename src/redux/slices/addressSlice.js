@@ -1,6 +1,6 @@
 // // src/redux/slices/addressSlice.js
 // import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import api from '../../api/apiConfig'; 
+// import api from '../../api/apiConfig';
 // import { notification } from 'antd';
 
 // const showNotification = (type, message, description) => {
@@ -131,26 +131,25 @@
 // export const { setSelectedProvince, setSelectedDistrict, setSelectedWard } = addressSlice.actions;
 // export default addressSlice.reducer;
 
-
 // src/redux/slices/addressSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/apiConfig'; 
-import { notification } from 'antd';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../../api/apiConfig";
+import { notification } from "antd";
 
 const showNotification = (type, message, description) => {
   notification[type]({
     message,
     description,
-    placement: 'topRight',
+    placement: "topRight",
   });
 };
 
 // Async thunks
 export const fetchProvinces = createAsyncThunk(
-  'address/fetchProvinces',
+  "address/fetchProvinces",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/location/provinces');
+      const response = await api.get("/api/location/provinces");
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -159,10 +158,10 @@ export const fetchProvinces = createAsyncThunk(
 );
 
 export const fetchDistricts = createAsyncThunk(
-  'address/fetchDistricts',
+  "address/fetchDistricts",
   async (provinceId, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/location/districts', {
+      const response = await api.get("/api/location/districts", {
         params: { provinceId },
       });
       return response.data;
@@ -173,10 +172,10 @@ export const fetchDistricts = createAsyncThunk(
 );
 
 export const fetchWards = createAsyncThunk(
-  'address/fetchWards',
+  "address/fetchWards",
   async (prodistrictId, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/location/wards', {
+      const response = await api.get("/api/location/wards", {
         params: { prodistrictId },
       });
       return response.data;
@@ -189,10 +188,10 @@ export const fetchWards = createAsyncThunk(
 // New API for fetching address by prowardId
 
 export const fetchAddressByProwardId = createAsyncThunk(
-  'address/fetchAddressByProwardId',
+  "address/fetchAddressByProwardId",
   async (prowardId, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/location/address', {
+      const response = await api.get("/api/location/address", {
         params: { prowardId },
       });
       console.log("API Response for prowardId", prowardId, ":", response.data); // Debug API response
@@ -204,7 +203,7 @@ export const fetchAddressByProwardId = createAsyncThunk(
 );
 
 const addressSlice = createSlice({
-  name: 'address',
+  name: "address",
   initialState: {
     provinces: [],
     districts: [],
@@ -213,9 +212,10 @@ const addressSlice = createSlice({
     selectedProvince: null,
     selectedDistrict: null,
     selectedWard: null,
-    selectedAddress: null,  // New state for address data
+    selectedAddress: null, // New state for address data
     loading: false,
     error: null,
+    deliver_option: null,
   },
   reducers: {
     setSelectedProvince: (state, action) => {
@@ -251,7 +251,7 @@ const addressSlice = createSlice({
       .addCase(fetchProvinces.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        showNotification('error', 'Error', 'Unable to load provinces');
+        showNotification("error", "Error", "Unable to load provinces");
       })
       // Districts
       .addCase(fetchDistricts.pending, (state) => {
@@ -265,7 +265,7 @@ const addressSlice = createSlice({
       .addCase(fetchDistricts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        showNotification('error', 'Error', 'Unable to load districts');
+        showNotification("error", "Error", "Unable to load districts");
       })
       // Wards
       .addCase(fetchWards.pending, (state) => {
@@ -279,7 +279,7 @@ const addressSlice = createSlice({
       .addCase(fetchWards.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        showNotification('error', 'Error', 'Unable to load wards');
+        showNotification("error", "Error", "Unable to load wards");
       })
       // Address by ProWardId
       .addCase(fetchAddressByProwardId.pending, (state) => {
@@ -288,17 +288,24 @@ const addressSlice = createSlice({
       })
       .addCase(fetchAddressByProwardId.fulfilled, (state, action) => {
         state.loading = false;
-        state.prowards = Array.isArray(action.payload) ? action.payload : [action.payload];
+        state.prowards = Array.isArray(action.payload)
+          ? action.payload
+          : [action.payload];
         // Optionally set first address as selected
         state.selectedAddress = state.prowards[0] || null;
       })
       .addCase(fetchAddressByProwardId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        showNotification('error', 'Error', 'Unable to load address');
+        showNotification("error", "Error", "Unable to load address");
       });
   },
 });
 
-export const { setSelectedProvince, setSelectedDistrict, setSelectedWard, setSelectedAddress } = addressSlice.actions;
+export const {
+  setSelectedProvince,
+  setSelectedDistrict,
+  setSelectedWard,
+  setSelectedAddress,
+} = addressSlice.actions;
 export default addressSlice.reducer;
