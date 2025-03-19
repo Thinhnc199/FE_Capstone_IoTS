@@ -7,14 +7,18 @@ import {
   setsearchKeyword,
 } from "../../redux/slices/productSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DatePicker, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import SearchAndFilterProducts from "./components/SearchAndFilterProducts";
 import ProductStoreTables from "./components/productStoreTables";
+import CreateProductModal from "./components/CreateProductModal";
+
 const { RangePicker } = DatePicker;
+
 export default function ListProductStore() {
   const dispatch = useDispatch();
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
   const {
     items,
@@ -32,19 +36,21 @@ export default function ListProductStore() {
       fetchProducts({
         pageIndex,
         pageSize,
-        searchKeyword: searchKeyword,
-        startFilterDate: startFilterDate, // Sử dụng filter của tab hiện tại
-        endFilterDate: endFilterDate,
+        searchKeyword,
+        startFilterDate,
+        endFilterDate,
       })
     );
   }, [
     dispatch,
     pageIndex,
     pageSize,
-    searchKeyword, // Theo dõi thay đổi của filter trong tab hiện tại
+    searchKeyword,
     startFilterDate,
     endFilterDate,
+    totalCount,
   ]);
+  console.log("totaltotal", totalCount);
 
   const handlePageChange = (newPage) => {
     dispatch(setPageIndex(newPage));
@@ -54,25 +60,36 @@ export default function ListProductStore() {
     dispatch(setPageSize(value));
   };
 
-  if (error) return <p>Error: {error}</p>;
   const onDateChange = (dates, dateStrings) => {
-    dispatch(setStartFilterDate({ date: dateStrings[0] })); // Truyền thêm tab
-    dispatch(setEndFilterDate({ date: dateStrings[1] })); // Truyền thêm tab
-    console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
+    dispatch(setStartFilterDate(dateStrings[0])); // Ensure payload matches reducer expectations
+    dispatch(setEndFilterDate(dateStrings[1])); // Ensure payload matches reducer expectations
+    // console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
   };
+
+  const handleCreateProduct = () => {
+    setIsCreateModalVisible(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalVisible(false);
+  };
+
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="font-Mainfont">
-      <div className="bg-white rounded-md p-4  min-h-[60vh] overflow-hidden shadow-lg">
+      <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Products List</h1>
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-4">
             <div>
               <p className="font-semibold text-sm">Search by related</p>
               <SearchAndFilterProducts
-                setEndFilterDate={setEndFilterDate}
-                setStartFilterDate={setStartFilterDate}
-                setsearchKeyword={setsearchKeyword}
+                onSearch={(keyword) => dispatch(setsearchKeyword(keyword))}
+                onFilterDate={(startDate, endDate) => {
+                  dispatch(setStartFilterDate(startDate));
+                  dispatch(setEndFilterDate(endDate));
+                }}
               />
             </div>
             <div className="flex flex-col items-start">
@@ -81,8 +98,12 @@ export default function ListProductStore() {
             </div>
           </div>
 
-          {/* Button Create Product (Bên phải) */}
-          <Button className="font-medium" icon={<PlusOutlined />}>
+          {/* Button Create Product */}
+          <Button
+            onClick={handleCreateProduct}
+            className="font-medium"
+            icon={<PlusOutlined />}
+          >
             New Product
           </Button>
         </div>
@@ -94,6 +115,12 @@ export default function ListProductStore() {
           totalCount={totalCount}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
+        />
+
+        {/* Create Product Modal */}
+        <CreateProductModal
+          isVisible={isCreateModalVisible}
+          onClose={handleCloseCreateModal}
         />
       </div>
     </div>

@@ -33,7 +33,6 @@ import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
-import CreateProducts from "../components/StoreIoT/CreateProducts";
 import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
 import CheckStatus from "../components/StoreIoT/CheckStatus";
@@ -276,11 +275,7 @@ const publicRoute = [
     component: ListProductStore,
     layout: StoreIotLayout,
   },
-  {
-    path: "/store/add-device",
-    component: CreateProducts,
-    layout: StoreIotLayout,
-  },
+
   {
     path: "/store/status",
     component: CheckStatus,
