@@ -1,4 +1,3 @@
-
 // import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // import api from "../../api/apiConfig";
 
@@ -155,31 +154,46 @@ export const fetchAllMaterialCategories = createAsyncThunk(
   }
 );
 
-
 // Thunks
 export const fetchPaginatedMaterialCategories = createAsyncThunk(
   "materialCategory/fetchPaginated",
-  async ({ pageIndex, pageSize, searchKeyword, statusFilter, startFilterDate, endFilterDate }, { rejectWithValue }) => {
+  async (
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      statusFilter,
+      startFilterDate,
+      endFilterDate,
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      console.log("📡 API Call Params:", { pageIndex, pageSize, searchKeyword, statusFilter });
+      console.log("📡 API Call Params:", {
+        pageIndex,
+        pageSize,
+        searchKeyword,
+        statusFilter,
+      });
 
-      const response = await api.post(`/api/material-category/get-pagination`, 
-        { 
+      const response = await api.post(
+        `/api/material-category/get-pagination`,
+        {
           pageIndex,
           pageSize,
           searchKeyword: searchKeyword || "",
           ...(startFilterDate && { startFilterDate }),
           ...(endFilterDate && { endFilterDate }),
-        }, 
+        },
         {
           params: { statusFilter }, // statusFilter được gửi trong query parameters
         }
       );
 
-      console.log("✅ API Response Data:", response.data);
+      // console.log("✅ API Response Data:", response.data);
       return response.data;
     } catch (error) {
-      console.log("❌ API Error:", error.response?.data);
+      // console.log("❌ API Error:", error.response?.data);
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -192,10 +206,10 @@ export const fetchPaginatedMaterialCategories = createAsyncThunk(
 //       const response = await api.post(`/api/material-category/get-pagination`, {
 //         pageIndex,
 //         pageSize,
-//         searchKeyword: searchKeyword, 
+//         searchKeyword: searchKeyword,
 //         statusFilter: statusFilter,
-//         ...(startFilterDate && { startFilterDate }), 
-//         ...(endFilterDate && { endFilterDate }), 
+//         ...(startFilterDate && { startFilterDate }),
+//         ...(endFilterDate && { endFilterDate }),
 //       });
 //       console.log("API Data:", response.data);
 //       return response.data;
@@ -209,10 +223,13 @@ export const createMaterialCategory = createAsyncThunk(
   "materialCategory/create",
   async ({ label, description }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/material-category/create-material-category`, {
-        label,
-        description,
-      });
+      const response = await api.post(
+        `/api/material-category/create-material-category`,
+        {
+          label,
+          description,
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -224,10 +241,13 @@ export const updateMaterialCategory = createAsyncThunk(
   "materialCategory/update",
   async ({ id, label, description }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/api/material-category/Update-material-category/${id}`, {
-        label,
-        description,
-      });
+      const response = await api.put(
+        `/api/material-category/Update-material-category/${id}`,
+        {
+          label,
+          description,
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -283,7 +303,7 @@ const materialCategorySlice = createSlice({
       state.filters.all.endFilterDate = action.payload;
     },
     setStatusFilter: (state, action) => {
-      console.log("🔄 Changing statusFilter:", action.payload);
+      // console.log("🔄 Changing statusFilter:", action.payload);
       state.statusFilter = action.payload;
     },
   },
@@ -292,25 +312,31 @@ const materialCategorySlice = createSlice({
     //   state.paginatedData = action.payload.data || [];
     //   state.totalCount = action.payload.data?.length || 0;
     // });
-    handleAsyncState(builder, fetchPaginatedMaterialCategories, (state, action) => {
-      console.log("📌 Redux API Response:", action.payload);
-    
-      if (action.payload && action.payload.data) {
-        if (state.statusFilter === 1) {
-          state.activeData = action.payload.data;
-          state.totalCountActive = action.payload.totalCount || action.payload.data.length; // ✅ Đảm bảo totalCount chính xác
-        } else if (state.statusFilter === 2) {
-          state.pendingData = action.payload.data;
-          state.totalCountPending = action.payload.totalCount || action.payload.data.length; // ✅ Đảm bảo totalCount chính xác
+    handleAsyncState(
+      builder,
+      fetchPaginatedMaterialCategories,
+      (state, action) => {
+        // console.log("📌 Redux API Response:", action.payload);
+
+        if (action.payload && action.payload.data) {
+          if (state.statusFilter === 1) {
+            state.activeData = action.payload.data;
+            state.totalCountActive =
+              action.payload.totalCount || action.payload.data.length; // ✅ Đảm bảo totalCount chính xác
+          } else if (state.statusFilter === 2) {
+            state.pendingData = action.payload.data;
+            state.totalCountPending =
+              action.payload.totalCount || action.payload.data.length; // ✅ Đảm bảo totalCount chính xác
+          }
+        } else {
+          state.activeData = [];
+          state.pendingData = [];
+          state.totalCountActive = 0;
+          state.totalCountPending = 0;
         }
-      } else {
-        state.activeData = [];
-        state.pendingData = [];
-        state.totalCountActive = 0;
-        state.totalCountPending = 0;
       }
-    });
-    
+    );
+
     handleAsyncState(builder, createMaterialCategory, (state, action) => {
       state.categories.unshift(action.payload);
       state.totalCount += 1;
@@ -326,16 +352,24 @@ const materialCategorySlice = createSlice({
     handleAsyncState(builder, fetchAllMaterialCategories, (state, action) => {
       state.paginatedData = action.payload.data; // Gán toàn bộ danh mục vào state
       state.totalCount = action.payload.data.length;
+      // console.log("📌 Redux API Responsse:", typeof state.paginatedData);
     });
     // handleAsyncState(builder, fetchPaginatedMaterialCategories, (state, action) => {
     //   console.log("API Response:", action.payload);
     //   if (action.payload && action.payload.data) {
-    //     state.paginatedData = action.payload.data || []; 
+    //     state.paginatedData = action.payload.data || [];
     //     state.totalCount = action.payload.data.totalCount || 0;
     //   }
     // });
   },
 });
 
-export const { setPageIndex, setPageSize, setSearchKeyword, setStartFilterDate, setEndFilterDate, setStatusFilter} = materialCategorySlice.actions;
+export const {
+  setPageIndex,
+  setPageSize,
+  setSearchKeyword,
+  setStartFilterDate,
+  setEndFilterDate,
+  setStatusFilter,
+} = materialCategorySlice.actions;
 export default materialCategorySlice.reducer;
