@@ -76,6 +76,20 @@ export const deActiveUsers = createAsyncThunk(
     }
   }
 );
+export const updatePassword = createAsyncThunk(
+  "accounts/updatePassword",
+  async ({ oldPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`api/user/update-password`, {
+        oldPassword,
+        newPassword,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
 export const fetchRole = createAsyncThunk(
   "accounts/fetchRole",

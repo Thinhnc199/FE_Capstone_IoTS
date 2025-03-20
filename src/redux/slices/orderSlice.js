@@ -113,7 +113,7 @@ const initialState = {
   order: [],
   loading: false,
   error: null,
-  fee: 0,
+  allfee: 0,
 };
 const orderSlice = createSlice({
   name: "createOrders",
@@ -148,7 +148,9 @@ const orderSlice = createSlice({
       state.dataCheckOrder = action.payload;
     });
     handleAsyncState(builder, getfeeShip, (state, action) => {
-      state.fee = action.payload;
+      if (action.payload.length > 0) {
+        state.fee = action.payload[0].fee; // Cập nhật fee từ response
+      }
     });
   },
 });

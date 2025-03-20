@@ -22,6 +22,7 @@ export default function Checkout() {
   const [selectedDeliverOption, setSelectedDeliverOption] = useState("none");
   const [contactNumber, setContactNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [loadingFee, setLoadingFee] = useState(false);
   const [notes, setNotes] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ export default function Checkout() {
   const { fee } = useSelector((state) => state.orders);
   const token = localStorage.getItem("token");
   const isValidPhone = (value) => /^\d{10,11}$/.test(value);
+
   useEffect(() => {
     if (token) {
       dispatch(fetchCarts({ pageIndex, pageSize }));
@@ -51,7 +53,7 @@ export default function Checkout() {
           addressId: selectedAddressId,
           deliver_option: selectedDeliverOption,
         })
-      );
+      ).finally(() => setLoadingFee(false));
       console.log("districtId", selectedDistrictId);
     } else {
       dispatch(resetCart());
@@ -101,7 +103,7 @@ export default function Checkout() {
       );
     }
   };
-  console.log("fee", typeof fee);
+  console.log("fee", fee);
 
   return (
     <div className="mx-auto h-screen gap-2 bg-mainColer">
@@ -259,7 +261,15 @@ export default function Checkout() {
             </span>
             <span className="justify-between text-gray-500 flex items-center">
               <p className="font-semibold text-sm"> Shipping fee: </p>
-              <p className="font-semibold text-sm">{0}₫</p>
+              {loadingFee ? (
+                <p className="font-semibold text-sm text-blue-500">
+                  Loading...
+                </p>
+              ) : (
+                <p className="font-semibold text-sm">
+                  {(fee || 0).toLocaleString()}₫
+                </p>
+              )}
             </span>
           </div>
           <Divider className="bg-gray-200" />
@@ -267,7 +277,7 @@ export default function Checkout() {
             <span className="justify-between text-gray-800 flex items-center">
               <p className="font-semibold text-lg"> Total: </p>
               <p className="font-semibold text-lg text-headerBg">
-                {totalSelectedItemsPrice.toLocaleString()}₫
+                {(totalSelectedItemsPrice + (fee || 0)).toLocaleString()}₫
               </p>
             </span>
             <span className="justify-between text-gray-800 flex items-center py-4">
