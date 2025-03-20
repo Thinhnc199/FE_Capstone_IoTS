@@ -39,7 +39,7 @@ import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
-
+import HistoryOrder from "../pages/HistoryOrder";
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
 import Checkout from "../pages/Checkout/Checkout";
@@ -53,6 +53,7 @@ import AddressSelector from "../components/StoreIoT/components/AddressSelector";
 import CreateProductPage from "../components/StoreIoT/CreateProductPage";
 import CheckProcessOrder from "../pages/CheckProcessOrder";
 import CreateLab from "../components/Trainer/CreateLab";
+import ProfilePage from "../pages/Profile/ProfilePage";
 // const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -138,6 +139,16 @@ const publicRoute = [
     path: "/checkout",
     component: Checkout,
     layout: null,
+  },
+  {
+    path: "/history-order",
+    component: HistoryOrder,
+    layout: MainLayout,
+  },
+  {
+    path: "/profile",
+    component: ProfilePage,
+    layout: MainLayout,
   },
   {
     path: "/checkout-process-order",

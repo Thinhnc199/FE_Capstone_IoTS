@@ -96,7 +96,7 @@ const AddressForm = ({ onAddressChange, defaultValues }) => {
         .filter(Boolean)
         .join(", ");
 
-      console.log("Selected Address:", fullAddress);
+      // console.log("Selected Address:", fullAddress);
       onAddressChange(fullAddress, {
         provinceId: selectedProvince?.id || null,
         districtId: selectedDistrict?.id || null,
@@ -116,7 +116,7 @@ const AddressForm = ({ onAddressChange, defaultValues }) => {
 
   // Debug prowards state
   useEffect(() => {
-    console.log("Current prowards:", prowards);
+    // console.log("Current prowards:", prowards);
     if (prowards.length === 0) {
       console.warn("prowards is empty after fetchAddressByProwardId");
     }
