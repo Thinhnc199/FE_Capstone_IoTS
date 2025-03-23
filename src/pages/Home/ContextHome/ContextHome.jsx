@@ -265,7 +265,7 @@ export default function ContextHome() {
       <hr className="p-4" />
 
       {/* Browse By Category */}
-      <div className="mb-8 p-4 rounded-md space-y-4 bg-white">
+      {/* <div className="mb-8 p-4 rounded-md space-y-4 bg-white">
         <Titles
           titleText="Categories"
           colorText="text-headerBg"
@@ -288,7 +288,7 @@ export default function ContextHome() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Another Flash Sales Section */}
       <div className="mb-8 p-4 rounded-md space-y-4 bg-white">

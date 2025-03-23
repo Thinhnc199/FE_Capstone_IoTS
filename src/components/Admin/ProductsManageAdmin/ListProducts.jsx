@@ -8,11 +8,11 @@ import {
 } from "../../../redux/slices/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { DatePicker } from "antd";
+// import { DatePicker } from "antd";
 import SearchAndFilterProducts from "../../StoreIoT/components/SearchAndFilterProducts";
 import ProductsTables from "../components/productsTables";
 
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 
 export default function ListProducts() {
   const dispatch = useDispatch();
@@ -55,11 +55,11 @@ export default function ListProducts() {
     dispatch(setPageSize(value));
   };
 
-  const onDateChange = (dates, dateStrings) => {
-    dispatch(setStartFilterDate(dateStrings[0])); // Ensure payload matches reducer expectations
-    dispatch(setEndFilterDate(dateStrings[1])); // Ensure payload matches reducer expectations
-    console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
-  };
+  // const onDateChange = (dates, dateStrings) => {
+  //   dispatch(setStartFilterDate(dateStrings[0])); // Ensure payload matches reducer expectations
+  //   dispatch(setEndFilterDate(dateStrings[1])); // Ensure payload matches reducer expectations
+  //   console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
+  // };
 
   if (error) return <p>Error: {error}</p>;
 
@@ -72,17 +72,15 @@ export default function ListProducts() {
             <div>
               <p className="font-semibold text-sm">Search by related</p>
               <SearchAndFilterProducts
-                onSearch={(keyword) => dispatch(setsearchKeyword(keyword))}
-                onFilterDate={(startDate, endDate) => {
-                  dispatch(setStartFilterDate(startDate));
-                  dispatch(setEndFilterDate(endDate));
-                }}
+                setEndFilterDate={setEndFilterDate}
+                setStartFilterDate={setStartFilterDate}
+                setsearchKeyword={setsearchKeyword}
               />
             </div>
-            <div className="flex flex-col items-start">
+            {/* <div className="flex flex-col items-start">
               <p className="font-semibold text-sm">Filter date</p>
               <RangePicker onChange={onDateChange} style={{ width: 300 }} />
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -13,6 +13,7 @@ const SearchAndFilterProducts = ({
 
   const onSearch = (value) => {
     dispatch(setsearchKeyword(value));
+    console.log("Search:", value);
   };
 
   // const onDateChange = (dates, dateStrings) => {

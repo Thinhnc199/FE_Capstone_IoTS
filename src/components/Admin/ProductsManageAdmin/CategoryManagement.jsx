@@ -541,13 +541,12 @@ export default function CategoryManagement() {
           <Button
             type="primary"
             style={{
-              backgroundColor: "#32CD32",
               color: "White",
               border: "1px solid white",
             }}
             onClick={() => showDrawer()}
             icon={<PlusOutlined />}
-            className="ml-2"
+            className="ml-2 bg-headerBg text-white"
           >
             New Category
           </Button>
