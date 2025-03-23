@@ -315,6 +315,11 @@ const publicRoute = [
     component: ComboLabsManagement,
     layout: StoreIotLayout,
   },
+  {
+    path: "/labs-management",
+    component: Test,
+    layout: MainLayout,
+  },
 ];
 
 const privateRoute = [];

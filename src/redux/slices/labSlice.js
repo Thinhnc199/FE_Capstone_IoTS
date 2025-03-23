@@ -39,6 +39,19 @@ export const getLabTrainerPagination = createAsyncThunk(
   }
 );
 
+export const getLabCustomerPagination = createAsyncThunk(
+  'lab/getLabCustomerPagination',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/api/lab/user-management/get-lab-pagination', params);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+
 export const getLabAdminPagination = createAsyncThunk(
   'lab/getLabAdminPagination',
   async (params, { rejectWithValue }) => {
@@ -232,6 +245,19 @@ const labSlice = createSlice({
         state.error = action.payload;
       })
 
+ // Get Lab Store Pagination
+ .addCase(getLabCustomerPagination.pending, (state) => {
+  state.loading = true;
+})
+.addCase(getLabCustomerPagination.fulfilled, (state, action) => {
+  state.loading = false;
+  state.labs = action.payload.data;
+})
+.addCase(getLabCustomerPagination.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+})
+      
       // Get Lab Trainer Pagination
       .addCase(getLabTrainerPagination.pending, (state) => {
         state.loading = true;
