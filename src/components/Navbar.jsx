@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchPaginatedMaterialCategories } from "../redux/slices/materialCategorySlice";
 import {
   fetchCarts,
   deleteCarts,
@@ -20,6 +21,8 @@ import {
   LoginOutlined,
   CloseOutlined,
   HistoryOutlined,
+  MenuOutlined,
+  ProductOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -35,20 +38,41 @@ import QuantityInput from "./common/QuantityInput";
 const { Search } = Input;
 
 const Navbar = () => {
+  const categoryButtonRef = useRef(null);
   const dispatch = useDispatch();
   const isDropdownOpen = useSelector((state) => state.carts.isOpenDropdown);
+  const { activeData } = useSelector((state) => state.materialCategory);
   const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
     (state) => state.carts
   );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const showModal = () => {
     setIsModalVisible(true);
   };
+  const showCategoryModal = () => {
+    setIsCategoryModalVisible(true);
+  };
 
+  const handleCategoryModalCancel = () => {
+    setIsCategoryModalVisible(false);
+  };
+
+  const getCategoryButtonPosition = () => {
+    if (categoryButtonRef.current) {
+      const rect = categoryButtonRef.current.getBoundingClientRect();
+      return {
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+      };
+    }
+    return { top: 0, left: 0 };
+  };
+
+  const { top, left } = getCategoryButtonPosition();
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -69,6 +93,11 @@ const Navbar = () => {
       dispatch(resetCart());
     }
   }, [token, dispatch]);
+  useEffect(() => {
+    dispatch(fetchPaginatedMaterialCategories({ pageIndex, pageSize }));
+  }, [token, dispatch]);
+
+  // handleTotalProduct
   const handleTotalProduct = () => {
     if (!Array.isArray(cart)) return 0;
     return cart.reduce((total, item) => total + item.quantity, 0);
@@ -82,6 +111,7 @@ const Navbar = () => {
     dispatch(fetchGetTotalPrice());
     dispatch(fetchCarts({ pageIndex, pageSize }));
   };
+  // handleCheckBox
   const handleCheckBox = async (cartId, isChecked) => {
     try {
       if (isChecked) {
@@ -98,6 +128,7 @@ const Navbar = () => {
       console.error("Failed to update cart selection:", error);
     }
   };
+
   const menuItems = [
     {
       key: "1",
@@ -214,7 +245,10 @@ const Navbar = () => {
         ];
 
   return (
-    <nav className="bg-white border-b border-b-gray-300 ">
+    <nav
+      className="bg-white border-b border-b-gray-300 relative "
+      style={{ zIndex: 1051 }}
+    >
       {/* Header Banner */}
       <div className="h-10 w-full bg-headerBg flex justify-center items-center text-white gap-2">
         <p>
@@ -237,7 +271,48 @@ const Navbar = () => {
         </Link>
 
         {/* Menu Links */}
-        <ul className="flex space-x-8 text-gray-700">
+        <ul className="flex space-x-8 text-gray-700 justify-center items-center">
+          <Button
+            ref={categoryButtonRef}
+            className="rounded-md bg-blue-50 text-gray-600 border-none font-semibold"
+            onClick={showCategoryModal}
+          >
+            <MenuOutlined />
+            Category
+          </Button>
+
+          {/* Modal Category */}
+          {isCategoryModalVisible && (
+            <div className="py-6">
+              <div
+                className="absolute bg-white shadow-lg rounded-sm scroll-y"
+                style={{
+                  top: `${105}px`,
+                  left: `${left}px`,
+                  zIndex: 1050,
+                  width: "300px",
+                }}
+              >
+                <div className="flex flex-col gap-2">
+                  {activeData.map((category) => (
+                    <div
+                      key={category.id}
+                      className="p-2 border-b border-gray-200 hover:bg-gray-50 cursor-pointer flex gap-2"
+                    >
+                      <ProductOutlined />
+                      <p className="font-semibold">{category.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                style={{ top: "105px", left: 0, right: 0, bottom: 0 }}
+                onClick={handleCategoryModalCancel}
+              ></div>
+            </div>
+          )}
+
           <li>
             <Link to="/" className="hover:text-[#007AFF] cursor-pointer">
               Home
@@ -256,9 +331,9 @@ const Navbar = () => {
           <li>
             <Link
               to="/StoreEmail"
-              className="hover:text-[#007AFF] cursor-pointer text-blue-500 "
+              className="hover:text-[#007AFF] cursor-pointer "
             >
-              <b className="font-semibold">Become Store & Trainer</b>
+              <b className="font-normal">Become Store & Trainer</b>
             </Link>
           </li>
         </ul>
@@ -335,6 +410,32 @@ const Navbar = () => {
       >
         <p>Are you sure you want to logout?</p>
       </Modal>
+      {/* Category Modal */}
+      {/* <Modal
+        title="Categories"
+        visible={isCategoryModalVisible}
+        onCancel={handleCategoryModalCancel}
+        footer={null}
+        width={600}
+        bodyStyle={{ maxHeight: "60vh", overflowY: "auto" }}
+        style={{ zIndex: 1050 }}
+      >
+        <div className="flex flex-col gap-2">
+          {activeData.map((category) => (
+            <div
+              key={category.id}
+              className="p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+            >
+              <p className="font-semibold">{category.label}</p>
+            </div>
+          ))}
+        </div>
+      </Modal> */}
+      {/* <div
+        className={`fixed inset-0 bg-black bg-opacity-50 z-40 ${
+          isCategoryModalVisible ? "block" : "hidden"
+        }`}
+      ></div> */}
     </nav>
   );
 };
