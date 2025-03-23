@@ -1,14 +1,16 @@
-import { Avatar, Pagination, DatePicker, Input } from "antd";
+import { Avatar, Pagination } from "antd";
+import { Card, Badge, Button, Rate, Typography } from "antd";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchInfoStoreid } from "../redux/slices/accountSlice";
 import { fetchProductStoreid } from "../redux/slices/storeSlice";
-import { MessageOutlined } from "@ant-design/icons";
-
-const { RangePicker } = DatePicker;
-const { Search } = Input;
-
+import { MessageOutlined, HeartOutlined, EyeOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+const { Text } = Typography;
+const formatPrice = (price) => {
+  return new Intl.NumberFormat("vi-VN").format(price);
+};
 export default function StoreInfoPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -19,32 +21,16 @@ export default function StoreInfoPage() {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // State quản lý filter và search
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [startFilterDate, setStartFilterDate] = useState(null);
-  const [endFilterDate, setEndFilterDate] = useState(null);
-
   useEffect(() => {
     dispatch(fetchInfoStoreid(id));
     dispatch(
       fetchProductStoreid({
-        storeID: id,
+        storeID: Number(id),
         pageIndex,
         pageSize,
-        searchKeyword,
-        startFilterDate,
-        endFilterDate,
       })
     );
-  }, [
-    dispatch,
-    id,
-    pageIndex,
-    pageSize,
-    searchKeyword,
-    startFilterDate,
-    endFilterDate,
-  ]);
+  }, [dispatch, id, pageIndex, pageSize]);
 
   // Hàm tính số tháng từ ngày tạo
   function calculateMonthsSince(dateString) {
@@ -72,7 +58,7 @@ export default function StoreInfoPage() {
   }
 
   return (
-    <div className="bg-white min-h-screen p-6">
+    <div className="bg-white min-h-screen p-6 mx-auto container">
       {/* Header với background và nút Chat Now */}
       <div
         className="relative h-64 rounded-lg overflow-hidden flex items-end p-6"
@@ -91,7 +77,7 @@ export default function StoreInfoPage() {
           />
           <div className="text-white">
             <h1 className="text-2xl font-semibold">{storeInfo.name}</h1>
-            <p>Online 7 giờ trước</p>
+            <p>Online 7 hours ago</p>
           </div>
           <button className="ml-auto bg-blue-500 text-white px-4 py-2 rounded-lg hover:text-blue-600 hover:bg-white hover:border hover:border-blue-500">
             <MessageOutlined className="mr-2" />
@@ -119,7 +105,7 @@ export default function StoreInfoPage() {
           <p className="text-gray-600">Joined (months ago)</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow text-center">
-          <h3 className="text-xl font-semibold">{storeInfo.provinceName}</h3>
+          <h3 className="text-xl font-semibold ">{storeInfo.provinceName}</h3>
           <p className="text-gray-600">Address</p>
         </div>
       </div>
@@ -139,25 +125,66 @@ export default function StoreInfoPage() {
       {/* Danh sách sản phẩm */}
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-4">All products</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {dataProduct.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-lg shadow overflow-hidden"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-40 object-cover"
-              />
-              <div className="p-4">
-                <h4 className="font-semibold">{product.name}</h4>
-                <p className="text-gray-600">{product.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 sm:grid-cols-4 gap-4">
+          {Array.isArray(dataProduct.devicesIot) &&
+            dataProduct.devicesIot.map((product) => (
+              <Link
+                to={`/detail/${product.id}`}
+                key={product.id} // Add the key prop here
+              >
+                <Card
+                  hoverable
+                  className="w-full h-96 bg-white shadow-md rounded-lg m-2 group flex flex-col"
+                  cover={
+                    <div className="relative flex-shrink-0">
+                      <Badge.Ribbon text="New" color="red">
+                        <img
+                          alt={product.name}
+                          src={product.imageUrl || "/placeholder.jpg"}
+                          className="w-full h-48 rounded-t-lg scale-100 transition-all duration-300 group-hover:scale-90 p-0"
+                        />
+                      </Badge.Ribbon>
 
+                      <div className="absolute top-2 left-2 flex space-x-2">
+                        <Button
+                          shape="circle"
+                          className="bg-white p-2 rounded-full shadow-md"
+                          icon={<HeartOutlined />}
+                        />
+                        <Button
+                          shape="circle"
+                          className="bg-white p-2 rounded-full shadow-md"
+                          icon={<EyeOutlined />}
+                        />
+                      </div>
+                    </div>
+                  }
+                >
+                  {/* context card */}
+                  <div className="flex flex-col flex-grow space-y-2">
+                    <div className="h-14 overflow-hidden">
+                      <Text
+                        strong
+                        className="text-lg font-bold group-hover:text-headerBg line-clamp-2 overflow-ellipsis overflow-hidden"
+                      >
+                        {product.name}
+                      </Text>
+                    </div>
+                    {product.product}
+                    <div className="flex items-center space-x-2">
+                      <Text strong className="text-xl text-red-500">
+                        {formatPrice(product.price)}đ
+                      </Text>
+                    </div>
+                    <div className="flex items-center">
+                      <Rate disabled allowHalf defaultValue={product.rating} />
+                      <Text className="text-gray-500 ml-2">(88)</Text>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+        </div>
         {/* Pagination */}
         <div className="mt-6 flex justify-center">
           <Pagination

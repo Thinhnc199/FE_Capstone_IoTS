@@ -1,28 +1,31 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import Titles from "../components/common/Titles";
-import { fetchProducts } from "../redux/slices/productSlice";
+import {
+  fetchProducts,
+  setPageIndex,
+  setPageSize,
+} from "../redux/slices/productSlice";
 import ProductCard from "./Home/components/ProductCard";
-
+import { Pagination } from "antd";
 export default function ViewAllProduct() {
   const dispatch = useDispatch();
 
   const {
     items,
-
     pageIndex,
     pageSize,
-
     searchKeyword,
     startFilterDate,
     endFilterDate,
+    totalCount,
   } = useSelector((state) => state.products);
 
   useEffect(() => {
     dispatch(
       fetchProducts({
         pageIndex,
-        pageSize: 100,
+        pageSize,
         searchKeyword: searchKeyword,
         startFilterDate: startFilterDate,
         endFilterDate: endFilterDate,
@@ -36,6 +39,10 @@ export default function ViewAllProduct() {
     startFilterDate,
     endFilterDate,
   ]);
+  const handlePageChange = (newPage, newPageSize) => {
+    dispatch(setPageIndex(newPage));
+    dispatch(setPageSize(newPageSize));
+  };
 
   return (
     <div className="container mx-auto  p-4  bg-white shadow-lg my-6">
@@ -52,6 +59,17 @@ export default function ViewAllProduct() {
         ) : (
           <p>No products available</p>
         )}
+      </div>
+      {/* Pagination */}
+      <div className="mt-6 flex justify-end">
+        <Pagination
+          current={pageIndex}
+          pageSize={pageSize}
+          total={totalCount}
+          onChange={handlePageChange}
+          showSizeChanger={true}
+          pageSizeOptions={["10", "20", "30", "50"]}
+        />
       </div>
     </div>
   );
