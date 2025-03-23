@@ -1,4 +1,3 @@
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
 import { message } from "antd";
@@ -26,16 +25,20 @@ export const sendOtp = createAsyncThunk(
         return rejectWithValue(error);
       }
 
-      if (error.response && error.response.status === 400 && error.response.data) {
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data
+      ) {
         return rejectWithValue(error.response.data);
       }
 
-      return rejectWithValue("No response from server. Please check your connection.");
-
+      return rejectWithValue(
+        "No response from server. Please check your connection."
+      );
     }
   }
 );
-
 
 export const registerUser = createAsyncThunk(
   "store/registerUser",
@@ -59,11 +62,12 @@ export const registerUser = createAsyncThunk(
 
       return rejectWithValue("Registration failed");
     } catch (error) {
-
       console.error("❌ Full Registration Error Object:", error);
 
       if (error.response && error.response.status === 400) {
-        const errorMessage = error.response.data?.message || "Registration failed due to invalid data.";
+        const errorMessage =
+          error.response.data?.message ||
+          "Registration failed due to invalid data.";
         message.error(errorMessage);
         return rejectWithValue(error.response.data);
       }
@@ -71,44 +75,10 @@ export const registerUser = createAsyncThunk(
       const genericError = error || "Registration failed. Please try again.";
       message.error(genericError);
       return rejectWithValue(genericError);
-
     }
   }
 );
 
-
-// get product store by user
-// export const fetchProductStoreid = createAsyncThunk(
-//   "store/fetchProductStoreid",
-//   async (
-//     {
-//       storeID,
-//       pageIndex,
-//       pageSize,
-//       searchKeyword,
-//       startFilterDate,
-//       endFilterDate,
-//     },
-//     { rejectWithValue }
-//   ) => {
-//     try {
-//       const response = await api.post(
-//         `/api/store/get-pagination-product-by-stores-id`,
-//         {
-//           pageIndex,
-//           pageSize,
-//           searchKeyword,
-//           startFilterDate,
-//           endFilterDate,
-//         },
-//         { storeID: storeID }
-//       );
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.message || error.message);
-//     }
-//   }
-// );
 export const fetchProductStoreid = createAsyncThunk(
   "store/fetchProductStoreid",
   async (
@@ -123,21 +93,27 @@ export const fetchProductStoreid = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      // Tạo query parameters
       const params = {
-        storeID,
+        storeId: storeID, // Thêm storeId vào query parameters
+      };
+
+      // Tạo request body
+      const body = {
         pageIndex,
         pageSize,
         searchKeyword,
+        startFilterDate,
+        endFilterDate,
       };
 
-      // Thêm startFilterDate và endFilterDate nếu chúng không null
-      if (startFilterDate) params.startFilterDate = startFilterDate;
-      if (endFilterDate) params.endFilterDate = endFilterDate;
-
+      // Gọi API
       const response = await api.post(
         `/api/store/get-pagination-product-by-stores-id`,
-        params
+        body, // Truyền body vào đây
+        { params } // Truyền query parameters vào đây
       );
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
