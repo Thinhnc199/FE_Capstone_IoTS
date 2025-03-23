@@ -82,11 +82,6 @@ const items2 = [
         label: <Link to="/admin/user-request">User Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
-      {
-        key: "productrequest",
-        label: <Link to="/admin/product-request">Product Requests</Link>,
-        icon: <UnorderedListOutlined />,
-      },
     ],
   },
 ];

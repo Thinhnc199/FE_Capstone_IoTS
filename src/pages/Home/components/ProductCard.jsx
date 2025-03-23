@@ -7,7 +7,7 @@ const { Text } = Typography;
 
 const ProductCard = ({ product }) => {
   if (!product || product.deviceTypeLabel !== "New") return null;
-  console.log("ổt", product.deviceTypeLabel);
+  // console.log("ổt", product.deviceTypeLabel);
 
   const discountPercentage =
     ((product.price - product.secondHandPrice) / product.price) * 100;

@@ -2,8 +2,6 @@
 // import api from "../../api/apiConfig";
 // import { message } from "antd";
 
-
-
 // // storeSlice.js
 
 // export const sendOtpStore = createAsyncThunk(
@@ -91,11 +89,9 @@
 // export const { resetStoreState } = storeSlice.actions;
 // export default storeSlice.reducer;
 
-
-
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
-import { message } from 'antd';
+import { message } from "antd";
 
 export const sendOtp = createAsyncThunk(
   "store/sendOtp",
@@ -122,16 +118,21 @@ export const sendOtp = createAsyncThunk(
       }
 
       // ✅ Nếu API trả về lỗi 400 có message, hiển thị message
-      if (error.response && error.response.status === 400 && error.response.data?.message) {
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data?.message
+      ) {
         return rejectWithValue(error.response.data.message);
       }
 
       // Nếu API không phản hồi, trả về lỗi mạng
-      return rejectWithValue("No response from server. Please check your connection.");
+      return rejectWithValue(
+        "No response from server. Please check your connection."
+      );
     }
   }
 );
-
 
 // ✅ Send OTP for Store/Trainer Registration
 // export const sendOtp = createAsyncThunk(
@@ -142,9 +143,9 @@ export const sendOtp = createAsyncThunk(
 //         role === 4
 //           ? "/api/trainer/create-trainer-user-request-verify-otp"
 //           : "/api/store/create-store-user-request-verify-otp";
-      
+
 //       const response = await api.post(apiEndpoint, { email });
-      
+
 //       if (response.status !== 200) {
 //         return rejectWithValue("Failed to send OTP.");
 //       }
@@ -156,7 +157,7 @@ export const sendOtp = createAsyncThunk(
 
 //       // Hiển thị lỗi trên giao diện
 //       message.error(errorMessage);
-//       console.error("API Error:", errorMessage); 
+//       console.error("API Error:", errorMessage);
 
 //       return rejectWithValue(errorMessage);
 //     }
@@ -167,9 +168,10 @@ export const sendOtp = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   "store/registerUser",
   async ({ userInfo, otp, password, roleId }, { rejectWithValue }) => {
-    const registerApi = roleId === 4
-      ? "/api/trainer/register-trainer-user"
-      : "/api/store/register-store-user";
+    const registerApi =
+      roleId === 4
+        ? "/api/trainer/register-trainer-user"
+        : "/api/store/register-store-user";
 
     try {
       const response = await api.post(registerApi, {
@@ -185,22 +187,92 @@ export const registerUser = createAsyncThunk(
 
       return rejectWithValue("Registration failed");
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Registration failed";
+      const errorMessage =
+        error.response?.data?.message || "Registration failed";
       message.error(errorMessage);
       return rejectWithValue(errorMessage);
     }
   }
 );
 
+// get product store by user
+// export const fetchProductStoreid = createAsyncThunk(
+//   "store/fetchProductStoreid",
+//   async (
+//     {
+//       storeID,
+//       pageIndex,
+//       pageSize,
+//       searchKeyword,
+//       startFilterDate,
+//       endFilterDate,
+//     },
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const response = await api.post(
+//         `/api/store/get-pagination-product-by-stores-id`,
+//         {
+//           pageIndex,
+//           pageSize,
+//           searchKeyword,
+//           startFilterDate,
+//           endFilterDate,
+//         },
+//         { storeID: storeID }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.message || error.message);
+//     }
+//   }
+// );
+export const fetchProductStoreid = createAsyncThunk(
+  "store/fetchProductStoreid",
+  async (
+    {
+      storeID,
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const params = {
+        storeID,
+        pageIndex,
+        pageSize,
+        searchKeyword,
+      };
+
+      // Thêm startFilterDate và endFilterDate nếu chúng không null
+      if (startFilterDate) params.startFilterDate = startFilterDate;
+      if (endFilterDate) params.endFilterDate = endFilterDate;
+
+      const response = await api.post(
+        `/api/store/get-pagination-product-by-stores-id`,
+        params
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // Store Slice
 const storeSlice = createSlice({
-  name: 'store',
+  name: "store",
   initialState: {
-    email: '',
-    selectedRole: 6, 
+    email: "",
+    selectedRole: 6,
     loading: false,
     error: null,
     success: false,
+    dataProduct: [],
   },
   reducers: {
     setRole: (state, action) => {
@@ -238,6 +310,23 @@ const storeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.success = false;
+      })
+      // dataa product story get by usser
+      .addCase(fetchProductStoreid.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(fetchProductStoreid.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.dataProduct = action.payload?.data || []; // Tránh lỗi khi API không trả về data
+      })
+
+      .addCase(fetchProductStoreid.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.success = false;
       });
   },
 });
@@ -245,4 +334,3 @@ const storeSlice = createSlice({
 export const { setRole } = storeSlice.actions;
 
 export default storeSlice.reducer;
-

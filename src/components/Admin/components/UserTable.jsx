@@ -4,7 +4,7 @@ import {
   EllipsisOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  EditOutlined,
+  // EditOutlined,
 } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { Modal, Button, Select, Table, Dropdown, message, Tag } from "antd";
@@ -153,15 +153,15 @@ const UserTable = ({
                       </span>
                     ),
                   },
-              {
-                key: "3",
-                label: (
-                  <span onClick={() => handleOpenModal(record, "updateRole")}>
-                    <EditOutlined className="text-black mr-2" />
-                    Update Role
-                  </span>
-                ),
-              },
+              // {
+              //   key: "3",
+              //   label: (
+              //     <span onClick={() => handleOpenModal(record, "updateRole")}>
+              //       <EditOutlined className="text-black mr-2" />
+              //       Update Role
+              //     </span>
+              //   ),
+              // },
             ],
           }}
           trigger={["click"]}
