@@ -54,6 +54,11 @@ import AddressSelector from "../components/StoreIoT/components/AddressSelector";
 
 import CheckProcessOrder from "../pages/CheckProcessOrder";
 import CreateLab from "../components/Trainer/CreateLab";
+import AboutIoTs from "../pages/AboutIoTs";
+import LabRequest from "../components/StoreIoT/LabRequest";
+import LabDetail from "../components/StoreIoT/LabDetail";
+import StoreLabsManagement from "../components/StoreIoT/StoreLabsManagement";
+import ComboLabsManagement from "../components/StoreIoT/ComboLabsManagement";
 // const allowedroles = localStorage.getItem("role");
 // const publicRoute = [
 //   { path: "/", component: Home, layout: MainLayout },
@@ -103,11 +108,13 @@ import CreateLab from "../components/Trainer/CreateLab";
 // export { publicRoute, privateRoute };
 
 const publicRoute = [
-  { path: "/test", component: Test, layout: MainLayout },
+  { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
   { path: "/home", component: Home, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
+  { path: "/about", component: AboutIoTs, layout: MainLayout },
+
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
@@ -316,6 +323,26 @@ const publicRoute = [
     path: "/trainer/create-lab",
     component: CreateLab,
     layout: TrainerLayout,
+  },
+  {
+    path: "/store/lab-request",
+    component: LabRequest,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/detail-labRequest/:labId",
+    component: LabDetail,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/labs-management",
+    component: StoreLabsManagement,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/combo-labs",
+    component: ComboLabsManagement,
+    layout: StoreIotLayout,
   },
 ];
 

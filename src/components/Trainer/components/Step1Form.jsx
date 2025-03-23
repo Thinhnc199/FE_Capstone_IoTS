@@ -1,6 +1,4 @@
-// src/components/Step1Form.jsx
-import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Form,
@@ -12,14 +10,24 @@ import {
   Image,
   notification,
   Input as SearchInput,
+  Tooltip,
 } from "antd";
-import { UploadOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  InfoCircleOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import {
   createLabInformation,
   getLabInformation,
+  uploadLabVideo,
+  updateLabInformation, // Thêm import mới
 } from "./../../../redux/slices/labSlice";
 import { fetchCombos } from "./../../../redux/slices/comboSlice";
 import { uploadFiles } from "./../../../api/apiConfig";
+import PropTypes from "prop-types";
 
 const { TextArea } = Input;
 
@@ -38,30 +46,66 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
     initialData?.imageUrl ||
       "https://i.pinimg.com/736x/5c/ab/fd/5cabfdca18c19e5cecd8c0c62e8cc697.jpg"
   );
-  const [videoUrl, setVideoUrl] = useState(
-    initialData?.previewVideoUrl ||
-      "https://www.youtube.com/embed/tkDw607lm4U?si=i6QDwoRLNdHCNYJ9"
-  );
+  const [videoUrl, setVideoUrl] = useState(initialData?.previewVideoUrl || "");
   const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(!initialData); // Ban đầu dựa trên initialData
+  const [isEditMode, setIsEditMode] = useState(!initialData);
   const [isComboModalVisible, setIsComboModalVisible] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState(
     initialData?.comboId || null
   );
   const [uploading, setUploading] = useState(false);
+  const [videoFile, setVideoFile] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const hasFetchedRef = useRef(false);
 
-  // Fetch combos khi component mount và cập nhật lại khi có initialData
   useEffect(() => {
     dispatch(fetchCombos({ pageIndex: 1, pageSize: 10, searchKeyword: "" }));
-    if (initialData?.labId) {
+    if (initialData?.labId && !hasFetchedRef.current) {
+      console.log("Fetching lab info for labId:", initialData.labId);
       dispatch(getLabInformation(initialData.labId));
+      hasFetchedRef.current = true;
     }
-    // Khi có initialData (tức là quay lại từ Step 2), cho phép chỉnh sửa
-    if (initialData) {
-      setIsEditMode(false); // Đặt lại isEditMode để hiển thị nút Edit/Next
+  }, [dispatch, initialData?.labId]);
+
+  useEffect(() => {
+    console.log("Lab state:", labInfo);
+    if (initialData?.labId && labInfo) {
+      console.log("Lab info received:", labInfo);
+      form.setFieldsValue({
+        title: labInfo.title,
+        summary: labInfo.summary,
+        comboId: labInfo.comboId,
+        description: labInfo.description,
+        price: labInfo.price,
+      });
+      setImageUrl(labInfo.imageUrl || imageUrl);
+      setVideoUrl(labInfo.previewVideoUrl || videoUrl);
+      setSelectedCombo(labInfo.comboId || null);
     }
-  }, [dispatch, initialData]);
+  }, [labInfo, form, initialData?.labId, imageUrl, videoUrl]);
+
+  useEffect(() => {
+    if (videoFile && isEditMode) {
+      const uploadVideo = async () => {
+        setUploading(true);
+        try {
+          const result = await dispatch(uploadLabVideo(videoFile)).unwrap();
+          setVideoUrl(result.id);
+          notification.success({ message: "Video uploaded successfully!" });
+        } catch (err) {
+          console.error("Auto-upload video failed:", err);
+          notification.error({
+            message: "Failed to upload video",
+            description: err?.message || "Unknown error",
+          });
+          setVideoFile(null);
+        } finally {
+          setUploading(false);
+        }
+      };
+      uploadVideo();
+    }
+  }, [videoFile, dispatch, isEditMode]);
 
   const handleFinish = async (values) => {
     const labData = {
@@ -69,19 +113,40 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
       summary: values.summary,
       comboId: selectedCombo,
       description: values.description,
-      serialNumber: `LAB${Math.floor(Math.random() * 1000)}`,
+      serialNumber:
+        initialData?.serialNumber || `LAB${Math.floor(Math.random() * 1000)}`,
       imageUrl,
       previewVideoUrl: videoUrl,
       price: parseFloat(values.price),
     };
 
     try {
-      const response = await dispatch(createLabInformation(labData)).unwrap();
-      notification.success({ message: "Lab created successfully!" });
-      onSubmit({ ...labData, labId: response?.labId });
+      if (initialData?.labId && isEditMode) {
+        // Update mode
+        await dispatch(
+          updateLabInformation({ labId: initialData.labId, data: labData })
+        ).unwrap();
+        notification.success({ message: "Lab updated successfully!" });
+        onSubmit({ ...labData, labId: initialData.labId });
+        setIsEditMode(false);
+      } else {
+        // Create mode
+        const response = await dispatch(createLabInformation(labData)).unwrap();
+        notification.success({ message: "Lab created successfully!" });
+        const labId = response?.data?.id;
+        if (labId) {
+          onSubmit({ ...labData, labId });
+          goToStep2();
+        } else {
+          throw new Error("Lab ID not found in response");
+        }
+      }
     } catch (error) {
       notification.error({
-        message: "Failed to create lab",
+        message:
+          initialData?.labId && isEditMode
+            ? "Failed to update lab"
+            : "Failed to create lab",
         description: error.message,
       });
     }
@@ -93,7 +158,16 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
     form.setFieldsValue({ comboId });
   };
 
-  const uploadProps = {
+  const handleVideoFileChange = (info) => {
+    if (isEditMode) {
+      const selectedFile = info.fileList[0]?.originFileObj;
+      if (selectedFile) {
+        setVideoFile(selectedFile);
+      }
+    }
+  };
+
+  const uploadImageProps = {
     beforeUpload: async (file) => {
       setUploading(true);
       try {
@@ -111,6 +185,23 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
       return false;
     },
     showUploadList: false,
+  };
+
+  const uploadVideoProps = {
+    accept: "video/*",
+    beforeUpload: () => false,
+    onChange: handleVideoFileChange,
+    fileList: videoFile
+      ? [
+          {
+            uid: "-1",
+            name: videoFile.name,
+            status: uploading ? "uploading" : "done",
+          },
+        ]
+      : [],
+    showUploadList: false,
+    disabled: uploading || !isEditMode,
   };
 
   const handleSearch = (value) => {
@@ -167,25 +258,61 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
       layout="vertical"
       onFinish={handleFinish}
       initialValues={{
-        title: initialData?.title || labInfo?.title,
-        summary: initialData?.summary || labInfo?.summary,
-        comboId: initialData?.comboId || labInfo?.comboId || null,
-        description: initialData?.description || labInfo?.description,
-        price: initialData?.price || labInfo?.price,
+        title: labInfo?.title || initialData?.title,
+        summary: labInfo?.summary || initialData?.summary,
+        comboId: labInfo?.comboId || initialData?.comboId,
+        description: labInfo?.description || initialData?.description,
+        price: labInfo?.price || initialData?.price,
       }}
-      disabled={!isEditMode && initialData} // Disable form khi không ở edit mode và có initialData
+      disabled={!isEditMode && !!initialData?.labId}
+      className="p-6 bg-white rounded-lg shadow-lg"
     >
-      <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-        <Input placeholder="Enter lab title" />
-      </Form.Item>
-
-      <Form.Item name="summary" label="Summary" rules={[{ required: true }]}>
-        <Input placeholder="Enter lab summary" />
-      </Form.Item>
-
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+        Lab Information
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Form.Item
+          name="title"
+          label={
+            <span>
+              Title{" "}
+              <Tooltip title="Enter a unique title for the lab">
+                <InfoCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          rules={[{ required: true, message: "Please enter a title" }]}
+          className="mb-4"
+        >
+          <Input placeholder="Enter lab title" size="large" />
+        </Form.Item>
+        <Form.Item
+          name="summary"
+          label={
+            <span>
+              Summary{" "}
+              <Tooltip title="Provide a brief summary of the lab">
+                <InfoCircleOutlined />
+              </Tooltip>
+            </span>
+          }
+          rules={[{ required: true, message: "Please enter a summary" }]}
+          className="mb-4"
+        >
+          <Input placeholder="Enter lab summary" size="large" />
+        </Form.Item>
+      </div>
       <Form.Item
-        label="Combo"
+        label={
+          <span>
+            Combo{" "}
+            <Tooltip title="Select a combo associated with this lab">
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        }
         rules={[{ required: true, message: "Please select a combo" }]}
+        className="mb-4"
       >
         <Input
           value={
@@ -196,67 +323,161 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
           placeholder="Select a combo"
           readOnly
           onClick={() => setIsComboModalVisible(true)}
-          className="cursor-pointer"
+          className="cursor-pointer border-2 border-gray-300 rounded-lg p-2 hover:border-blue-500 transition-colors"
+          size="large"
         />
       </Form.Item>
-
       <Form.Item
         name="description"
-        label="Description"
-        rules={[{ required: true }]}
+        label={
+          <span>
+            Description{" "}
+            <Tooltip title="Enter detailed description of the lab">
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        }
+        rules={[{ required: true, message: "Please enter a description" }]}
+        className="mb-4"
       >
-        <TextArea rows={4} placeholder="Enter lab description" />
-      </Form.Item>
-
-      <Form.Item label="Image">
-        <Upload {...uploadProps} listType="picture" maxCount={1}>
-          <Button icon={<UploadOutlined />} loading={uploading}>
-            Upload Image
-          </Button>
-        </Upload>
-        {imageUrl && (
-          <div className="mt-2">
-            <img
-              src={imageUrl}
-              alt="preview"
-              className="w-32 h-32 object-cover rounded"
-            />
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={() => setImageUrl("")}
-              className="mt-2"
-            >
-              Delete
-            </Button>
-          </div>
-        )}
-      </Form.Item>
-
-      <Form.Item label="Preview Video">
-        <Input
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
-          placeholder="Enter YouTube embed URL"
-          addonAfter={
-            <EyeOutlined onClick={() => setIsVideoModalVisible(true)} />
-          }
+        <TextArea
+          rows={4}
+          placeholder="Enter lab description"
+          size="large"
+          className="resize-vertical"
         />
       </Form.Item>
 
-      <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-        <Input type="number" placeholder="Enter price" />
-      </Form.Item>
+      <div className="grid grid-cols-1 gap-8">
+        <Form.Item
+          label={<span className="text-lg font-medium">Image</span>}
+          className="mb-6"
+        >
+          <div className="flex flex-col items-center">
+            <Upload {...uploadImageProps} listType="picture" maxCount={1}>
+              <Button
+                icon={uploading ? <LoadingOutlined /> : <UploadOutlined />}
+                size="large"
+                className={`w-64 ${
+                  uploading ? "bg-gray-400" : "bg-blue-500"
+                } text-white hover:bg-blue-600 transition-colors`}
+                disabled={uploading || !isEditMode}
+              >
+                {uploading ? "Uploading..." : "Upload Image"}
+              </Button>
+            </Upload>
+            {imageUrl && (
+              <div className="mt-6 flex flex-col items-center gap-4">
+                <div className="relative group w-[300px] h-[200px]">
+                  <img
+                    src={imageUrl}
+                    alt="preview"
+                    className="w-full h-full object-cover rounded-lg border border-gray-300 transition-transform group-hover:scale-105 shadow-md"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center rounded-lg transition-opacity">
+                    <Button
+                      icon={<DeleteOutlined />}
+                      danger
+                      size="middle"
+                      onClick={() => setImageUrl("")}
+                      disabled={!isEditMode}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-red"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Form.Item>
 
-      <div className="flex justify-end gap-4">
-        {initialData && !isEditMode ? (
+        <Form.Item
+          label={<span className="text-lg font-medium">Preview Video</span>}
+          className="mb-6"
+        >
+          <div className="flex flex-col items-center">
+            <Upload {...uploadVideoProps}>
+              <Button
+                icon={uploading ? <LoadingOutlined /> : <UploadOutlined />}
+                size="large"
+                className={`w-64 ${
+                  uploading ? "bg-gray-400" : "bg-blue-500"
+                } text-white hover:bg-blue-600 transition-colors`}
+                disabled={uploading || !isEditMode}
+              >
+                {uploading ? "Uploading..." : "Select Video"}
+              </Button>
+            </Upload>
+            {videoUrl && (
+              <div className="mt-6 flex flex-col items-center gap-4 w-full">
+                <div className="relative group w-[300px] h-[200px]">
+                  <video
+                    src={videoUrl}
+                    className="w-full h-full object-cover rounded-lg border border-gray-300 transition-transform group-hover:scale-105 shadow-md"
+                    muted
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center rounded-lg transition-opacity">
+                    <Button
+                      icon={<EyeOutlined />}
+                      size="middle"
+                      onClick={() => setIsVideoModalVisible(true)}
+                      className="opacity-0 group-hover:opacity-100 text-white bg-blue-500 hover:bg-blue-600 transition-opacity mr-2"
+                    >
+                      View
+                    </Button>
+                    <Button
+                      icon={<DeleteOutlined />}
+                      danger
+                      size="middle"
+                      onClick={() => {
+                        setVideoUrl("");
+                        setVideoFile(null);
+                      }}
+                      disabled={!isEditMode}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-red"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Form.Item>
+      </div>
+
+      <Form.Item
+        name="price"
+        label={
+          <span>
+            Price ($){" "}
+            <Tooltip title="Enter the price for this lab">
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        }
+        rules={[{ required: true, message: "Please enter a price" }]}
+        className="mb-4"
+      >
+        <Input type="number" placeholder="Enter price" size="large" />
+      </Form.Item>
+      <div className="flex justify-end gap-4 mt-6">
+        {initialData?.labId && !isEditMode ? (
           <>
-            <Button onClick={goToStep2} disabled={labLoading || comboLoading}>
+            <Button
+              onClick={goToStep2}
+              disabled={labLoading || comboLoading}
+              size="large"
+              className="bg-green-500 text-white hover:bg-green-600"
+            >
               Next
             </Button>
             <Button
               onClick={() => setIsEditMode(true)}
               disabled={labLoading || comboLoading}
+              size="large"
+              className="bg-yellow-500 text-white hover:bg-yellow-600"
             >
               Edit
             </Button>
@@ -266,37 +487,39 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
             type="primary"
             htmlType="submit"
             loading={labLoading || comboLoading}
+            size="large"
+            className="bg-blue-500 hover:bg-blue-600"
           >
-            Submit
+            {initialData?.labId && isEditMode ? "Update" : "Submit"}
           </Button>
         )}
       </div>
-
-      {/* Modal for Video Preview */}
       <Modal
         visible={isVideoModalVisible}
         footer={null}
         onCancel={() => setIsVideoModalVisible(false)}
-        width={800}
+        width={900}
+        className="rounded-lg"
       >
-        <iframe
-          width="100%"
-          height="450"
+        <video
+          controls
           src={videoUrl}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+          className="w-full rounded-lg"
+          style={{ maxHeight: "500px" }}
+        >
+          Your browser does not support the video tag.
+        </video>
       </Modal>
-
-      {/* Modal for Combo Selection */}
       <Modal
-        title="Select a Combo"
+        title={<span className="text-xl font-semibold">Select a Combo</span>}
         visible={isComboModalVisible}
         onCancel={() => setIsComboModalVisible(false)}
         footer={[
-          <Button key="cancel" onClick={() => setIsComboModalVisible(false)}>
+          <Button
+            key="cancel"
+            onClick={() => setIsComboModalVisible(false)}
+            size="large"
+          >
             Cancel
           </Button>,
           <Button
@@ -304,17 +527,22 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
             type="primary"
             onClick={() => handleComboSelect(selectedCombo)}
             disabled={!selectedCombo}
+            size="large"
+            className="bg-blue-500 hover:bg-blue-600"
           >
             Save
           </Button>,
         ]}
-        width={800}
+        width={1000}
+        className="rounded-lg"
       >
         <SearchInput
           placeholder="Search combos by name"
           value={searchKeyword}
           onChange={(e) => handleSearch(e.target.value)}
-          style={{ marginBottom: 16 }}
+          size="large"
+          style={{ marginBottom: 16, width: "100%" }}
+          className="mb-4"
         />
         <Table
           loading={comboLoading}
@@ -325,17 +553,22 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
             onClick: () => setSelectedCombo(record.id),
             className: `${
               selectedCombo === record.id ? "bg-bgColer" : ""
-            } cursor-pointer`,
+            } cursor-pointer hover:bg-gray-100 transition-colors`,
           })}
           pagination={{
             current: pageIndex,
-            pageSize: pageSize,
+            pageSize,
             total: totalCount,
             showSizeChanger: true,
             pageSizeOptions: ["5", "10", "20"],
             onChange: (page, pageSize) =>
               handleTableChange({ current: page, pageSize }),
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`,
+            className: "mt-4",
           }}
+          className="rounded-lg shadow-md"
+          size="middle"
         />
       </Modal>
     </Form>
@@ -361,5 +594,689 @@ Step1Form.propTypes = {
 Step1Form.defaultProps = {
   initialData: {},
 };
-
 export default Step1Form;
+
+// import { useState, useEffect, useRef } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import {
+//   Form,
+//   Input,
+//   Button,
+//   Upload,
+//   Modal,
+//   Table,
+//   Image,
+//   notification,
+//   Input as SearchInput,
+//   Tooltip,
+// } from "antd";
+// import {
+//   UploadOutlined,
+//   EyeOutlined,
+//   DeleteOutlined,
+//   InfoCircleOutlined,
+//   LoadingOutlined,
+// } from "@ant-design/icons";
+// import {
+//   createLabInformation,
+//   getLabInformation,
+//   uploadLabVideo,
+// } from "./../../../redux/slices/labSlice";
+// import { fetchCombos } from "./../../../redux/slices/comboSlice";
+// import { uploadFiles } from "./../../../api/apiConfig";
+// import PropTypes from "prop-types";
+
+// const { TextArea } = Input;
+
+// const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
+//   const [form] = Form.useForm();
+//   const dispatch = useDispatch();
+//   const {
+//     combos,
+//     loading: comboLoading,
+//     totalCount,
+//     pageIndex,
+//     pageSize,
+//   } = useSelector((state) => state.combo);
+//   const { labInfo, loading: labLoading } = useSelector((state) => state.lab); // Thêm uploadedVideoUrl từ state.lab
+//   const [imageUrl, setImageUrl] = useState(
+//     initialData?.imageUrl ||
+//       "https://i.pinimg.com/736x/5c/ab/fd/5cabfdca18c19e5cecd8c0c62e8cc697.jpg"
+//   );
+//   const [videoUrl, setVideoUrl] = useState(initialData?.previewVideoUrl || "");
+//   const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
+//   const [isEditMode, setIsEditMode] = useState(!initialData);
+//   const [isComboModalVisible, setIsComboModalVisible] = useState(false);
+//   const [selectedCombo, setSelectedCombo] = useState(
+//     initialData?.comboId || null
+//   );
+//   const [uploading, setUploading] = useState(false);
+//   const [videoFile, setVideoFile] = useState(null); // Lưu file video được chọn
+//   const [searchKeyword, setSearchKeyword] = useState("");
+//   const hasFetchedRef = useRef(false);
+
+//   useEffect(() => {
+//     dispatch(fetchCombos({ pageIndex: 1, pageSize: 10, searchKeyword: "" }));
+//     if (initialData?.labId && !hasFetchedRef.current) {
+//       console.log("Fetching lab info for labId:", initialData.labId);
+//       dispatch(getLabInformation(initialData.labId));
+//       hasFetchedRef.current = true;
+//     }
+//   }, [dispatch, initialData?.labId]);
+
+//   useEffect(() => {
+//     console.log("Lab state:", labInfo);
+//     if (initialData?.labId && labInfo) {
+//       console.log("Lab info received:", labInfo);
+//       form.setFieldsValue({
+//         title: labInfo.title,
+//         summary: labInfo.summary,
+//         comboId: labInfo.comboId,
+//         description: labInfo.description,
+//         price: labInfo.price,
+//       });
+//       setImageUrl(labInfo.imageUrl || imageUrl);
+//       setVideoUrl(labInfo.previewVideoUrl || videoUrl);
+//       setSelectedCombo(labInfo.comboId || null);
+//     }
+//   }, [labInfo, form, initialData?.labId, imageUrl, videoUrl]);
+
+//   // Tự động upload video khi chọn file
+//   useEffect(() => {
+//     if (videoFile && isEditMode) {
+//       // Chỉ upload khi ở edit mode
+//       const uploadVideo = async () => {
+//         setUploading(true);
+//         try {
+//           const result = await dispatch(uploadLabVideo(videoFile)).unwrap();
+//           setVideoUrl(result.id); // Gán URL trả về từ API
+//           notification.success({ message: "Video uploaded successfully!" });
+//         } catch (err) {
+//           console.error("Auto-upload video failed:", err);
+//           notification.error({
+//             message: "Failed to upload video",
+//             description: err?.message || "Unknown error",
+//           });
+//           setVideoFile(null);
+//         } finally {
+//           setUploading(false);
+//         }
+//       };
+//       uploadVideo();
+//     }
+//   }, [videoFile, dispatch, isEditMode]);
+
+//   const handleFinish = async (values) => {
+//     const labData = {
+//       title: values.title,
+//       summary: values.summary,
+//       comboId: selectedCombo,
+//       description: values.description,
+//       serialNumber: `LAB${Math.floor(Math.random() * 1000)}`,
+//       imageUrl,
+//       previewVideoUrl: videoUrl,
+//       price: parseFloat(values.price),
+//     };
+
+//     try {
+//       const response = await dispatch(createLabInformation(labData)).unwrap();
+//       notification.success({ message: "Lab created successfully!" });
+//       const labId = response?.data?.id;
+//       if (labId) {
+//         onSubmit({ ...labData, labId });
+//         goToStep2();
+//       } else {
+//         throw new Error("Lab ID not found in response");
+//       }
+//     } catch (error) {
+//       notification.error({
+//         message: "Failed to create lab",
+//         description: error.message,
+//       });
+//     }
+//   };
+
+//   const handleComboSelect = (comboId) => {
+//     setSelectedCombo(comboId);
+//     setIsComboModalVisible(false);
+//     form.setFieldsValue({ comboId });
+//   };
+
+//   const handleVideoFileChange = (info) => {
+//     if (isEditMode) {
+//       // Chỉ cho phép chọn file khi ở edit mode
+//       const selectedFile = info.fileList[0]?.originFileObj;
+//       if (selectedFile) {
+//         setVideoFile(selectedFile); // Kích hoạt useEffect để upload tự động
+//       }
+//     }
+//   };
+
+//   const uploadImageProps = {
+//     beforeUpload: async (file) => {
+//       setUploading(true);
+//       try {
+//         const fileId = await uploadFiles(file);
+//         setImageUrl(fileId);
+//         notification.success({ message: "Image uploaded successfully!" });
+//       } catch (error) {
+//         notification.error({
+//           message: "Failed to upload image",
+//           description: error.message,
+//         });
+//       } finally {
+//         setUploading(false);
+//       }
+//       return false;
+//     },
+//     showUploadList: false,
+//   };
+
+//   const uploadVideoProps = {
+//     accept: "video/*",
+//     beforeUpload: () => false,
+//     onChange: handleVideoFileChange,
+//     fileList: videoFile
+//       ? [
+//           {
+//             uid: "-1",
+//             name: videoFile.name,
+//             status: uploading ? "uploading" : "done",
+//           },
+//         ]
+//       : [],
+//     showUploadList: false, // Tắt danh sách mặc định để tự quản lý UI
+//     disabled: uploading || !isEditMode,
+//   };
+//   // const uploadImageProps = {
+//   //   beforeUpload: async (file) => {
+//   //     setUploading(true);
+//   //     try {
+//   //       const fileId = await uploadFiles(file);
+//   //       setImageUrl(fileId);
+//   //       notification.success({ message: 'Image uploaded successfully!' });
+//   //     } catch (error) {
+//   //       notification.error({ message: 'Failed to upload image', description: error.message });
+//   //     } finally {
+//   //       setUploading(false);
+//   //     }
+//   //     return false;
+//   //   },
+//   //   showUploadList: false,
+//   // };
+
+//   // const uploadVideoProps = {
+//   //   accept: 'video/*',
+//   //   beforeUpload: () => false, // Ngăn upload tự động từ component Upload
+//   //   onChange: handleVideoFileChange,
+//   //   fileList: videoFile ? [{ uid: '-1', name: videoFile.name, status: uploading ? 'uploading' : 'done' }] : [],
+//   //   showUploadList: true,
+//   //   disabled: uploading || !isEditMode,
+//   // };
+
+//   const handleSearch = (value) => {
+//     setSearchKeyword(value);
+//     dispatch(fetchCombos({ pageIndex: 1, pageSize, searchKeyword: value }));
+//   };
+
+//   const handleTableChange = (pagination) => {
+//     dispatch(
+//       fetchCombos({
+//         pageIndex: pagination.current,
+//         pageSize: pagination.pageSize,
+//         searchKeyword,
+//       })
+//     );
+//   };
+
+//   const columns = [
+//     {
+//       title: "Image",
+//       dataIndex: "imageUrl",
+//       key: "imageUrl",
+//       render: (imageUrl) => (
+//         <Image
+//           width={50}
+//           src={imageUrl || "https://via.placeholder.com/50"}
+//           alt="Combo Image"
+//         />
+//       ),
+//     },
+//     {
+//       title: "Name",
+//       dataIndex: "name",
+//       key: "name",
+//       render: (text) => <span className="font-bold">{text}</span>,
+//     },
+//     {
+//       title: "Store",
+//       dataIndex: "storeNavigationName",
+//       key: "storeNavigationName",
+//       render: (text) => <span>{text || "Unknown Store"}</span>,
+//     },
+//     {
+//       title: "Price",
+//       dataIndex: "price",
+//       key: "price",
+//       render: (text) => <span>${text}</span>,
+//     },
+//   ];
+
+//   return (
+//     <Form
+//       form={form}
+//       layout="vertical"
+//       onFinish={handleFinish}
+//       initialValues={{
+//         title: labInfo?.title || initialData?.title,
+//         summary: labInfo?.summary || initialData?.summary,
+//         comboId: labInfo?.comboId || initialData?.comboId,
+//         description: labInfo?.description || initialData?.description,
+//         price: labInfo?.price || initialData?.price,
+//       }}
+//       disabled={!isEditMode && !!initialData?.labId}
+//       className="p-6 bg-white rounded-lg shadow-lg"
+//     >
+//       <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+//         Lab Information
+//       </h2>
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//         <Form.Item
+//           name="title"
+//           label={
+//             <span>
+//               Title{" "}
+//               <Tooltip title="Enter a unique title for the lab">
+//                 <InfoCircleOutlined />
+//               </Tooltip>
+//             </span>
+//           }
+//           rules={[{ required: true, message: "Please enter a title" }]}
+//           className="mb-4"
+//         >
+//           <Input placeholder="Enter lab title" size="large" />
+//         </Form.Item>
+//         <Form.Item
+//           name="summary"
+//           label={
+//             <span>
+//               Summary{" "}
+//               <Tooltip title="Provide a brief summary of the lab">
+//                 <InfoCircleOutlined />
+//               </Tooltip>
+//             </span>
+//           }
+//           rules={[{ required: true, message: "Please enter a summary" }]}
+//           className="mb-4"
+//         >
+//           <Input placeholder="Enter lab summary" size="large" />
+//         </Form.Item>
+//       </div>
+//       <Form.Item
+//         label={
+//           <span>
+//             Combo{" "}
+//             <Tooltip title="Select a combo associated with this lab">
+//               <InfoCircleOutlined />
+//             </Tooltip>
+//           </span>
+//         }
+//         rules={[{ required: true, message: "Please select a combo" }]}
+//         className="mb-4"
+//       >
+//         <Input
+//           value={
+//             selectedCombo
+//               ? combos.find((combo) => combo.id === selectedCombo)?.name
+//               : ""
+//           }
+//           placeholder="Select a combo"
+//           readOnly
+//           onClick={() => setIsComboModalVisible(true)}
+//           className="cursor-pointer border-2 border-gray-300 rounded-lg p-2 hover:border-blue-500 transition-colors"
+//           size="large"
+//         />
+//       </Form.Item>
+//       <Form.Item
+//         name="description"
+//         label={
+//           <span>
+//             Description{" "}
+//             <Tooltip title="Enter detailed description of the lab">
+//               <InfoCircleOutlined />
+//             </Tooltip>
+//           </span>
+//         }
+//         rules={[{ required: true, message: "Please enter a description" }]}
+//         className="mb-4"
+//       >
+//         <TextArea
+//           rows={4}
+//           placeholder="Enter lab description"
+//           size="large"
+//           className="resize-vertical"
+//         />
+//       </Form.Item>
+
+//       {/* <Form.Item label="Image" className="mb-4">
+//         <Upload {...uploadImageProps} listType="picture" maxCount={1}>
+//           <Button
+//             icon={<UploadOutlined />}
+//             loading={uploading}
+//             size="large"
+//             className="w-full bg-blue-500 text-white hover:bg-blue-600"
+//           >
+//             Upload Image
+//           </Button>
+//         </Upload>
+//         {imageUrl && (
+//           <div className="mt-4 flex items-center gap-4">
+//             <img src={imageUrl} alt="preview" className="w-32 h-32 object-cover rounded-lg border border-gray-300" />
+//             <Button
+//               icon={<DeleteOutlined />}
+//               danger
+//               onClick={() => setImageUrl('')}
+//               size="large"
+//               className="ml-2"
+//             >
+//               Delete
+//             </Button>
+//           </div>
+//         )}
+//       </Form.Item>
+//       <Form.Item label="Preview Video" className="mb-4">
+//         <div className="flex items-center gap-4">
+//           <Input
+//             value={videoUrl}
+//             placeholder="Video URL will appear here after upload"
+//             readOnly
+//             disabled
+//             size="large"
+//             className="flex-1"
+//             addonAfter={
+//               videoUrl && <EyeOutlined onClick={() => setIsVideoModalVisible(true)} />
+//             }
+//           />
+//           <Upload {...uploadVideoProps}>
+//             <Button
+//               icon={<UploadOutlined />}
+//               loading={uploading}
+//               disabled={!isEditMode}
+//               size="large"
+//             >
+//               Select Video
+//             </Button>
+//           </Upload>
+//           {videoUrl && (
+//             <Button
+//               icon={<DeleteOutlined />}
+//               danger
+//               onClick={() => {
+//                 setVideoUrl('');
+//                 setVideoFile(null);
+//               }}
+//               disabled={!isEditMode}
+//               size="large"
+//             >
+//             </Button>
+//           )}
+//         </div>
+//       </Form.Item> */}
+//       <div className="grid grid-cols-1 gap-8">
+//         {/* Upload Image */}
+//         <Form.Item
+//           label={<span className="text-lg font-medium">Image</span>}
+//           className="mb-6"
+//         >
+//           <div className="flex flex-col items-center">
+//             <Upload {...uploadImageProps} listType="picture" maxCount={1}>
+//               <Button
+//                 icon={uploading ? <LoadingOutlined /> : <UploadOutlined />}
+//                 size="large"
+//                 className={`w-64 ${
+//                   uploading ? "bg-gray-400" : "bg-blue-500"
+//                 } text-white hover:bg-blue-600 transition-colors`}
+//                 disabled={uploading || !isEditMode}
+//               >
+//                 {uploading ? "Uploading..." : "Upload Image"}
+//               </Button>
+//             </Upload>
+//             {imageUrl && (
+//               <div className="mt-6 flex flex-col items-center gap-4">
+//                 <div className="relative group w-[300px] h-[200px]">
+//                   <img
+//                     src={imageUrl}
+//                     alt="preview"
+//                     className="w-full h-full object-cover rounded-lg border border-gray-300 transition-transform group-hover:scale-105 shadow-md"
+//                   />
+//                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center rounded-lg transition-opacity">
+//                     <Button
+//                       icon={<DeleteOutlined />}
+//                       danger
+//                       size="middle"
+//                       onClick={() => setImageUrl("")}
+//                       disabled={!isEditMode}
+//                       className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-red"
+//                     >
+//                       Delete
+//                     </Button>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         </Form.Item>
+
+//         {/* Upload Preview Video */}
+//         <Form.Item
+//           label={<span className="text-lg font-medium">Preview Video</span>}
+//           className="mb-6"
+//         >
+//           <div className="flex flex-col items-center">
+//             <Upload {...uploadVideoProps}>
+//               <Button
+//                 icon={uploading ? <LoadingOutlined /> : <UploadOutlined />}
+//                 size="large"
+//                 className={`w-64 ${
+//                   uploading ? "bg-gray-400" : "bg-blue-500"
+//                 } text-white hover:bg-blue-600 transition-colors`}
+//                 disabled={uploading || !isEditMode}
+//               >
+//                 {uploading ? "Uploading..." : "Select Video"}
+//               </Button>
+//             </Upload>
+//             {videoUrl && (
+//               <div className="mt-6 flex flex-col items-center gap-4 w-full">
+//                 <div className="relative group w-[300px] h-[200px]">
+//                   <video
+//                     src={videoUrl}
+//                     className="w-full h-full object-cover rounded-lg border border-gray-300 transition-transform group-hover:scale-105 shadow-md"
+//                     muted
+//                   />
+//                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center rounded-lg transition-opacity">
+//                     <Button
+//                       icon={<EyeOutlined />}
+//                       size="middle"
+//                       onClick={() => setIsVideoModalVisible(true)}
+//                       className="opacity-0 group-hover:opacity-100 text-white bg-blue-500 hover:bg-blue-600 transition-opacity mr-2"
+//                     >
+//                       View
+//                     </Button>
+//                     <Button
+//                       icon={<DeleteOutlined />}
+//                       danger
+//                       size="middle"
+//                       onClick={() => {
+//                         setVideoUrl("");
+//                         setVideoFile(null);
+//                       }}
+//                       disabled={!isEditMode}
+//                       className="opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-red"
+//                     >
+//                       Delete
+//                     </Button>
+//                   </div>
+//                 </div>
+//                 {/* <Input
+//                   value={videoUrl}
+//                   placeholder="Video URL will appear here after upload"
+//                   readOnly
+//                   disabled
+//                   size="large"
+//                   className="w-full max-w-md mt-2"
+//                 /> */}
+//               </div>
+//             )}
+//           </div>
+//         </Form.Item>
+//       </div>
+
+//       <Form.Item
+//         name="price"
+//         label={
+//           <span>
+//             Price ($){" "}
+//             <Tooltip title="Enter the price for this lab">
+//               <InfoCircleOutlined />
+//             </Tooltip>
+//           </span>
+//         }
+//         rules={[{ required: true, message: "Please enter a price" }]}
+//         className="mb-4"
+//       >
+//         <Input type="number" placeholder="Enter price" size="large" />
+//       </Form.Item>
+//       <div className="flex justify-end gap-4 mt-6">
+//         {initialData && !isEditMode ? (
+//           <>
+//             <Button
+//               onClick={goToStep2}
+//               disabled={labLoading || comboLoading}
+//               size="large"
+//               className="bg-green-500 text-white hover:bg-green-600"
+//             >
+//               Next
+//             </Button>
+//             <Button
+//               onClick={() => setIsEditMode(true)}
+//               disabled={labLoading || comboLoading}
+//               size="large"
+//               className="bg-yellow-500 text-white hover:bg-yellow-600"
+//             >
+//               Edit
+//             </Button>
+//           </>
+//         ) : (
+//           <Button
+//             type="primary"
+//             htmlType="submit"
+//             loading={labLoading || comboLoading}
+//             size="large"
+//             className="bg-blue-500 hover:bg-blue-600"
+//           >
+//             Submit
+//           </Button>
+//         )}
+//       </div>
+//       <Modal
+//         visible={isVideoModalVisible}
+//         footer={null}
+//         onCancel={() => setIsVideoModalVisible(false)}
+//         width={900}
+//         className="rounded-lg"
+//       >
+//         <video
+//           controls
+//           src={videoUrl}
+//           className="w-full rounded-lg"
+//           style={{ maxHeight: "500px" }}
+//         >
+//           Your browser does not support the video tag.
+//         </video>
+//       </Modal>
+//       <Modal
+//         title={<span className="text-xl font-semibold">Select a Combo</span>}
+//         visible={isComboModalVisible}
+//         onCancel={() => setIsComboModalVisible(false)}
+//         footer={[
+//           <Button
+//             key="cancel"
+//             onClick={() => setIsComboModalVisible(false)}
+//             size="large"
+//           >
+//             Cancel
+//           </Button>,
+//           <Button
+//             key="save"
+//             type="primary"
+//             onClick={() => handleComboSelect(selectedCombo)}
+//             disabled={!selectedCombo}
+//             size="large"
+//             className="bg-blue-500 hover:bg-blue-600"
+//           >
+//             Save
+//           </Button>,
+//         ]}
+//         width={1000}
+//         className="rounded-lg"
+//       >
+//         <SearchInput
+//           placeholder="Search combos by name"
+//           value={searchKeyword}
+//           onChange={(e) => handleSearch(e.target.value)}
+//           size="large"
+//           style={{ marginBottom: 16, width: "100%" }}
+//           className="mb-4"
+//         />
+//         <Table
+//           loading={comboLoading}
+//           dataSource={combos}
+//           columns={columns}
+//           rowKey="id"
+//           onRow={(record) => ({
+//             onClick: () => setSelectedCombo(record.id),
+//             className: `${
+//               selectedCombo === record.id ? "bg-bgColer" : ""
+//             } cursor-pointer hover:bg-gray-100 transition-colors`,
+//           })}
+//           pagination={{
+//             current: pageIndex,
+//             pageSize,
+//             total: totalCount,
+//             showSizeChanger: true,
+//             pageSizeOptions: ["5", "10", "20"],
+//             onChange: (page, pageSize) =>
+//               handleTableChange({ current: page, pageSize }),
+//             showTotal: (total, range) =>
+//               `${range[0]}-${range[1]} of ${total} items`,
+//             className: "mt-4",
+//           }}
+//           className="rounded-lg shadow-md"
+//           size="middle"
+//         />
+//       </Modal>
+//     </Form>
+//   );
+// };
+
+// Step1Form.propTypes = {
+//   onSubmit: PropTypes.func.isRequired,
+//   initialData: PropTypes.shape({
+//     title: PropTypes.string,
+//     summary: PropTypes.string,
+//     comboId: PropTypes.number,
+//     description: PropTypes.string,
+//     serialNumber: PropTypes.string,
+//     imageUrl: PropTypes.string,
+//     previewVideoUrl: PropTypes.string,
+//     price: PropTypes.number,
+//     labId: PropTypes.number,
+//   }),
+//   goToStep2: PropTypes.func.isRequired,
+// };
+
+// Step1Form.defaultProps = {
+//   initialData: {},
+// };
+
+// export default Step1Form;
