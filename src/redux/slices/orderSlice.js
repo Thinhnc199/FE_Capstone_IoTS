@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
-
+const returnUrl = "http://localhost:5173/checkout-process-order";
+// const returnUrl2 = "https://fe-capstone-io-ts.vercel.app/checkout-process-order";
 const handleAsyncState = (builder, asyncThunk, onSuccess) => {
   builder
     .addCase(asyncThunk.pending, (state) => {
@@ -20,18 +21,32 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 export const createOrder = createAsyncThunk(
   "createOrders/createOrder",
   async (
-    { address, contactNumber, notes, provinceId, districtId, wardId },
+    {
+      address,
+      contactNumber,
+      notes,
+      provinceId,
+      districtId,
+      wardId,
+      addressId,
+      deliver_option,
+    },
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.post(`/api/Order/create-order`, {
-        address,
-        contactNumber,
-        notes,
-        provinceId,
-        districtId,
-        wardId,
-      });
+      const response = await api.post(
+        `/api/Order/create-order?returnUrl=${encodeURIComponent(returnUrl)}`,
+        {
+          address,
+          contactNumber,
+          notes,
+          provinceId,
+          districtId,
+          wardId,
+          addressId,
+          deliver_option,
+        }
+      );
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -65,11 +80,40 @@ export const checkSuccessOrder = createAsyncThunk(
     }
   }
 );
+export const getfeeShip = createAsyncThunk(
+  "createOrders/getfeeShip",
+  async (
+    { provinceId, wardId, districtId, addressId, address, deliver_option },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(`/api/Shipping/get-fee`, {
+        provinceId,
+        wardId,
+        districtId,
+        addressId,
+        address,
+        deliver_option,
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(
+          error.response.data.errors ||
+            error.response.data.message ||
+            "Something went wrong"
+        );
+      }
+      return rejectWithValue(error);
+    }
+  }
+);
 const initialState = {
   dataCheckOrder: null,
   order: [],
   loading: false,
   error: null,
+  allfee: 0,
 };
 const orderSlice = createSlice({
   name: "createOrders",
@@ -102,6 +146,11 @@ const orderSlice = createSlice({
     });
     handleAsyncState(builder, checkSuccessOrder, (state, action) => {
       state.dataCheckOrder = action.payload;
+    });
+    handleAsyncState(builder, getfeeShip, (state, action) => {
+      if (action.payload.length > 0) {
+        state.fee = action.payload[0].fee; // Cập nhật fee từ response
+      }
     });
   },
 });

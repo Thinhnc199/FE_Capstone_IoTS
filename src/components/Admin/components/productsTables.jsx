@@ -4,30 +4,25 @@ import {
   EllipsisOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  // EditOutlined,
 } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { Modal, Button, Select, Table, Dropdown, message, Tag } from "antd";
+import { Modal, Button, Table, Dropdown, message, Tag } from "antd";
 import {
-  activeUsers,
-  deActiveUsers,
-  updateRole,
-} from "../../../redux/slices/accountSlice";
+  activeProducts,
+  deactiveProducts,
+} from "../../../redux/slices/productSlice";
 
-const { Option } = Select;
-
-const UserTable = ({
-  users,
+const ProductsTables = ({
+  items,
   pageSize,
   pageIndex,
   totalCount,
   onPageChange,
   onPageSizeChange,
-  roles,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
+
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
   const handleOpenModal = (user, type) => {
@@ -39,47 +34,20 @@ const UserTable = ({
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
-    setSelectedRole(null);
+
     setModalType(null);
   };
 
   const handleActive = () => {
-    dispatch(activeUsers({ id: selectedUser.id }));
-    message.success("User activated successfully");
+    dispatch(activeProducts({ id: selectedUser.id }));
+    message.success("Item activated successfully");
     handleCloseModal();
   };
 
   const handleDeActive = () => {
-    dispatch(deActiveUsers({ id: selectedUser.id }));
-    message.success("User deactivated successfully");
+    dispatch(deactiveProducts({ id: selectedUser.id }));
+    message.success("Item deactivated successfully");
     handleCloseModal();
-  };
-
-  const handleUpdateRole = () => {
-    if (selectedUser && selectedRole) {
-      dispatch(updateRole({ id: selectedUser.id, roleIdList: [selectedRole] }));
-      message.success("User role updated successfully");
-      handleCloseModal();
-    }
-  };
-
-  const getRoleColor = (label) => {
-    switch (label) {
-      case "Store":
-        return "orange";
-      case "Customer":
-        return "default";
-      case "Trainer":
-        return "green";
-      case "Manager":
-        return "yellow";
-      case "Staff":
-        return "blue";
-      case "Admin":
-        return "purple";
-      default:
-        return "default";
-    }
   };
 
   const columns = [
@@ -89,35 +57,44 @@ const UserTable = ({
       key: "id",
     },
     {
-      title: "Full Name",
-      dataIndex: "fullname",
-      key: "fullname",
+      title: " Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Role",
-      key: "roles",
+      title: " Product",
+      key: "Product",
       render: (text, record) => (
-        <>
-          {record.roles.map((role) =>
-            role && role.label ? (
-              <Tag color={getRoleColor(role.label)} key={role.id}>
-                {role.label}
-              </Tag>
-            ) : null
-          )}
-        </>
+        <div className="w-auto h-20 flex items-center justify-center">
+          <img
+            src={record.imageUrl}
+            alt=""
+            className="w-full h-full object-contain"
+          />
+        </div>
       ),
     },
+    {
+      title: " Category",
+      dataIndex: "categoryName",
+      key: "categoryName",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Device Type",
+
+      key: "deviceType",
+      render: (text, record) => (
+        <Tag color={record.deviceType === 1 ? "green" : "red"}>
+          {record.deviceType === 1 ? "New" : "Like new"}
+        </Tag>
+      ),
+    },
+
     {
       title: "Status",
       key: "status",
@@ -153,15 +130,6 @@ const UserTable = ({
                       </span>
                     ),
                   },
-              // {
-              //   key: "3",
-              //   label: (
-              //     <span onClick={() => handleOpenModal(record, "updateRole")}>
-              //       <EditOutlined className="text-black mr-2" />
-              //       Update Role
-              //     </span>
-              //   ),
-              // },
             ],
           }}
           trigger={["click"]}
@@ -175,7 +143,7 @@ const UserTable = ({
     <div className="overflow-hidden ">
       <Table
         columns={columns}
-        dataSource={users}
+        dataSource={items}
         rowKey={(record) => record.id}
         pagination={{
           current: pageIndex,
@@ -199,62 +167,43 @@ const UserTable = ({
         </p>
       </div>
       <Modal
-        title={modalType === "updateRole" ? "Update User Role" : "Confirmation"}
+        title={
+          modalType === "active"
+            ? "Do you wanna active product ?"
+            : "Do you wanna deactive product ?"
+        }
         open={isModalOpen}
         onCancel={handleCloseModal}
         footer={[
           <Button key="cancel" onClick={handleCloseModal}>
             Cancel
           </Button>,
-          modalType === "updateRole" ? (
-            <Button key="update" type="primary" onClick={handleUpdateRole}>
-              Update
-            </Button>
-          ) : (
-            <Button
-              key="confirm"
-              type="primary"
-              onClick={modalType === "active" ? handleActive : handleDeActive}
-            >
-              Confirm
-            </Button>
-          ),
-        ]}
-      >
-        {modalType === "updateRole" ? (
-          <Select
-            className="w-full"
-            placeholder="Select a role"
-            onChange={(value) => setSelectedRole(value)}
+
+          <Button
+            key="confirm"
+            type="primary"
+            onClick={modalType === "active" ? handleActive : handleDeActive}
           >
-            {roles.map((role) => (
-              <Option key={role.id} value={role.id}>
-                {role.label}
-              </Option>
-            ))}
-          </Select>
-        ) : (
-          <p>Are you sure you want to {modalType} this user?</p>
-        )}
-      </Modal>
+            Confirm
+          </Button>,
+        ]}
+      ></Modal>
     </div>
   );
 };
 
-UserTable.propTypes = {
-  users: PropTypes.arrayOf(
+ProductsTables.propTypes = {
+  items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
-      fullname: PropTypes.string.isRequired,
-      username: PropTypes.string.isRequired,
-      email: PropTypes.string.isRequired,
-      roles: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          label: PropTypes.string.isRequired,
-        })
-      ).isRequired,
+      name: PropTypes.string.isRequired,
+      deviceType: PropTypes.string.isRequired,
+      mcU_MPU: PropTypes.string.isRequired,
+
       isActive: PropTypes.number.isRequired,
+      isHardwareInformation: PropTypes.number.isRequired,
+      isNetworkConnection: PropTypes.number.isRequired,
+      isSoftwareOrOperations: PropTypes.number.isRequired,
     })
   ).isRequired,
   pageSize: PropTypes.number.isRequired,
@@ -262,12 +211,6 @@ UserTable.propTypes = {
   totalCount: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired,
   onPageSizeChange: PropTypes.func.isRequired,
-  roles: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
 };
 
-export default UserTable;
+export default ProductsTables;

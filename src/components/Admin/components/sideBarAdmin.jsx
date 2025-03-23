@@ -66,7 +66,6 @@ const items2 = [
     label: "Products",
     children: [
       { key: "lp", label: <Link to="/admin/list-product">List products</Link> },
-      { key: "ad", label: <Link to="/admin/add-device">Add Device</Link> },
       {
         key: "cm",
         label: <Link to="/admin/category-management">Category Management</Link>,
@@ -81,11 +80,6 @@ const items2 = [
       {
         key: "userrequest",
         label: <Link to="/admin/user-request">User Requests</Link>,
-        icon: <UnorderedListOutlined />,
-      },
-      {
-        key: "productrequest",
-        label: <Link to="/admin/product-request">Product Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
     ],

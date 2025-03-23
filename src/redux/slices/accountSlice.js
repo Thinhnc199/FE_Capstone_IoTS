@@ -76,6 +76,20 @@ export const deActiveUsers = createAsyncThunk(
     }
   }
 );
+export const updatePassword = createAsyncThunk(
+  "accounts/updatePassword",
+  async ({ oldPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`api/user/update-password`, {
+        oldPassword,
+        newPassword,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
 export const fetchRole = createAsyncThunk(
   "accounts/fetchRole",
@@ -141,6 +155,20 @@ export const verifyAccounts = createAsyncThunk(
     }
   }
 );
+// get info by storeid
+export const fetchInfoStoreid = createAsyncThunk(
+  "accounts/fetchInfoStoreid",
+  async (storeID, { rejectWithValue }) => {
+    try {
+      const response = await api.get(
+        `/api/store/get-store-details-by-store-id/${storeID}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 // Initial state
 const initialState = {
@@ -151,6 +179,7 @@ const initialState = {
   pageSize: 10,
   error: null,
   roles: [],
+  storeInfo: [],
   filters: {
     all: {
       searchKeyword: "",
@@ -218,6 +247,9 @@ const accountListSlice = createSlice({
     handleAsyncState(builder, fetchUsers, (state, action) => {
       state.users = action.payload.data;
       state.totalCount = action.payload.totalCount;
+    });
+    handleAsyncState(builder, fetchInfoStoreid, (state, action) => {
+      state.storeInfo = action.payload.data;
     });
 
     handleAsyncState(builder, activeUsers, (state, action) => {

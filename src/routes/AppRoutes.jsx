@@ -33,14 +33,13 @@ import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
-import CreateProducts from "../components/StoreIoT/CreateProducts";
 import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
 import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
-
+import HistoryOrder from "../pages/HistoryOrder";
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
 import Checkout from "../pages/Checkout/Checkout";
@@ -51,61 +50,17 @@ import ComboList from "../pages/Home/components/ComboList";
 import ComboDetail from "../pages/ComboDetail";
 import ComboUpdatePage from "../components/StoreIoT/components/ComboUpdatePage";
 import AddressSelector from "../components/StoreIoT/components/AddressSelector";
-
+import CreateProductPage from "../components/StoreIoT/CreateProductPage";
 import CheckProcessOrder from "../pages/CheckProcessOrder";
 import CreateLab from "../components/Trainer/CreateLab";
+
 import AboutIoTs from "../pages/AboutIoTs";
 import LabRequest from "../components/StoreIoT/LabRequest";
 import LabDetail from "../components/StoreIoT/LabDetail";
 import StoreLabsManagement from "../components/StoreIoT/StoreLabsManagement";
 import ComboLabsManagement from "../components/StoreIoT/ComboLabsManagement";
-// const allowedroles = localStorage.getItem("role");
-// const publicRoute = [
-//   { path: "/", component: Home, layout: MainLayout },
-//   { path: "/home", component: Test, layout: MainLayout },
-//   { path: "/register", component: Register, layout: MainLayout },
-//   { path: "/login", component: Login, layout: MainLayout },
-//   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
-//   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
-//   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
-//   { path: "*", component: ErrorPage, layout: null },
-//   { path: "/Access-Restricted", component: AccessRestricted, layout: null },
-//   { path: "/registerCustomer", component: RegisterCustomer, layout: MainLayout },
-//   { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
-//   { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
-//   { path: "/contact", component: ContactPage, layout: MainLayout },
-// ];
-
-// const privateRoute = [
-//   // Admin Routes
-//   { path: "/admin", component: DashBoard, layout: AdminLayout },
-//   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
-//   { path: "/admin/list-account", component: ListAccount, layout: AdminLayout },
-//   { path: "/admin/admin-account", component: AdminAccount, layout: AdminLayout },
-//   { path: "/admin/staff-account", component: StaffAccount, layout: AdminLayout },
-//   { path: "/admin/manager-account", component: ManagerAccount, layout: AdminLayout },
-//   { path: "/admin/customer-account", component: CustomerAccount, layout: AdminLayout },
-//   { path: "/admin/store-account", component: StoreAccount, layout: AdminLayout },
-//   { path: "/admin/trainer-account", component: TrainerAccount, layout: AdminLayout },
-//   { path: "/admin/list-product", component: ListProduct, layout: AdminLayout },
-//   { path: "/admin/profile", component: Profile, layout: AdminLayout },
-//   { path: "/admin/create-manager-staff", component: CreateManagerStaff, layout: AdminLayout },
-//   { path: "/admin/user-request", component: UserRequest, layout: AdminLayout },
-//   { path: "/admin/user-request/:id", component: DetailUserRequest, layout: AdminLayout },
-
-//   // Store Routes
-//   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout },
-//   { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout },
-//   { path: "/store/payment-packages", component: PaymentMembershipPage, layout: StoreLayout },
-//   { path: "/store/dashboard", component: DashBoardStore, layout: StoreIotLayout },
-//   { path: "/store/wallet", component: WalletStore, layout: StoreIotLayout },
-//   { path: "/store/list-product", component: ListProductStore, layout: StoreIotLayout },
-
-//   // Trainer Routes
-//   { path: "/trainer/registerTrainer", component: TrainerRegister, layout: TrainerLayout },
-// ];
-
-// export { publicRoute, privateRoute };
+import ProfilePage from "../pages/Profile/ProfilePage";
+import StoreInfoPage from "../pages/StoreInfoPage";
 
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
@@ -146,6 +101,21 @@ const publicRoute = [
     path: "/checkout",
     component: Checkout,
     layout: null,
+  },
+  {
+    path: "/history-order",
+    component: HistoryOrder,
+    layout: MainLayout,
+  },
+  {
+    path: "/profile",
+    component: ProfilePage,
+    layout: MainLayout,
+  },
+  {
+    path: "/shop-infomation/:id",
+    component: StoreInfoPage,
+    layout: MainLayout,
   },
   {
     path: "/checkout-process-order",
@@ -284,10 +254,11 @@ const publicRoute = [
     layout: StoreIotLayout,
   },
   {
-    path: "/store/add-device",
-    component: CreateProducts,
+    path: "/store/create-product",
+    component: CreateProductPage,
     layout: StoreIotLayout,
   },
+
   {
     path: "/store/status",
     component: CheckStatus,
@@ -374,3 +345,50 @@ const privateRoute = [];
 export { publicRoute, privateRoute };
 // { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout, allowedroless: [6] },
 //   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout, allowedroless: [6] }
+// const allowedroles = localStorage.getItem("role");
+// const publicRoute = [
+//   { path: "/", component: Home, layout: MainLayout },
+//   { path: "/home", component: Test, layout: MainLayout },
+//   { path: "/register", component: Register, layout: MainLayout },
+//   { path: "/login", component: Login, layout: MainLayout },
+//   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
+//   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
+//   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
+//   { path: "*", component: ErrorPage, layout: null },
+//   { path: "/Access-Restricted", component: AccessRestricted, layout: null },
+//   { path: "/registerCustomer", component: RegisterCustomer, layout: MainLayout },
+//   { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
+//   { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
+//   { path: "/contact", component: ContactPage, layout: MainLayout },
+// ];
+
+// const privateRoute = [
+//   // Admin Routes
+//   { path: "/admin", component: DashBoard, layout: AdminLayout },
+//   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
+//   { path: "/admin/list-account", component: ListAccount, layout: AdminLayout },
+//   { path: "/admin/admin-account", component: AdminAccount, layout: AdminLayout },
+//   { path: "/admin/staff-account", component: StaffAccount, layout: AdminLayout },
+//   { path: "/admin/manager-account", component: ManagerAccount, layout: AdminLayout },
+//   { path: "/admin/customer-account", component: CustomerAccount, layout: AdminLayout },
+//   { path: "/admin/store-account", component: StoreAccount, layout: AdminLayout },
+//   { path: "/admin/trainer-account", component: TrainerAccount, layout: AdminLayout },
+//   { path: "/admin/list-product", component: ListProduct, layout: AdminLayout },
+//   { path: "/admin/profile", component: Profile, layout: AdminLayout },
+//   { path: "/admin/create-manager-staff", component: CreateManagerStaff, layout: AdminLayout },
+//   { path: "/admin/user-request", component: UserRequest, layout: AdminLayout },
+//   { path: "/admin/user-request/:id", component: DetailUserRequest, layout: AdminLayout },
+
+//   // Store Routes
+//   { path: "/store/registerStore", component: StoreRegistration, layout: StoreLayout },
+//   { path: "/store/welcome", component: WelcomeStore, layout: StoreLayout },
+//   { path: "/store/payment-packages", component: PaymentMembershipPage, layout: StoreLayout },
+//   { path: "/store/dashboard", component: DashBoardStore, layout: StoreIotLayout },
+//   { path: "/store/wallet", component: WalletStore, layout: StoreIotLayout },
+//   { path: "/store/list-product", component: ListProductStore, layout: StoreIotLayout },
+
+//   // Trainer Routes
+//   { path: "/trainer/registerTrainer", component: TrainerRegister, layout: TrainerLayout },
+// ];
+
+// export { publicRoute, privateRoute };

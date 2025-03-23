@@ -31,9 +31,11 @@ export const sendOtp = createAsyncThunk(
       }
 
       return rejectWithValue("No response from server. Please check your connection.");
+
     }
   }
 );
+
 
 export const registerUser = createAsyncThunk(
   "store/registerUser",
@@ -57,6 +59,7 @@ export const registerUser = createAsyncThunk(
 
       return rejectWithValue("Registration failed");
     } catch (error) {
+
       console.error("❌ Full Registration Error Object:", error);
 
       if (error.response && error.response.status === 400) {
@@ -68,10 +71,81 @@ export const registerUser = createAsyncThunk(
       const genericError = error || "Registration failed. Please try again.";
       message.error(genericError);
       return rejectWithValue(genericError);
+
     }
   }
 );
 
+
+// get product store by user
+// export const fetchProductStoreid = createAsyncThunk(
+//   "store/fetchProductStoreid",
+//   async (
+//     {
+//       storeID,
+//       pageIndex,
+//       pageSize,
+//       searchKeyword,
+//       startFilterDate,
+//       endFilterDate,
+//     },
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const response = await api.post(
+//         `/api/store/get-pagination-product-by-stores-id`,
+//         {
+//           pageIndex,
+//           pageSize,
+//           searchKeyword,
+//           startFilterDate,
+//           endFilterDate,
+//         },
+//         { storeID: storeID }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.message || error.message);
+//     }
+//   }
+// );
+export const fetchProductStoreid = createAsyncThunk(
+  "store/fetchProductStoreid",
+  async (
+    {
+      storeID,
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const params = {
+        storeID,
+        pageIndex,
+        pageSize,
+        searchKeyword,
+      };
+
+      // Thêm startFilterDate và endFilterDate nếu chúng không null
+      if (startFilterDate) params.startFilterDate = startFilterDate;
+      if (endFilterDate) params.endFilterDate = endFilterDate;
+
+      const response = await api.post(
+        `/api/store/get-pagination-product-by-stores-id`,
+        params
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Store Slice
 const storeSlice = createSlice({
   name: "store",
   initialState: {
@@ -80,6 +154,7 @@ const storeSlice = createSlice({
     loading: false,
     error: null,
     success: false,
+    dataProduct: [],
   },
   reducers: {
     setRole: (state, action) => {
@@ -117,6 +192,23 @@ const storeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.success = false;
+      })
+      // dataa product story get by usser
+      .addCase(fetchProductStoreid.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(fetchProductStoreid.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.dataProduct = action.payload?.data || []; // Tránh lỗi khi API không trả về data
+      })
+
+      .addCase(fetchProductStoreid.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.success = false;
       });
   },
 });
@@ -124,4 +216,3 @@ const storeSlice = createSlice({
 export const { setRole, clearError } = storeSlice.actions;
 
 export default storeSlice.reducer;
-

@@ -49,7 +49,8 @@ const QuantityInput = ({ cartId, quantity, min = 0, max = 100 }) => {
 };
 
 QuantityInput.propTypes = {
-  cartId: PropTypes.string.isRequired,
+  // cartId: PropTypes.string.isRequired,
+  cartId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   quantity: PropTypes.number.isRequired,
   min: PropTypes.number,
   max: PropTypes.number,

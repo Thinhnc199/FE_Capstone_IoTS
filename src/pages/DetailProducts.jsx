@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchProductDetails } from "../redux/slices/productSlice";
-import { Tabs, InputNumber, Button, message } from "antd";
-import { StarOutlined } from "@ant-design/icons";
+import { Tabs, InputNumber, Button, message, Spin } from "antd";
+import { StarOutlined, ShopOutlined, MessageOutlined } from "@ant-design/icons";
 import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
 import { ProductType } from "../redux/constants";
 import ErrorProduct from "./ErrorProduct";
@@ -12,6 +12,7 @@ export default function DetailProducts() {
   const dispatch = useDispatch();
   const productDetail = useSelector((state) => state.products.ProductsDetail);
   const product = productDetail.data;
+
   const [allImages, setAllImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [numCart, setNumCart] = useState(1);
@@ -41,7 +42,21 @@ export default function DetailProducts() {
   const onChange = (value) => {
     setNumCart(value);
   };
+  // Utility function
+  function calculateMonthsSince(dateString) {
+    const createdDate = new Date(dateString);
+    const currentDate = new Date();
 
+    const yearsDifference =
+      currentDate.getFullYear() - createdDate.getFullYear();
+    const monthsDifference = currentDate.getMonth() - createdDate.getMonth();
+
+    // Total months difference
+    return yearsDifference * 12 + monthsDifference;
+  }
+
+  // Inside the component
+  const joinedMonths = calculateMonthsSince(product?.storeInfo?.createdDate);
   const HandleAddToCart = async () => {
     if (product.quantity <= 0) {
       message.warning("Sản phẩm đã hết hàng.");
@@ -58,17 +73,23 @@ export default function DetailProducts() {
       );
 
       if (fetchAddCarts.fulfilled.match(result)) {
-        message.success("Sản phẩm đã được thêm vào giỏ hàng!");
+        message.success("Product has been added to cart!");
         dispatch(fetchCarts({ pageIndex, pageSize }));
       } else {
-        throw new Error(result.payload || "Lỗi không xác định");
+        throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Lỗi khi thêm vào giỏ hàng: ${error.message}`);
+      message.error(`Error adding to cart: ${error.message}`);
     }
   };
 
-  if (productDetail.loading) return <p>Loading...</p>;
+  if (productDetail.loading)
+    return (
+      <Spin
+        size="large"
+        className="flex justify-center items-center h-screen"
+      />
+    );
   if (!product) return <ErrorProduct />;
 
   const isNew = product.deviceType === 1;
@@ -106,8 +127,9 @@ export default function DetailProducts() {
         <div className="col-span-2 ">
           <div className="grid grid-cols-2 md:grid-cols-2 gap-1  text-md font-medium">
             <div className="flex space-x-2">
-              <p>Type:</p>
-              <p className="text-headerBg">{isNew ? "New" : "Secondhand"}</p>
+              <p>Available:</p>
+              {/* <p className="text-headerBg">{isNew ? "New" : "Secondhand"}</p> */}
+              <p className="text-headerBg">{product.quantity}</p>
             </div>
             <div className="flex space-x-2">
               <p>Status:</p>
@@ -121,11 +143,11 @@ export default function DetailProducts() {
             </div>
             <div className="flex space-x-2">
               <p>Category:</p>
-              <p className="text-headerBg">{product.quantity || "N/A"}</p>
+              <p className="text-headerBg">{product.category.label || "N/A"}</p>
             </div>
             <div className="flex space-x-2">
               <p>Brand:</p>
-              <p className="text-headerBg">{product.quantity || "N/A"}</p>
+              <p className="text-headerBg">{product.manufacturer || "N/A"}</p>
             </div>
           </div>
 
@@ -233,7 +255,77 @@ export default function DetailProducts() {
           </div>
         </div>
       </div>
+      {/* shop info */}
 
+      <div className="flex items-center bg-white border rounded-md shadow-md p-4 m-4">
+        {product?.storeInfo ? (
+          <>
+            {/* Avatar của shop */}
+            <div className="flex-shrink-0 mr-4">
+              <Link to={`/shop-infomation/${product.storeInfo.id}`}>
+                <img
+                  src={product.storeInfo.imageUrl}
+                  alt={product.storeInfo.name}
+                  className="w-16 h-16 rounded-full object-cover border-gray-300 border"
+                />
+              </Link>
+            </div>
+
+            <div className="flex-shrink-0">
+              <h1 className="text-lg font-medium">{product.storeInfo.name}</h1>
+
+              <div className="flex gap-2 mt-2 flex-none">
+                <button className=" px-4 py-2 border border-blue-500 bg-blue-100 text-blue-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
+                  <MessageOutlined className="mr-2" />
+                  Chat Now
+                </button>
+                <Link to={`/shop-infomation/${product.storeInfo.id}`}>
+                  <button className="px-4 py-2 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
+                    <ShopOutlined className="mr-2" />
+                    View Shop
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="h-20 w-px bg-gray-300 mx-4"></div>
+
+            <div className="grid grid-cols-2 gap-4 w-full">
+              {/* Cột 1 */}
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2 items-center">
+                  <span className="text-gray-500">Evaluates:</span>
+                  <span className="text-blue-600">
+                    {product.storeInfo.numberOfFeedbacks}
+                  </span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <span className="text-gray-500">Products:</span>
+                  <span className="text-blue-600">
+                    {product.storeInfo.storeNumberOfProducts || "N/A"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Cột 2 */}
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2 items-center">
+                  <span className="text-gray-500">Joined:</span>
+                  <span className="text-blue-600">
+                    {joinedMonths} month ago
+                  </span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <span className="text-gray-500">None:</span>
+                  <span className="text-blue-600">none</span>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p>No shop information available.</p>
+        )}
+      </div>
       {/* Tabs & Viewed Products Section */}
       <div className="grid grid-cols-10 gap-4 p-4 rounded-md">
         <div className="col-span-7 p-4 bg-white border shadow-md rounded-md">

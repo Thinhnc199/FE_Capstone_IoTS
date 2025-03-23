@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Table, Tag } from "antd";
 import { Roles } from "../../../redux/constants";
+import dayjs from "dayjs";
 const RequestTable = ({
   userRequest,
   pageSize,
@@ -81,6 +82,7 @@ const RequestTable = ({
       title: "createdDate",
       dataIndex: "createdDate",
       key: "createdDate",
+      render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm:ss"),
     },
   ];
   return (

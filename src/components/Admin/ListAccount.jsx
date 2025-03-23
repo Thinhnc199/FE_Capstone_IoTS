@@ -9,10 +9,11 @@ import {
 } from "../../redux/slices/accountSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { DatePicker, Space } from "antd";
+// import { DatePicker } from "antd";
+import { Space } from "antd";
 import SearchAndFilter from "./components/SearchAndFilter";
 import UserTable from "./components/UserTable";
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 export default function ListAccount() {
   const dispatch = useDispatch();
 
@@ -51,11 +52,11 @@ export default function ListAccount() {
   };
 
   if (error) return <p>Error: {error}</p>;
-  const onDateChange = (dates, dateStrings) => {
-    dispatch(setStartFilterDate({ tab: currentTab, date: dateStrings[0] })); // Truyền thêm tab
-    dispatch(setEndFilterDate({ tab: currentTab, date: dateStrings[1] })); // Truyền thêm tab
-    console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
-  };
+  // const onDateChange = (dates, dateStrings) => {
+  //   dispatch(setStartFilterDate({ tab: currentTab, date: dateStrings[0] })); // Truyền thêm tab
+  //   dispatch(setEndFilterDate({ tab: currentTab, date: dateStrings[1] })); // Truyền thêm tab
+  //   console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
+  // };
 
   return (
     <div className="">
@@ -71,11 +72,11 @@ export default function ListAccount() {
               currentTab={currentTab}
             />
           </div>
-          <div className="flex flex-col items-start mb-4 p-0">
+          {/* <div className="flex flex-col items-start mb-4 p-0">
             {" "}
             <p className="font-semibold text-sm">filer date</p>
             <RangePicker onChange={onDateChange} style={{ width: 300 }} />
-          </div>
+          </div> */}
         </Space>
 
         <UserTable

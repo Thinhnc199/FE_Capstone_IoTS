@@ -83,6 +83,7 @@ export const deactiveProducts = createAsyncThunk(
       const response = await api.put(
         `/api/iot-device/deactivate-iot-device/${id}`
       );
+
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -146,53 +147,6 @@ const initialState = {
     loading: false,
     error: null,
   },
-
-  ProductDatas: {
-    name: "",
-    deviceType: 1,
-    isHardwareInformation: 0,
-    mcU_MPU: "",
-    memory: "",
-    wirelessConnection: "",
-    connectivity: "",
-    sensor: "",
-    isNetworkConnection: 0,
-    protocol: "",
-    dataTransmissionStandard: "",
-    networkSecurity: "",
-    isSoftwareOrOperations: 0,
-    firmware: "",
-    firmwareVersion: 0,
-    embeddedEperatingSystem: "",
-    cloudservice: "",
-    firmwareOTASupport: 0,
-    isPowerSource: 0,
-    operatingVoltage: "",
-    powerConsumption: "",
-    powerSource: "",
-    isSecurity: 0,
-    dataEncryption: "",
-    deviceAuthentication: "",
-    connectionDelay: "",
-    processingSpeed: "",
-    serviceLife: "",
-    durability: "",
-    summary: "",
-    description: "",
-    categoryId: 0,
-    manufacturer: "",
-    model: "",
-    serialNumber: "",
-    specifications: "",
-    notes: "",
-    price: 0,
-    quantity: 0,
-    storeId: 0,
-    imageUrl: "",
-    secondHandPrice: 0,
-    secondhandQualityPercent: 0,
-    attachments: [],
-  },
 };
 const productSlice = createSlice({
   name: "products",
@@ -221,6 +175,7 @@ const productSlice = createSlice({
   extraReducers: (builder) => {
     handleAsyncState(builder, fetchProducts, (state, action) => {
       state.items = action.payload;
+      state.totalCount = action.payload.length;
     });
     handleAsyncState(builder, fetchProductDetails, (state, action) => {
       state.ProductsDetail.data = action.payload;
@@ -228,10 +183,10 @@ const productSlice = createSlice({
       state.ProductsDetail.error = null;
     });
     handleAsyncState(builder, createProducts, (state, action) => {
-      state.ProductDatas.data = action.payload;
-      state.ProductDatas.loading = false;
-      state.ProductDatas.error = null;
+      state.items.unshift(action.payload); // ✅ Thêm sản phẩm vào danh sách
+      state.totalCount += 1; // ✅ Cập nhật số lượng sản phẩm
     });
+
     handleAsyncState(builder, activeProducts, (state, action) => {
       // const updatedUser = action.payload;
       // const index = state.users.findIndex((user) => user.id === updatedUser.id);

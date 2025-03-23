@@ -21,7 +21,6 @@ const items2 = [
     label: "Products",
     children: [
       { key: "lp", label: <Link to="/store/list-product">List products</Link> },
-      { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
     ],
   },
   {
@@ -29,12 +28,27 @@ const items2 = [
     icon: <ProductOutlined />,
     label: "Combos",
     children: [
-      { key: "3a", label: <Link to="/store/combo-managerment">Combos List</Link> },
+      {
+        key: "3a",
+        label: <Link to="/store/combo-managerment">Combos List</Link>,
+      },
       // { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
     ],
   },
   {
     key: "sub4",
+    icon: <ProductOutlined />,
+    label: "Labs",
+    children: [
+      {
+        key: "3a",
+        label: <Link to="/store/combo-managerment">Lab List</Link>,
+      },
+      // { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
+    ],
+  },
+  {
+    key: "sub5",
     icon: <WalletOutlined />,
     label: <Link to="/store/wallet">Wallet</Link>,
   },
