@@ -41,14 +41,24 @@ const items2 = [
     label: "Labs",
     children: [
       {
-        key: "3a",
-        label: <Link to="/store/combo-managerment">Lab List</Link>,
+        key: "lm",
+        label: <Link to="/store/labs-management">Lab List</Link>,
       },
+      {
+        key: "cm",
+        label: <Link to="/store/combo-labs">Combo Labs</Link>,
+      },
+
       // { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
     ],
   },
   {
     key: "sub5",
+    icon: <WalletOutlined />,
+    label: <Link to="/store/labs-management">labs Request</Link>,
+  },
+  {
+    key: "sub6",
     icon: <WalletOutlined />,
     label: <Link to="/store/wallet">Wallet</Link>,
   },

@@ -2,8 +2,28 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createOrUpdateStore, createOrUpdateBusinessLicense, uploadFiles, submitStoreRegistration, getStoreDetailsByUserId, getBusinessLicenseByStoreId } from "../../api/apiConfig";
 import axios from 'axios';
-
-
+import { notification } from "antd";
+// Show toast notifications
+const showNotification = (type, message, description) => {
+  notification[type]({
+    message,
+    description,
+    placement: "topRight",
+    duration: 3,
+    style: {
+      backgroundColor: "#ffffff", 
+      color: "#333333", 
+      borderRadius: "8px", 
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", 
+      border: "1px solid #f0f0f0", 
+      right: "20px",
+      top: "50px",
+      position: "fixed",
+      zIndex: 10000,
+      width: "380px",
+    },
+  });
+};
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -56,27 +76,15 @@ export const submitStoreDocuments = createAsyncThunk(
   "storeRegistration/submitStoreDocuments",
   async (licenseData, { rejectWithValue }) => {
     try {
-      // console.log("Send API:", licenseData);
-      return await createOrUpdateBusinessLicense(licenseData); 
+      return await createOrUpdateBusinessLicense(licenseData);
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to submit store documents");
+      console.error("❌ Full API Error :", error);
+      showNotification("error", "Submit Failed", error );
+      return rejectWithValue(error);
     }
   }
 );
 
-// export const getStoreDetails = createAsyncThunk(
-//   "storeRegistration/getStoreDetails",
-//   async (userId, { rejectWithValue }) => {
-//     try {
-//       const response = await getStoreDetailsByUserId(userId);
-//       console.log("Store API Response:", response); 
-//       return response; 
-//     } catch (error) {
-//       console.error("Error fetching store details:", error);
-//       return rejectWithValue(error.message || "Failed to fetch store details");
-//     }
-//   }
-// );
 export const getStoreDetails = createAsyncThunk(
   "storeRegistration/getStoreDetails",
   async (userId, { rejectWithValue }) => {
@@ -115,19 +123,6 @@ export const getBusinessLicenseDetails = createAsyncThunk(
     }
   }
 );
-
-// // Fetch Business License Details
-// export const getBusinessLicenseDetails = createAsyncThunk(
-//   "storeRegistration/getBusinessLicenseDetails",
-//   async (storeId, { rejectWithValue }) => {
-//     try {
-//       const response = await getBusinessLicenseByStoreId(storeId); // Call the API function
-//       return response; // Business license data
-//     } catch (error) {
-//       return rejectWithValue(error.message || "Failed to fetch business license");
-//     }
-//   }
-// );
 
 // Submit Store Approval
 export const submitStoreApproval = createAsyncThunk(

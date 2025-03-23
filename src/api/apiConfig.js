@@ -264,31 +264,6 @@ export const submitStoreRegistration = async (requestId) => {
   return response.data;
 };
 
-// export const uploadFiles = async (file) => {
-//   try {
-//     const formData = new FormData();
-//     formData.append("file", file);
-
-//     const response = await api.post("/api/file/upload-files", formData, {
-//       headers: { "Content-Type": "multipart/form-data" },
-//     });
-
-//     console.log("Upload Success:", response.data); // Debug dữ liệu trả về
-
-//     if (response.data && response.data.data && response.data.data.imageUrl) {
-//       return {
-//         id: response.data.data.id,
-//         imageUrl: response.data.data.imageUrl, // ✅ Trả về cả imageUrl
-//       };
-//     } else {
-//       throw new Error("Invalid response format: No image URL found");
-//     }
-//   } catch (error) {
-//     console.error("Upload Error:", error);
-//     throw new Error("Upload image failed");
-//   }
-// };
-
 export const uploadFiles = async (file) => {
   try {
     const formData = new FormData();
