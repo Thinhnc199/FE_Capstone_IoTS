@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-import HeaderTrainer from "./components/headerTrainer";
-import SideBarTrainer from "./components/sideBarTrainer";
+import HeaderTrainer from "./components/HeaderTrainer";
+import SideBarTrainer from "./components/SideBarTrainer";
 import { Layout } from "antd";
 import { useSelector } from "react-redux";
 // import CheckStoreStatus from "./components/CheckStoreStatus";
