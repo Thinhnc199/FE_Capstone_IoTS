@@ -49,14 +49,14 @@ export const fetchAddCarts = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      if (error.response) {
-        return rejectWithValue(
-          error.response.data.errors ||
-            error.response.data.message ||
-            "Something went wrong"
-        );
-      }
-      return rejectWithValue(error.message || "Unknown error");
+      // if (error.response) {
+      //   return rejectWithValue(
+      //     error.response.data.errors ||
+      //       error.response.data.message ||
+      //       "Something went wrong"
+      //   );
+      // }
+      return rejectWithValue(error || "Unknown error");
     }
   }
 );
@@ -154,6 +154,25 @@ export const fetchGetTotalPrice = createAsyncThunk(
     }
   }
 );
+
+// Thêm createAsyncThunk để lấy danh sách lab của Combo
+export const fetchComboIncludedLabs = createAsyncThunk(
+  "carts/fetchComboIncludedLabs",
+  async ({ cartId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/cart/get-all-combo-included-labs/${cartId}`);
+      return response.data.data;
+    } catch (error) {
+      // if (error.response) {
+      //   return rejectWithValue(
+      //     error.response.data.message || "Failed to fetch included labs"
+      //   );
+      // }
+      return rejectWithValue(error || "Unknown error");
+    }
+  }
+);
+
 const initialState = {
   cart: [],
   loading: false,
@@ -167,6 +186,7 @@ const initialState = {
   messages: null,
   totalSelectedItemsPrice: 0,
   isDropdownOpen: false,
+  includedLabs: [],
 };
 const cartSlice = createSlice({
   name: "carts",
@@ -213,6 +233,10 @@ const cartSlice = createSlice({
     handleAsyncState(builder, fetchGetTotalPrice, (state, action) => {
       state.totalSelectedItemsPrice =
         action.payload.data.totalSelectedItemsPrice;
+    });
+    // Xử lý fetchComboIncludedLabs
+    handleAsyncState(builder, fetchComboIncludedLabs, (state, action) => {
+      state.includedLabs = action.payload; // Lưu danh sách lab vào state
     });
     // handleAsyncState(builder, updateAddCarts, (state, action) => {
     //   const { cartId, quantity } = action.meta.arg; // Lấy dữ liệu từ request gốc
