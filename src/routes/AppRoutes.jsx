@@ -61,6 +61,8 @@ import StoreLabsManagement from "../components/StoreIoT/StoreLabsManagement";
 import ComboLabsManagement from "../components/StoreIoT/ComboLabsManagement";
 import ProfilePage from "../pages/Profile/ProfilePage";
 import StoreInfoPage from "../pages/StoreInfoPage";
+import CustomerLabsManagement from "../pages/labs/CustomerLabsManagement";
+import CustomerLabDetail from "../pages/labs/CustomerLabDetail";
 
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
@@ -314,6 +316,16 @@ const publicRoute = [
     path: "/store/combo-labs",
     component: ComboLabsManagement,
     layout: StoreIotLayout,
+  },
+  {
+    path: "/labs-management",
+    component: CustomerLabsManagement,
+    layout: MainLayout,
+  },
+  {
+    path: "/customer/lab-details/:labId",
+    component: CustomerLabDetail,
+    layout: MainLayout,
   },
 ];
 

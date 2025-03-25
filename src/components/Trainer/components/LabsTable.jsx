@@ -1,11 +1,14 @@
-// import  { useEffect, useState } from "react";
+
+// import { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import { Table, Input, Select, Image, Tag } from "antd";
+// import { Link } from "react-router-dom";
 // import PropTypes from "prop-types";
 // import {
 //   getLabAdminPagination,
 //   getLabStorePagination,
 //   getLabTrainerPagination,
+//   getLabCustomerPagination,
 // } from "./../../../redux/slices/labSlice";
 // import debounce from "lodash/debounce";
 
@@ -27,35 +30,54 @@
 //     labStatus: 0,
 //   });
 
-//   const fetchLabs = () => {
-//     const params = {
-//       pageIndex: pagination.pageIndex,
-//       pageSize: pagination.pageSize,
-//       searchKeyword,
+//   useEffect(() => {
+//     const fetchLabs = () => {
+//       const params = {
+//         pageIndex: pagination.pageIndex,
+//         pageSize: pagination.pageSize,
+//         searchKeyword,
+//       };
+
+//       if (role === "store") {
+//         dispatch(
+//           getLabStorePagination({ comboId: advancedFilter.comboId, params })
+//         );
+//       } else if (role === "trainer") {
+//         dispatch(
+//           getLabTrainerPagination({
+//             advancedFilter: {
+//               ...advancedFilter,
+//               userId: advancedFilter.userId || userId,
+//             },
+//             paginationRequest: params,
+//           })
+//         );
+//       } else if (role === "admin") {
+//         dispatch(
+//           getLabAdminPagination({
+//             advancedFilter,
+//             paginationRequest: params,
+//           })
+//         );
+//       } else if (role === "customer") {
+//         dispatch(
+//           getLabCustomerPagination({
+//             paginationRequest: params,
+//           })
+//         );
+//       }
 //     };
 
-//     if (role === "store") {
-//       dispatch(getLabStorePagination({ comboId: advancedFilter.comboId, params }));
-//     } else if (role === "trainer") {
-//       dispatch(
-//         getLabTrainerPagination({
-//           advancedFilter: { ...advancedFilter, userId: advancedFilter.userId || userId },
-//           paginationRequest: params,
-//         })
-//       );
-//     } else if (role === "admin") {
-//       dispatch(
-//         getLabAdminPagination({
-//           advancedFilter,
-//           paginationRequest: params,
-//         })
-//       );
-//     }
-//   };
-
-//   useEffect(() => {
 //     fetchLabs();
-//   }, [pagination.pageIndex, pagination.pageSize, searchKeyword, advancedFilter, fetchLabs]); // Thêm fetchLabs vào dependency
+//   }, [
+//     pagination.pageIndex,
+//     pagination.pageSize,
+//     searchKeyword,
+//     advancedFilter,
+//     dispatch,
+//     role,
+//     userId,
+//   ]); // Các dependency cần thiết
 
 //   const handleTableChange = (paginationData) => {
 //     setPagination({
@@ -84,7 +106,7 @@
 //       case 1:
 //         return <Tag color="green">Approved</Tag>;
 //       case 2:
-//         return <Tag color="orange">Pending</Tag>;
+//         return <Tag color="orange">Pending To Approved</Tag>;
 //       case 3:
 //         return <Tag color="red">Rejected</Tag>;
 //       default:
@@ -93,6 +115,14 @@
 //   };
 
 //   const columns = [
+//     {
+//       title: "ID",
+//       dataIndex: "id",
+//       key: "id",
+//       render: (text, record) => (
+//         <Link to={`/store/detail-labRequest/${record.id}`}>{text}</Link>
+//       ),
+//     },
 //     {
 //       title: "Image",
 //       dataIndex: "imageUrl",
@@ -110,6 +140,9 @@
 //       dataIndex: "title",
 //       key: "title",
 //       sorter: (a, b) => a.title.localeCompare(b.title),
+//       render: (text, record) => (
+//         <Link to={`/store/detail-labRequest/${record.id}`}>{text}</Link>
+//       ),
 //     },
 //     {
 //       title: "Summary",
@@ -140,7 +173,7 @@
 //       render: getStatusTag,
 //       filters: [
 //         { text: "Approved", value: 1 },
-//         { text: "Pending", value: 2 },
+//         { text: "Pending To Approved", value: 2 },
 //         { text: "Rejected", value: 3 },
 //       ],
 //       onFilter: (value, record) => record.status === value,
@@ -170,7 +203,7 @@
 //               className="w-1/4"
 //             >
 //               <Option value={1}>Approved</Option>
-//               <Option value={2}>Pending</Option>
+//               <Option value={2}>Pending To Approved</Option>
 //               <Option value={3}>Rejected</Option>
 //             </Select>
 //             <Select
@@ -190,7 +223,7 @@
 //       {/* Table */}
 //       <Table
 //         columns={columns}
-//         dataSource={labs.data }
+//         dataSource={labs?.data || []} // Giữ nguyên để tránh lỗi khi labs chưa load
 //         loading={loading}
 //         pagination={{
 //           current: pagination.pageIndex,
@@ -208,7 +241,7 @@
 // };
 
 // LabsTable.propTypes = {
-//   role: PropTypes.oneOf(["admin", "trainer", "store"]).isRequired, // Role là bắt buộc
+//   role: PropTypes.oneOf(["admin", "trainer", "store"]).isRequired,
 //   comboId: PropTypes.number,
 //   userId: PropTypes.number,
 //   storeId: PropTypes.number,
@@ -231,6 +264,7 @@ import {
   getLabAdminPagination,
   getLabStorePagination,
   getLabTrainerPagination,
+  getLabCustomerPagination,
 } from "./../../../redux/slices/labSlice";
 import debounce from "lodash/debounce";
 
@@ -281,6 +315,12 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
             paginationRequest: params,
           })
         );
+      } else if (role === "customer") {
+        dispatch(
+          getLabCustomerPagination({
+            paginationRequest: params,
+          })
+        );
       }
     };
 
@@ -293,14 +333,14 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
     dispatch,
     role,
     userId,
-  ]); // Các dependency cần thiết
+  ]);
 
   const handleTableChange = (paginationData) => {
     setPagination({
       ...pagination,
       pageIndex: paginationData.current,
       pageSize: paginationData.pageSize,
-      totalCount: labs.totalCount || 0,
+      totalCount: labs?.totalCount || 0,
     });
   };
 
@@ -330,13 +370,28 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
     }
   };
 
+  const getDetailPath = (recordId) => {
+    switch (role) {
+      case "store":
+        return `/store/detail-labRequest/${recordId}`;
+      case "trainer":
+        return `/trainer/detail-lab/${recordId}`;
+      case "admin":
+        return `/admin/detail-lab/${recordId}`;
+      case "customer":
+        return `/customer/lab-details/${recordId}`;
+      default:
+        return "#";
+    }
+  };
+
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
       render: (text, record) => (
-        <Link to={`/store/detail-labRequest/${record.id}`}>{text}</Link>
+        <Link to={getDetailPath(record.id)}>{text}</Link>
       ),
     },
     {
@@ -357,7 +412,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       key: "title",
       sorter: (a, b) => a.title.localeCompare(b.title),
       render: (text, record) => (
-        <Link to={`/store/detail-labRequest/${record.id}`}>{text}</Link>
+        <Link to={getDetailPath(record.id)}>{text}</Link>
       ),
     },
     {
@@ -439,7 +494,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       {/* Table */}
       <Table
         columns={columns}
-        dataSource={labs?.data || []} // Giữ nguyên để tránh lỗi khi labs chưa load
+        dataSource={labs?.data || []} // Sử dụng labs.data vì state.labs là action.payload.data
         loading={loading}
         pagination={{
           current: pagination.pageIndex,
@@ -457,7 +512,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
 };
 
 LabsTable.propTypes = {
-  role: PropTypes.oneOf(["admin", "trainer", "store"]).isRequired,
+  role: PropTypes.oneOf(["admin", "trainer", "store", "customer"]).isRequired,
   comboId: PropTypes.number,
   userId: PropTypes.number,
   storeId: PropTypes.number,

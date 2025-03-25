@@ -6,7 +6,8 @@ import { useParams } from "react-router-dom";
 import { InputNumber, Button, message, Skeleton, Row, Col, Modal } from "antd";
 import { ProductType } from "../redux/constants";
 import { memo } from "react";
-
+import LabDrawer from "./labs/LabDrawer"; // Import file Drawer mới
+import { getLabMemberPagination } from "../redux/slices/labSlice"; // Thêm import
 // Type definitions
 // const { Panel } = Collapse;
 
@@ -19,19 +20,39 @@ const ComboDetail = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  useEffect(() => {
-    console.log("Updated selectedCombo:", selectedCombo);
-  }, [selectedCombo]);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false); // Trạng thái Drawer
+  const { labs, loading: labLoading } = useSelector((state) => state.lab); // Lấy labs từ labSlice
+  // useEffect(() => {
+  //   console.log("Updated selectedCombo:", selectedCombo);
+  // }, [selectedCombo]);
+  // useEffect(() => {
+  //   if (comboId) {
+  //     dispatch(fetchComboDetails(comboId));
+  //   }
+  //   // Cleanup function if needed
+  //   return () => {
+  //     // Add cleanup logic if necessary
+  //   };
+  // }, [dispatch, comboId]);
   useEffect(() => {
     if (comboId) {
       dispatch(fetchComboDetails(comboId));
+      // Gọi API lấy danh sách labs
+      dispatch(
+        getLabMemberPagination({
+          comboId,
+          params: {
+            pageIndex: 0,
+            pageSize: 10,
+            searchKeyword: "",
+          },
+        })
+      );
     }
-    // Cleanup function if needed
-    return () => {
-      // Add cleanup logic if necessary
-    };
+    return () => {};
   }, [dispatch, comboId]);
 
+  console.log("Selected comboId:", comboId);
   const onChange = useCallback(
     (value) => {
       if (value > selectedCombo?.data?.quantity) {
@@ -46,7 +67,7 @@ const ComboDetail = () => {
 
   const handleAddToCart = useCallback(async () => {
     if (!selectedCombo?.data?.quantity) {
-      message.warning("Product is out of stock.");
+      message.warning("Combo is out of stock.");
       return;
     }
 
@@ -54,21 +75,21 @@ const ComboDetail = () => {
       setIsAdding(true);
       const result = await dispatch(
         fetchAddCarts({
-          comboId,
-          comboType: ProductType.DEVICE,
+          productId: comboId,
+          productType: ProductType.COMBO,
           quantity: numCart,
         })
       );
 
       if (fetchAddCarts.fulfilled.match(result)) {
-        message.success("Product added to cart successfully!");
+        message.success("Combo added to cart successfully!");
         dispatch(fetchCarts({ pageIndex, pageSize }));
       } else {
-        throw new Error(result.payload?.message || "Failed to add to cart");
+        throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
       console.error("Add to cart error:", error);
-      message.error(`Error adding to cart: ${error.message}`);
+      message.error(`Error adding to cart: ${error}`);
     } finally {
       setIsAdding(false);
     }
@@ -82,6 +103,14 @@ const ComboDetail = () => {
   const handleModalClose = useCallback(() => {
     setIsModalVisible(false);
     setSelectedImage(null);
+  }, []);
+
+  const handleShowLabs = useCallback(() => {
+    setIsDrawerVisible(true);
+  }, []);
+
+  const handleDrawerClose = useCallback(() => {
+    setIsDrawerVisible(false);
   }, []);
 
   if (loading) {
@@ -234,6 +263,14 @@ const ComboDetail = () => {
                   >
                     Add to Cart
                   </Button>
+                  <Button
+                    onClick={handleShowLabs}
+                    loading={labLoading}
+                    className="w-full h-10 mb-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 border-none"
+                  >
+                    Show Labs
+                  </Button>
+
                   <Button className="w-full h-10 rounded-md bg-textColer text-white font-semibold hover:bg-opacity-90 border-none">
                     Buy Now
                   </Button>
@@ -391,6 +428,7 @@ const ComboDetail = () => {
             </div>
           </div>
         </div>
+
         {/* <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-headerBg mb-6 tracking-wide">
             Combo Details
@@ -508,7 +546,14 @@ const ComboDetail = () => {
           </div>
         </div>
       </div>
-
+      {/* Thêm LabDrawer */}
+      <LabDrawer
+        visible={isDrawerVisible}
+        onClose={handleDrawerClose}
+        labs={labs?.data?.data || []} // Truyền danh sách labs từ state
+        comboId={comboId}
+        onAddToCart={handleAddToCart} // Truyền hàm thêm combo vào giỏ hàng
+      />
       {/* Modal for Enlarged Image */}
       <Modal
         visible={isModalVisible}
