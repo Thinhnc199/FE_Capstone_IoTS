@@ -327,6 +327,11 @@ const publicRoute = [
     component: CustomerLabDetail,
     layout: MainLayout,
   },
+  {
+    path: "/trainer/update-lab/:labId",
+    component: CreateLab,
+    layout: TrainerLayout,
+  },
 ];
 
 const privateRoute = [];

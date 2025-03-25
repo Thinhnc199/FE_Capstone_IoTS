@@ -23,6 +23,7 @@ import {
   HistoryOutlined,
   MenuOutlined,
   ProductOutlined,
+  PlaySquareOutlined 
 } from "@ant-design/icons";
 import {
   Badge,
@@ -164,7 +165,11 @@ const Navbar = () => {
       label: <Link to="/history-order">History order</Link>,
       icon: <HistoryOutlined />,
     },
-
+    {
+      key: "4",
+      label: <Link to="/labs-management">My Tutorial Lab</Link>,
+      icon: <PlaySquareOutlined  />,
+    },
     {
       key: "7",
       label: "Logout",

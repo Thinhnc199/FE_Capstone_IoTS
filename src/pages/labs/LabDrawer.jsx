@@ -115,7 +115,7 @@ import { fetchAddCarts, fetchCarts } from "./../../redux/slices/cartSlice"; // T
 import { ProductType } from "./../../redux/constants";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-
+import { ShopOutlined } from "@ant-design/icons";
 const LabDrawer = ({ visible, onClose, labs }) => {
   const dispatch = useDispatch();
   const [addingLabId, setAddingLabId] = useState(null);
@@ -188,8 +188,11 @@ const LabDrawer = ({ visible, onClose, labs }) => {
               }
               description={
                 <div>
-                  <p>Price: ${lab.price}</p>
-                  <p>Store: {lab.storeName}</p>
+                  <p>Price: {lab.price} VND</p>
+                  <p>
+                    {" "}
+                    <ShopOutlined />:{lab.storeName}
+                  </p>
                 </div>
               }
             />

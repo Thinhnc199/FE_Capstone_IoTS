@@ -171,7 +171,7 @@ const ComboList = () => {
                   {combo.name}
                 </h2>
                 <p className="text-red-600 font-semibold text-xl">
-                 $ {combo.price.toLocaleString()} 
+                  {combo.price.toLocaleString()} VND
                 </p>
                 <div className="flex items-center mt-2">
                   <Rate

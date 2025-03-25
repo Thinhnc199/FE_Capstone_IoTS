@@ -229,7 +229,7 @@ const ComboDetail = () => {
                 </p>
                 <div className="flex items-center mb-4">
                   <span className="text-3xl font-semibold text-red-600">
-                    ${selectedCombo.data.price}
+                    {selectedCombo.data.price.toLocaleString()} VND
                   </span>
                   {selectedCombo.data.quantity > 0 ? (
                     <span className="ml-4 text-sm text-green-600">
