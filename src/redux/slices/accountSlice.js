@@ -52,7 +52,17 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
-
+export const fetchUserById = createAsyncThunk(
+  "accounts/fetchUserById",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/user/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 export const activeUsers = createAsyncThunk(
   "accounts/activeUsers",
   async ({ id }, { rejectWithValue }) => {
@@ -174,6 +184,7 @@ export const fetchInfoStoreid = createAsyncThunk(
 const initialState = {
   loading: false,
   users: [],
+  detailUser: "",
   totalCount: 0,
   pageIndex: 1,
   pageSize: 10,
@@ -247,6 +258,9 @@ const accountListSlice = createSlice({
     handleAsyncState(builder, fetchUsers, (state, action) => {
       state.users = action.payload.data;
       state.totalCount = action.payload.totalCount;
+    });
+    handleAsyncState(builder, fetchUserById, (state, action) => {
+      state.detailUser = action.payload;
     });
     handleAsyncState(builder, fetchInfoStoreid, (state, action) => {
       state.storeInfo = action.payload.data;
