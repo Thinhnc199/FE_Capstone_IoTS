@@ -28,8 +28,10 @@ import StoreRegistration from "../components/StoreIoT/StoreRegistration";
 import EmailOtpPage from "./../pages/StoreRes/EmailOtpPage";
 import OtpUserInfoPage from "../pages/StoreRes/OtpUserInfoPage";
 import PaymentMembershipPage from "../components/StoreIoT/PaymentMembershipPage";
+import TrainerIotLayout from "../components/Trainer/TrainerIotLayout";
 import TrainerRegister from "../components/Trainer/TrainerResgister";
 import TrainerLayout from "../components/Trainer/TrainerLayout";
+import DashBoardTrainer from "../components/Trainer/DashBoardTrainer";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
@@ -230,16 +232,7 @@ const publicRoute = [
     component: PaymentMembershipPage,
     layout: StoreLayout,
   },
-  {
-    path: "/trainer/payment-packages",
-    component: PaymentMembershipPage,
-    layout: TrainerLayout,
-  },
-  {
-    path: "/trainer/registerTrainer",
-    component: TrainerRegister,
-    layout: TrainerLayout,
-  },
+
   {
     path: "/store/dashboard",
     component: DashBoardStore,
@@ -292,11 +285,7 @@ const publicRoute = [
     component: AddressSelector,
     layout: StoreLayout,
   },
-  {
-    path: "/trainer/create-lab",
-    component: CreateLab,
-    layout: TrainerLayout,
-  },
+
   {
     path: "/store/lab-request",
     component: LabRequest,
@@ -326,6 +315,32 @@ const publicRoute = [
     path: "/customer/lab-details/:labId",
     component: CustomerLabDetail,
     layout: MainLayout,
+  },
+  // trainer
+  {
+    path: "/trainer",
+    component: DashBoardTrainer,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/dashboard",
+    component: DashBoardTrainer,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/payment-packages",
+    component: PaymentMembershipPage,
+    layout: TrainerLayout,
+  },
+  {
+    path: "/trainer/registerTrainer",
+    component: TrainerRegister,
+    layout: TrainerLayout,
+  },
+  {
+    path: "/trainer/create-lab",
+    component: CreateLab,
+    layout: TrainerLayout,
   },
 ];
 
