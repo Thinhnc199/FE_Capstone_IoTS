@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Avatar,
   Card,
@@ -10,8 +10,8 @@ import {
   Modal,
   Form,
 } from "antd";
-import { useDispatch } from "react-redux";
-import { updatePassword } from "../../redux/slices/accountSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePassword, fetchUserById } from "../../redux/slices/accountSlice";
 import {
   UserOutlined,
   EditOutlined,
@@ -23,49 +23,58 @@ import {
 } from "@ant-design/icons";
 
 // Giả lập dữ liệu từ API
-const userData = {
-  id: 120,
-  fullname: "John Doe",
-  username: "supercustomer@gmail.com",
-  email: "supercustomer@gmail.com",
-  phone: "0767676284",
-  address: "Bay Area, San Francisco, CA",
-  provinceId: 0,
-  provinceName: null,
-  districtId: 0,
-  districtName: null,
-  wardId: 0,
-  wardName: null,
-  gender: 2, // 1: Male, 2: Female
-  createdBy: null,
-  createdDate: "2025-03-02T08:09:45.713",
-  updatedBy: null,
-  updatedDate: "2025-03-02T08:09:45.713",
-  isActive: 1,
-  roles: [
-    {
-      id: 5,
-      label: "Customer",
-      orders: 5,
-      isActive: 1,
-    },
-  ],
-  imageUrl: null,
-};
+// const detailUser = {
+//   id: 120,
+//   fullname: "John Doe",
+//   username: "supercustomer@gmail.com",
+//   email: "supercustomer@gmail.com",
+//   phone: "0767676284",
+//   address: "Bay Area, San Francisco, CA",
+//   provinceId: 0,
+//   provinceName: null,
+//   districtId: 0,
+//   districtName: null,
+//   wardId: 0,
+//   wardName: null,
+//   gender: 2, // 1: Male, 2: Female
+//   createdBy: null,
+//   createdDate: "2025-03-02T08:09:45.713",
+//   updatedBy: null,
+//   updatedDate: "2025-03-02T08:09:45.713",
+//   isActive: 1,
+//   roles: [
+//     {
+//       id: 5,
+//       label: "Customer",
+//       orders: 5,
+//       isActive: 1,
+//     },
+//   ],
+//   imageUrl: null,
+// };
 
 // Component chính
 export default function ProfilePage() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [formData, setFormData] = useState(userData);
+  // const [formData, setFormData] = useState(detailUser);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const { detailUser } = useSelector((state) => state.accounts);
+  const userId = Number(localStorage.getItem("userId"));
 
+  console.log("detailUser", detailUser);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchUserById({ id: userId }));
+    }
+  }, [dispatch, userId]);
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    // setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log(e);
   };
 
   const handleSaveChanges = () => {
-    console.log("Updated user data:", formData);
     message.success("Profile updated successfully!");
     // Dispatch API update here
   };
@@ -96,11 +105,11 @@ export default function ProfilePage() {
             <Avatar
               size={100}
               icon={<UserOutlined />}
-              src={userData.imageUrl}
+              src={detailUser.imageUrl}
               className="mb-6 border-4 border-blue-500"
             />
-            <h2 className="text-2xl font-semibold">{userData.fullname}</h2>
-            <p className="text-gray-400 text-lg">{userData.username}</p>
+            <h2 className="text-2xl font-semibold">{detailUser.fullname}</h2>
+            <p className="text-gray-400 text-lg">{detailUser.username}</p>
 
             <Button
               type="primary"
@@ -117,26 +126,28 @@ export default function ProfilePage() {
           <div className="mt-6 space-y-4">
             <div className="flex items-center">
               <MailOutlined className="mr-2 text-xl text-yellow-500" />
-              <span className="text-gray-700 text-lg">{userData.email}</span>
+              <span className="text-gray-700 text-lg">{detailUser.email}</span>
             </div>
             <Divider className="bg-slate-300"></Divider>
             <div className="flex items-center">
               <PhoneOutlined className="mr-2 text-xl text-green-500" />
-              <span className="text-gray-700 text-lg">{userData.phone}</span>
+              <span className="text-gray-700 text-lg">{detailUser.phone}</span>
             </div>
             <Divider className="bg-slate-300"></Divider>
             <div className="flex items-center">
               <EnvironmentOutlined className="mr-2 text-xl" />
-              <span className="text-gray-700 text-lg">{userData.address}</span>
+              <span className="text-gray-700 text-lg">
+                {detailUser.address}
+              </span>
             </div>
             <Divider className="bg-slate-300"></Divider>
             <p className="text-gray-700 text-lg">
-              {userData.gender === 1 ? (
+              {detailUser.gender === 1 ? (
                 <ManOutlined className="mr-2 text-xl text-blue-400" />
               ) : (
                 <WomanOutlined className="mr-2 text-xl text-pink-400" />
               )}
-              {userData.gender === 1 ? "Male" : "Female"}
+              {detailUser.gender === 1 ? "Male" : "Female"}
             </p>
           </div>
         </Card>
@@ -152,7 +163,7 @@ export default function ProfilePage() {
                 <p className="text-md font-semibold">Full Name:</p>
                 <Input
                   name="fullName"
-                  value={formData.fullname}
+                  value={detailUser.fullname}
                   onChange={handleChange}
                   className="w-full h-[2.5rem] rounded-sm"
                 />
@@ -161,7 +172,7 @@ export default function ProfilePage() {
                 <p className="text-md font-semibold">Email:</p>
                 <Input
                   name="email"
-                  value={formData.email}
+                  value={detailUser.email}
                   onChange={handleChange}
                   className="w-full h-[2.5rem] rounded-sm"
                 />
@@ -170,7 +181,7 @@ export default function ProfilePage() {
                 <p className="text-md font-semibold">Phone:</p>
                 <Input
                   name="phone"
-                  value={formData.phone}
+                  value={detailUser.phone}
                   onChange={handleChange}
                   className="w-full h-[2.5rem] rounded-sm"
                 />
@@ -179,7 +190,7 @@ export default function ProfilePage() {
                 <p className=" text-md font-semibold">Address:</p>
                 <Input
                   name="address"
-                  value={formData.address}
+                  value={detailUser.address}
                   onChange={handleChange}
                   className="w-full h-[2.5rem] rounded-sm"
                 />
