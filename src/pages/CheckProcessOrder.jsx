@@ -121,9 +121,9 @@ export default function CheckProcessOrder() {
   useEffect(() => {
     const fetchOrderStatus = async () => {
       try {
-        const currentUrl = window.location.href;
-        console.log("Fetching order status for URL:", currentUrl);
-        await dispatch(checkSuccessOrder({ urlResponse: currentUrl }));
+        const FE_URL = import.meta.env.VITE_FE_URL;
+        console.log("Fetching order status for URL:", FE_URL);
+        await dispatch(checkSuccessOrder({ urlResponse: FE_URL }));
       } catch (error) {
         console.error(error);
       }

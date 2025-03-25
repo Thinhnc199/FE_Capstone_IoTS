@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
-const returnUrl = "http://localhost:5173/checkout-process-order";
-// const returnUrl2 = "https://fe-capstone-io-ts.vercel.app/checkout-process-order";
+// const returnUrl = "http://localhost:5173/checkout-process-order";
+
+const returnUrl = "https://fe-capstone-io-ts.vercel.app/checkout-process-order";
 const handleAsyncState = (builder, asyncThunk, onSuccess) => {
   builder
     .addCase(asyncThunk.pending, (state) => {
