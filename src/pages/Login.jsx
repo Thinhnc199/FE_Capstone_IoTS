@@ -28,7 +28,6 @@ const Login = () => {
   //   (state) => state.trainerRegister.requestStatus
   // );
 
-
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
@@ -73,7 +72,7 @@ const Login = () => {
           break;
         case 4:
           if (isActive === 1) {
-            navigate("/trainer/welcome");
+            navigate("/trainer");
           } else if (isActive === 2) {
             navigate("/trainer/registerTrainer");
             // if (requestStatusTrainer === "Approved") {

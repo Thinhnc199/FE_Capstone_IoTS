@@ -117,24 +117,25 @@ const LabDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-mainColer p-6">
+    //max-h-screen bg-white rounded-sm shadow-sm mx-auto p-4 my-4 container
+    <div className="min-h-screen bg-mainColer rounded-sm shadow-sm mx-auto p-4 my-4 container">
       <div className="bg-white text-gray-800 p-4 rounded-lg mb-6 shadow">
-  <h1 className="text-3xl font-bold font-Mainfont">{labInfo.title}</h1>
-  <p className="text-lg mt-2">{labInfo.summary}</p>
-  <div className="flex items-center mt-4">
-    <Rate disabled value={labInfo.rating} />
-    <span className="ml-2 text-sm">({labInfo.rating} stars)</span>
-  </div>
-  <p className="text-sm mt-2">
-    Last updated: {dayjs(labInfo.updatedDate).format("DD/MM/YYYY")}
-  </p>
-  <p className="text-sm">
-    Created by:{" "}
-    <span className="text-textColer">
-      {labInfo.createdByNavigationEmail}
-    </span>
-  </p>
-</div>
+        <h1 className="text-3xl font-bold font-Mainfont">{labInfo.title}</h1>
+        <p className="text-lg mt-2">{labInfo.summary}</p>
+        <div className="flex items-center mt-4">
+          <Rate disabled value={labInfo.rating} />
+          <span className="ml-2 text-sm">({labInfo.rating} stars)</span>
+        </div>
+        <p className="text-sm mt-2">
+          Last updated: {dayjs(labInfo.updatedDate).format("DD/MM/YYYY")}
+        </p>
+        <p className="text-sm">
+          Created by:{" "}
+          <span className="text-textColer">
+            {labInfo.createdByNavigationEmail}
+          </span>
+        </p>
+      </div>
 
       {/* Sử dụng items thay vì TabPane */}
       <Tabs
