@@ -42,6 +42,7 @@ import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
 import HistoryOrder from "../pages/HistoryOrder";
+import HistoryOrderDetail from "../pages/HistoryOrderDetail";
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
 import Checkout from "../pages/Checkout/Checkout";
@@ -112,6 +113,11 @@ const publicRoute = [
   {
     path: "/history-order",
     component: HistoryOrder,
+    layout: MainLayout,
+  },
+  {
+    path: "/history-order/:id",
+    component: HistoryOrderDetail,
     layout: MainLayout,
   },
   {
