@@ -12,7 +12,6 @@ const { Text, Title } = Typography;
 const { TabPane } = Tabs;
 dayjs.locale("vi");
 
-// Giữ nguyên toàn bộ dữ liệu mẫu
 const mockData = [
   {
     orderId: 300,
