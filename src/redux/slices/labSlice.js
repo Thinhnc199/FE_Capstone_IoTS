@@ -264,7 +264,7 @@ const labSlice = createSlice({
       })
       .addCase(getLabTrainerPagination.fulfilled, (state, action) => {
         state.loading = false;
-        state.labs = action.payload;
+        state.labs = action.payload.data;
       })
       .addCase(getLabTrainerPagination.rejected, (state, action) => {
         state.loading = false;

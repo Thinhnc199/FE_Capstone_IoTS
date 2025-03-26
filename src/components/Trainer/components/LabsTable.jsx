@@ -1,9 +1,9 @@
-
 // import { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
-// import { Table, Input, Select, Image, Tag } from "antd";
-// import { Link } from "react-router-dom";
+// import { Table, Input, Select, Image, Tag, Button, notification } from "antd";
+// import { Link, useNavigate } from "react-router-dom"; // Thêm useNavigate
 // import PropTypes from "prop-types";
+// import { EditOutlined, PlusOutlined } from "@ant-design/icons"; // Thêm icons
 // import {
 //   getLabAdminPagination,
 //   getLabStorePagination,
@@ -11,11 +11,13 @@
 //   getLabCustomerPagination,
 // } from "./../../../redux/slices/labSlice";
 // import debounce from "lodash/debounce";
-
+// import ComboDetailModal from "./../../../components/StoreIoT/components/ComboDetailModal"; // Import component ComboDetailModal
+// import { fetchComboDetails } from "./../../../redux/slices/comboSlice";
 // const { Option } = Select;
 
 // const LabsTable = ({ role, comboId, userId, storeId }) => {
 //   const dispatch = useDispatch();
+//   const navigate = useNavigate(); // Hook để điều hướng
 //   const { labs, loading } = useSelector((state) => state.lab);
 //   const [pagination, setPagination] = useState({
 //     pageIndex: 1,
@@ -24,12 +26,13 @@
 //   });
 //   const [searchKeyword, setSearchKeyword] = useState("");
 //   const [advancedFilter, setAdvancedFilter] = useState({
-//     userId: userId || 0,
-//     storeId: storeId || 0,
-//     comboId: comboId || 0,
-//     labStatus: 0,
+//     userId: null,
+//     storeId: null,
+//     comboId: null,
+//     labStatus: null,
 //   });
-
+//   const [isComboModalVisible, setIsComboModalVisible] = useState(false); // State cho modal combo
+//   const [selectedCombo, setSelectedCombo] = useState(null); // State cho dữ liệu combo
 //   useEffect(() => {
 //     const fetchLabs = () => {
 //       const params = {
@@ -38,24 +41,30 @@
 //         searchKeyword,
 //       };
 
+//       const appliedFilter = {
+//         ...(comboId && { comboId }),
+//         ...(userId && { userId }),
+//         ...(storeId && { storeId }),
+//         ...(advancedFilter.labStatus !== null && {
+//           labStatus: advancedFilter.labStatus,
+//         }),
+//       };
+
 //       if (role === "store") {
 //         dispatch(
-//           getLabStorePagination({ comboId: advancedFilter.comboId, params })
+//           getLabStorePagination({ comboId: appliedFilter.comboId, params })
 //         );
 //       } else if (role === "trainer") {
 //         dispatch(
 //           getLabTrainerPagination({
-//             advancedFilter: {
-//               ...advancedFilter,
-//               userId: advancedFilter.userId || userId,
-//             },
+//             advancedFilter: appliedFilter,
 //             paginationRequest: params,
 //           })
 //         );
 //       } else if (role === "admin") {
 //         dispatch(
 //           getLabAdminPagination({
-//             advancedFilter,
+//             advancedFilter: appliedFilter,
 //             paginationRequest: params,
 //           })
 //         );
@@ -73,18 +82,35 @@
 //     pagination.pageIndex,
 //     pagination.pageSize,
 //     searchKeyword,
-//     advancedFilter,
+//     advancedFilter.labStatus,
 //     dispatch,
 //     role,
+//     comboId,
 //     userId,
-//   ]); // Các dependency cần thiết
+//     storeId,
+//   ]);
+
+//   // Hàm hiển thị modal chi tiết combo
+//   const handleShowComboDetail = async (comboId) => {
+//     try {
+//       const response = await dispatch(fetchComboDetails(comboId));
+//       setSelectedCombo(response.payload.data);
+//       setIsComboModalVisible(true);
+//     } catch (err) {
+//       console.error("Error fetching combo details:", err);
+//       notification.error({
+//         message: "Error",
+//         description: "Failed to get combo details.",
+//       });
+//     }
+//   };
 
 //   const handleTableChange = (paginationData) => {
 //     setPagination({
 //       ...pagination,
 //       pageIndex: paginationData.current,
 //       pageSize: paginationData.pageSize,
-//       totalCount: labs.totalCount || 0,
+//       totalCount: labs?.totalCount || 0,
 //     });
 //   };
 
@@ -96,7 +122,7 @@
 //   const handleFilterChange = (key, value) => {
 //     setAdvancedFilter((prev) => ({
 //       ...prev,
-//       [key]: value || 0,
+//       [key]: value === undefined ? null : value,
 //     }));
 //     setPagination({ ...pagination, pageIndex: 1 });
 //   };
@@ -104,13 +130,28 @@
 //   const getStatusTag = (status) => {
 //     switch (status) {
 //       case 1:
-//         return <Tag color="green">Approved</Tag>;
+//         return <Tag color="green">Active</Tag>;
 //       case 2:
-//         return <Tag color="orange">Pending To Approved</Tag>;
+//         return <Tag color="yellow">Pending</Tag>;
 //       case 3:
 //         return <Tag color="red">Rejected</Tag>;
 //       default:
-//         return <Tag color="gray">Unknown</Tag>;
+//         return <Tag color="grey">Unknown</Tag>;
+//     }
+//   };
+
+//   const getDetailPath = (recordId) => {
+//     switch (role) {
+//       case "store":
+//         return `/store/detail-labRequest/${recordId}`;
+//       case "trainer":
+//         return `/trainer/detail-lab/${recordId}`;
+//       case "admin":
+//         return `/admin/detail-lab/${recordId}`;
+//       case "customer":
+//         return `/customer/lab-details/${recordId}`;
+//       default:
+//         return "#";
 //     }
 //   };
 
@@ -120,7 +161,7 @@
 //       dataIndex: "id",
 //       key: "id",
 //       render: (text, record) => (
-//         <Link to={`/store/detail-labRequest/${record.id}`}>{text}</Link>
+//         <Link to={getDetailPath(record.id)}>{text}</Link>
 //       ),
 //     },
 //     {
@@ -141,7 +182,7 @@
 //       key: "title",
 //       sorter: (a, b) => a.title.localeCompare(b.title),
 //       render: (text, record) => (
-//         <Link to={`/store/detail-labRequest/${record.id}`}>{text}</Link>
+//         <Link to={`/trainer/detail-lab/${record.id}`}>{text}</Link>
 //       ),
 //     },
 //     {
@@ -153,6 +194,9 @@
 //       title: "Combo",
 //       dataIndex: "comboNavigationName",
 //       key: "comboNavigationName",
+//       render: (text, record) => (
+//         <a onClick={() => handleShowComboDetail(record.comboId)}>{text}</a>
+//       ),
 //     },
 //     {
 //       title: "Store",
@@ -163,7 +207,7 @@
 //       title: "Price",
 //       dataIndex: "price",
 //       key: "price",
-//       render: (price) => `$${price}`,
+//       render: (price) => `${price} VND`,
 //       sorter: (a, b) => a.price - b.price,
 //     },
 //     {
@@ -172,19 +216,54 @@
 //       key: "status",
 //       render: getStatusTag,
 //       filters: [
-//         { text: "Approved", value: 1 },
-//         { text: "Pending To Approved", value: 2 },
+//         { text: "Active", value: 1 },
+//         { text: "Pending", value: 2 },
 //         { text: "Rejected", value: 3 },
 //       ],
 //       onFilter: (value, record) => record.status === value,
 //     },
+//     ...(role === "trainer"
+//       ? [
+//           {
+//             title: "Action",
+//             key: "action",
+//             render: (_, record) => (
+//               <Button
+//                 type="link"
+//                 icon={<EditOutlined />}
+//                 onClick={() => navigate(`/trainer/update-lab/${record.id}`)}
+//               >
+//                 Edit
+//               </Button>
+//             ),
+//           },
+//         ]
+//       : []),
 //   ];
+
+//   const handleCreateLab = () => {
+//     // Thêm độ trễ 0.5 giây trước khi chuyển trang
+//     setTimeout(() => {
+//       navigate("/trainer/create-lab");
+//     }, 500);
+//   };
 
 //   return (
 //     <div className="p-6 bg-white rounded-lg shadow-lg">
-//       <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-//         Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)})
-//       </h2>
+//       <div className="flex justify-between items-center mb-6">
+//         <h2 className="text-2xl font-semibold text-gray-800">
+//           Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)})
+//         </h2>
+//         {role === "trainer" && (
+//           <Button
+//             type="primary"
+//             icon={<PlusOutlined />}
+//             onClick={handleCreateLab}
+//           >
+//             Create Lab
+//           </Button>
+//         )}
+//       </div>
 
 //       {/* Search and Filters */}
 //       <div className="flex gap-4 mb-4">
@@ -202,9 +281,8 @@
 //               onChange={(value) => handleFilterChange("labStatus", value)}
 //               className="w-1/4"
 //             >
-//               <Option value={1}>Approved</Option>
-//               <Option value={2}>Pending To Approved</Option>
-//               <Option value={3}>Rejected</Option>
+//               <Option value={1}>Active</Option>
+//               <Option value={2}>Pending</Option>
 //             </Select>
 //             <Select
 //               placeholder="Filter by Combo"
@@ -219,11 +297,15 @@
 //           </>
 //         )}
 //       </div>
-
+//       <ComboDetailModal
+//         visible={isComboModalVisible}
+//         onCancel={() => setIsComboModalVisible(false)}
+//         combo={selectedCombo}
+//       />
 //       {/* Table */}
 //       <Table
 //         columns={columns}
-//         dataSource={labs?.data || []} // Giữ nguyên để tránh lỗi khi labs chưa load
+//         dataSource={labs?.data || []}
 //         loading={loading}
 //         pagination={{
 //           current: pagination.pageIndex,
@@ -241,38 +323,44 @@
 // };
 
 // LabsTable.propTypes = {
-//   role: PropTypes.oneOf(["admin", "trainer", "store"]).isRequired,
+//   role: PropTypes.oneOf(["admin", "trainer", "store", "customer"]).isRequired,
 //   comboId: PropTypes.number,
 //   userId: PropTypes.number,
 //   storeId: PropTypes.number,
 // };
 
 // LabsTable.defaultProps = {
-//   comboId: 0,
-//   userId: 0,
-//   storeId: 0,
+//   comboId: null,
+//   userId: null,
+//   storeId: null,
 // };
 
 // export default LabsTable;
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Input, Select, Image, Tag } from "antd";
-import { Link } from "react-router-dom";
+import { Table, Input, Select, Image, Tag, Button, notification } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   getLabAdminPagination,
   getLabStorePagination,
   getLabTrainerPagination,
   getLabCustomerPagination,
 } from "./../../../redux/slices/labSlice";
+import { fetchCombos } from "./../../../redux/slices/comboSlice";
 import debounce from "lodash/debounce";
+import ComboDetailModal from "./../../../components/StoreIoT/components/ComboDetailModal";
+import { fetchComboDetails } from "./../../../redux/slices/comboSlice";
 
 const { Option } = Select;
 
 const LabsTable = ({ role, comboId, userId, storeId }) => {
   const dispatch = useDispatch();
-  const { labs, loading } = useSelector((state) => state.lab);
+  const navigate = useNavigate();
+  const { labs, loading: labLoading } = useSelector((state) => state.lab);
+  const { combos, loading: comboLoading } = useSelector((state) => state.combo);
   const [pagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 5,
@@ -280,12 +368,26 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   });
   const [searchKeyword, setSearchKeyword] = useState("");
   const [advancedFilter, setAdvancedFilter] = useState({
-    userId: userId || 0,
-    storeId: storeId || 0,
-    comboId: comboId || 0,
-    labStatus: 0,
+    userId: null,
+    storeId: null,
+    comboId: null,
+    labStatus: null,
   });
+  const [isComboModalVisible, setIsComboModalVisible] = useState(false);
+  const [selectedCombo, setSelectedCombo] = useState(null);
 
+  // Fetch combos when component mounts
+  useEffect(() => {
+    dispatch(
+      fetchCombos({
+        pageIndex: 0,
+        pageSize: 50,
+        searchKeyword: "",
+      })
+    );
+  }, [dispatch]);
+
+  // Fetch labs based on filters and pagination
   useEffect(() => {
     const fetchLabs = () => {
       const params = {
@@ -294,33 +396,38 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
         searchKeyword,
       };
 
+      const appliedFilter = {
+        ...(comboId && { comboId }),
+        ...(userId && { userId }),
+        ...(storeId && { storeId }),
+        ...(advancedFilter.labStatus !== null && {
+          labStatus: advancedFilter.labStatus,
+        }),
+        ...(advancedFilter.comboId !== null && {
+          comboId: advancedFilter.comboId,
+        }),
+      };
+
       if (role === "store") {
         dispatch(
-          getLabStorePagination({ comboId: advancedFilter.comboId, params })
+          getLabStorePagination({ comboId: appliedFilter.comboId, params })
         );
       } else if (role === "trainer") {
         dispatch(
           getLabTrainerPagination({
-            advancedFilter: {
-              ...advancedFilter,
-              userId: advancedFilter.userId || userId,
-            },
+            advancedFilter: appliedFilter,
             paginationRequest: params,
           })
         );
       } else if (role === "admin") {
         dispatch(
           getLabAdminPagination({
-            advancedFilter,
+            advancedFilter: appliedFilter,
             paginationRequest: params,
           })
         );
       } else if (role === "customer") {
-        dispatch(
-          getLabCustomerPagination({
-            paginationRequest: params,
-          })
-        );
+        dispatch(getLabCustomerPagination({ paginationRequest: params }));
       }
     };
 
@@ -329,11 +436,46 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
     pagination.pageIndex,
     pagination.pageSize,
     searchKeyword,
-    advancedFilter,
+    advancedFilter.labStatus,
+    advancedFilter.comboId,
     dispatch,
     role,
+    comboId,
     userId,
+    storeId,
   ]);
+
+  // Debounced combo search
+  const debouncedFetchCombos = useCallback(
+    debounce((keyword) => {
+      dispatch(
+        fetchCombos({
+          pageIndex: 0,
+          pageSize: 50,
+          searchKeyword: keyword,
+        })
+      );
+    }, 300),
+    [dispatch]
+  );
+
+  const handleComboSearch = (value) => {
+    debouncedFetchCombos(value);
+  };
+
+  const handleShowComboDetail = async (comboId) => {
+    try {
+      const response = await dispatch(fetchComboDetails(comboId));
+      setSelectedCombo(response.payload.data);
+      setIsComboModalVisible(true);
+    } catch (err) {
+      console.error("Error fetching combo details:", err);
+      notification.error({
+        message: "Error",
+        description: "Failed to get combo details.",
+      });
+    }
+  };
 
   const handleTableChange = (paginationData) => {
     setPagination({
@@ -352,7 +494,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   const handleFilterChange = (key, value) => {
     setAdvancedFilter((prev) => ({
       ...prev,
-      [key]: value || 0,
+      [key]: value === undefined ? null : value,
     }));
     setPagination({ ...pagination, pageIndex: 1 });
   };
@@ -360,13 +502,13 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   const getStatusTag = (status) => {
     switch (status) {
       case 1:
-        return <Tag color="green">Approved</Tag>;
+        return <Tag color="green">Active</Tag>;
       case 2:
-        return <Tag color="orange">Pending To Approved</Tag>;
+        return <Tag color="yellow">Pending</Tag>;
       case 3:
         return <Tag color="red">Rejected</Tag>;
       default:
-        return <Tag color="gray">Unknown</Tag>;
+        return <Tag color="grey">Unknown</Tag>;
     }
   };
 
@@ -412,7 +554,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       key: "title",
       sorter: (a, b) => a.title.localeCompare(b.title),
       render: (text, record) => (
-        <Link to={getDetailPath(record.id)}>{text}</Link>
+        <Link to={`/trainer/detail-lab/${record.id}`}>{text}</Link>
       ),
     },
     {
@@ -424,6 +566,9 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       title: "Combo",
       dataIndex: "comboNavigationName",
       key: "comboNavigationName",
+      render: (text, record) => (
+        <a onClick={() => handleShowComboDetail(record.comboId)}>{text}</a>
+      ),
     },
     {
       title: "Store",
@@ -434,7 +579,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price) => `$${price}`,
+      render: (price) => `${price} VND`,
       sorter: (a, b) => a.price - b.price,
     },
     {
@@ -443,19 +588,53 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       key: "status",
       render: getStatusTag,
       filters: [
-        { text: "Approved", value: 1 },
-        { text: "Pending To Approved", value: 2 },
+        { text: "Active", value: 1 },
+        { text: "Pending", value: 2 },
         { text: "Rejected", value: 3 },
       ],
       onFilter: (value, record) => record.status === value,
     },
+    ...(role === "trainer"
+      ? [
+          {
+            title: "Action",
+            key: "action",
+            render: (_, record) => (
+              <Button
+                type="link"
+                icon={<EditOutlined />}
+                onClick={() => navigate(`/trainer/update-lab/${record.id}`)}
+              >
+                Edit
+              </Button>
+            ),
+          },
+        ]
+      : []),
   ];
+
+  const handleCreateLab = () => {
+    setTimeout(() => {
+      navigate("/trainer/create-lab");
+    }, 500);
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-        Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)})
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)})
+        </h2>
+        {role === "trainer" && (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleCreateLab}
+          >
+            Create Lab
+          </Button>
+        )}
+      </div>
 
       {/* Search and Filters */}
       <div className="flex gap-4 mb-4">
@@ -473,29 +652,40 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
               onChange={(value) => handleFilterChange("labStatus", value)}
               className="w-1/4"
             >
-              <Option value={1}>Approved</Option>
-              <Option value={2}>Pending To Approved</Option>
-              <Option value={3}>Rejected</Option>
+              <Option value={1}>Active</Option>
+              <Option value={2}>Pending</Option>
             </Select>
             <Select
-              placeholder="Filter by Combo"
+              showSearch
+              placeholder="Select or search a combo"
               allowClear
               onChange={(value) => handleFilterChange("comboId", value)}
+              onSearch={handleComboSearch}
+              filterOption={false} // Disable default filtering, use API search instead
+              loading={comboLoading}
               className="w-1/4"
             >
-              <Option value={9}>Combo for developer</Option>
-              <Option value={17}>August Smart Lock</Option>
-              <Option value={20}>IoT Home Automation Starter Kit</Option>
+              {combos?.map((combo) => (
+                <Option key={combo.id} value={combo.id}>
+                  {combo.name}
+                </Option>
+              ))}
             </Select>
           </>
         )}
       </div>
 
+      <ComboDetailModal
+        visible={isComboModalVisible}
+        onCancel={() => setIsComboModalVisible(false)}
+        combo={selectedCombo}
+      />
+
       {/* Table */}
       <Table
         columns={columns}
-        dataSource={labs?.data || []} // Sử dụng labs.data vì state.labs là action.payload.data
-        loading={loading}
+        dataSource={labs?.data || []}
+        loading={labLoading}
         pagination={{
           current: pagination.pageIndex,
           pageSize: pagination.pageSize,
@@ -519,9 +709,9 @@ LabsTable.propTypes = {
 };
 
 LabsTable.defaultProps = {
-  comboId: 0,
-  userId: 0,
-  storeId: 0,
+  comboId: null,
+  userId: null,
+  storeId: null,
 };
 
 export default LabsTable;
