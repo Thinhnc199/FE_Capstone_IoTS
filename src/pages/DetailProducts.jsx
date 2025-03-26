@@ -59,7 +59,7 @@ export default function DetailProducts() {
   const joinedMonths = calculateMonthsSince(product?.storeInfo?.createdDate);
   const HandleAddToCart = async () => {
     if (product.quantity <= 0) {
-      message.warning("Sản phẩm đã hết hàng.");
+      message.warning("The product is out of stock.");
       return;
     }
 
@@ -335,8 +335,147 @@ export default function DetailProducts() {
             items={[
               {
                 key: "1",
-                label: "Describe",
-                children: <p>{product.description || "Không có mô tả."}</p>,
+                label: "Product Details",
+                children: (
+                  <div className="space-y-4 font-normal">
+                    {/* Summary - Chỉ hiển thị nếu có dữ liệu */}
+                    {product.summary && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Summary</h3>
+                        <p className="text-gray-700">{product.summary}</p>
+                      </div>
+                    )}
+
+                    {/* Description - Chỉ hiển thị nếu có dữ liệu */}
+                    {product.description && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Description
+                        </h3>
+                        <p className="text-gray-700 whitespace-pre-line">
+                          {product.description}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Basic Info - Chỉ hiển thị nếu có ít nhất một trường dữ liệu */}
+                    {(product.weight ||
+                      product.warrantyMonth ||
+                      product.category?.label ||
+                      product.model) && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Basic Information
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Mỗi trường chỉ hiển thị nếu có giá trị */}
+                          {product.weight !== undefined &&
+                            product.weight !== null && (
+                              <div>
+                                <p className="text-gray-500">Weight</p>
+                                <p className="font-medium">
+                                  {product.weight} kg
+                                </p>
+                              </div>
+                            )}
+
+                          {product.warrantyMonth !== undefined &&
+                            product.warrantyMonth !== null && (
+                              <div>
+                                <p className="text-gray-500">Warranty</p>
+                                <p className="font-medium">
+                                  {product.warrantyMonth} months
+                                </p>
+                              </div>
+                            )}
+
+                          {product.category?.label && (
+                            <div>
+                              <p className="text-gray-500">Category</p>
+                              <p className="font-medium">
+                                {product.category.label}
+                              </p>
+                            </div>
+                          )}
+
+                          {product.model && (
+                            <div>
+                              <p className="text-gray-500">Model</p>
+                              <p className="font-medium">{product.model}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Specifications - Chỉ hiển thị nếu có dữ liệu */}
+                    {product.specifications && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Specifications
+                        </h3>
+                        <p className="text-gray-700 whitespace-pre-line">
+                          {product.specifications}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Device Specifications - Chỉ hiển thị nếu có dữ liệu */}
+                    {product.deviceSpecificationsList?.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Technical Specifications
+                        </h3>
+                        {product.deviceSpecificationsList.map(
+                          (specGroup, index) => (
+                            <div key={index} className="mb-6">
+                              {/* Chỉ hiển thị tên nhóm nếu có */}
+                              {specGroup.name && (
+                                <h4 className="font-medium mb-2">
+                                  {specGroup.name}
+                                </h4>
+                              )}
+
+                              {/* Chỉ hiển thị bảng nếu có items */}
+                              {specGroup.deviceSpecificationItemsList?.length >
+                                0 && (
+                                <div className="overflow-x-auto">
+                                  <table className="min-w-full border">
+                                    <thead className="bg-gray-50">
+                                      <tr>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                                          Property
+                                        </th>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                                          Value
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                      {specGroup.deviceSpecificationItemsList.map(
+                                        (item, itemIndex) => (
+                                          <tr key={itemIndex}>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-700 border">
+                                              {item.specificationProperty ||
+                                                "N/A"}
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 border">
+                                              {item.specificationValue || "N/A"}
+                                            </td>
+                                          </tr>
+                                        )
+                                      )}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ),
               },
               {
                 key: "2",
@@ -345,8 +484,10 @@ export default function DetailProducts() {
                   product.reviews?.length > 0 ? (
                     product.reviews.map((review, index) => (
                       <div key={index} className="p-2 border-b">
-                        <p className="font-semibold">{review.user}</p>
-                        <p>{review.comment}</p>
+                        <p className="font-semibold">
+                          {review.user || "Anonymous"}
+                        </p>
+                        <p>{review.comment || "No comment"}</p>
                       </div>
                     ))
                   ) : (
@@ -359,12 +500,11 @@ export default function DetailProducts() {
             ]}
           />
         </div>
-        <div className="col-span-3  bg-white border shadow-md rounded-md p-4">
+        <div className="col-span-3 bg-white border shadow-md rounded-md p-4">
           <div className="flex justify-start items-center space-x-3 rounded-md bg-headerBg text-white p-2 m-1">
             <StarOutlined className="text-2xl" />
-            <h2 className="text-md  font-semibold  ">Viewed products</h2>
+            <h2 className="text-md font-semibold">Viewed products</h2>
           </div>
-
           <p>none</p>
         </div>
       </div>
