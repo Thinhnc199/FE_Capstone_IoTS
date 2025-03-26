@@ -65,6 +65,9 @@ import ProfilePage from "../pages/Profile/ProfilePage";
 import StoreInfoPage from "../pages/StoreInfoPage";
 import CustomerLabsManagement from "../pages/labs/CustomerLabsManagement";
 import CustomerLabDetail from "../pages/labs/CustomerLabDetail";
+import TrainerLabsManagement from "../components/Trainer/TrainerLabsManagement";
+import LabDetailTrainer from "../components/Trainer/LabDetailTrainer";
+import NewCreateLab from "../components/Trainer/NewCreLab";
 
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
@@ -316,7 +319,7 @@ const publicRoute = [
     component: CustomerLabDetail,
     layout: MainLayout,
   },
-  // trainer
+
   {
     path: "/trainer",
     component: DashBoardTrainer,
@@ -338,9 +341,24 @@ const publicRoute = [
     layout: TrainerLayout,
   },
   {
-    path: "/trainer/create-lab",
+    path: "/trainer/update-lab/:labId",
     component: CreateLab,
-    layout: TrainerLayout,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/create-lab",
+    component: NewCreateLab,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/labs-management",
+    component: TrainerLabsManagement,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/detail-lab/:labId",
+    component: LabDetailTrainer,
+    layout: TrainerIotLayout,
   },
 ];
 

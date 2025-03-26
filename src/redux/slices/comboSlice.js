@@ -171,7 +171,7 @@ export const fetchCombos = createAsyncThunk(
     try {
       console.log("📡 Fetching Combos with params:", { pageIndex, pageSize, searchKeyword });
 
-      const response = await api.post(`/api/combo/get-pagination`, { pageIndex, pageSize, searchKeyword });
+      const response = await api.post(`/api/combo/get-pagination`, { pageIndex, pageSize, searchKeyword: searchKeyword || "", });
 
       console.log("✅ API Response:", response.data);
 
@@ -286,11 +286,6 @@ export const fetchIotDevices = createAsyncThunk(
   }
 );
 
-// export const fetchIotDevices = createAsyncThunk("combo/fetchIotDevices", async (params) => {
-//   const response = await api.post("/api/iot-device/get-pagination", params);
-//   return response.data;
-// });
-
 // Initial state
 const initialState = {
   loading: false,
@@ -318,7 +313,7 @@ const comboSlice = createSlice({
       state.pageSize = action.payload;
     },
     setSearchKeyword: (state, action) => {
-      state.filters.all.searchKeyword = action.payload;
+      state.searchKeyword = action.payload;
     },
     setStartFilterDate: (state, action) => {
       state.filters.all.startFilterDate = action.payload;

@@ -782,11 +782,11 @@ const Step2Form = ({ labId, onBack }) => {
         if (response?.isSuccess && response?.statusCode === 200) {
           notification.success({
             message: "Lab Submitted Successfully!",
-            description: "Redirecting to welcome page in 5 seconds...",
+            // description: "Redirecting to welcome page in 5 seconds...",
           });
           setTimeout(() => {
-            window.location.href = "/trainer/welcome";
-          }, 5000);
+            window.location.href = "/trainer/labs-management";
+          }, 3000);
         }
       } catch (err) {
         notification.error({

@@ -135,7 +135,15 @@
 // }
 
 import { useState } from "react";
-import { Empty, Table, Button, Checkbox, Modal, List } from "antd";
+import {
+  Empty,
+  Table,
+  Button,
+  Checkbox,
+  Modal,
+  List,
+  notification,
+} from "antd";
 import QuantityInput from "../components/common/QuantityInput";
 import { useSelector, useDispatch } from "react-redux";
 import { DeleteFilled } from "@ant-design/icons";
@@ -169,12 +177,21 @@ export default function CartProducts() {
 
   // State để quản lý Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentCartId, setCurrentCartId] = useState(null); // Track the current cart item being viewed
 
   const handleDelete = async (cartId) => {
     try {
       await dispatch(deleteCarts({ cartId })).unwrap();
+      notification.success({
+        message: "Item Removed",
+        description: "The item has been removed from your cart.",
+      });
     } catch (error) {
       console.error("Failed to delete cart item:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to remove the item from your cart.",
+      });
     }
     dispatch(fetchGetTotalPrice());
     dispatch(fetchCarts({ pageIndex, pageSize }));
@@ -198,15 +215,44 @@ export default function CartProducts() {
   const handleViewIncludedLabs = async (cartId) => {
     try {
       await dispatch(fetchComboIncludedLabs({ cartId })).unwrap();
+      setCurrentCartId(cartId); // Store the cartId for the current combo
       setIsModalVisible(true);
     } catch (error) {
       console.error("Failed to fetch included labs:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to load included labs.",
+      });
+    }
+  };
+
+  // Xử lý bỏ chọn lab khỏi cart
+  const handleUnselectLab = async (labCartId) => {
+    try {
+      await dispatch(deleteCarts({ cartId: labCartId })).unwrap();
+      notification.success({
+        message: "Lab Removed",
+        description: "The lab has been removed from your cart.",
+      });
+      // Refresh the included labs and cart
+      await dispatch(
+        fetchComboIncludedLabs({ cartId: currentCartId })
+      ).unwrap();
+      dispatch(fetchGetTotalPrice());
+      dispatch(fetchCarts({ pageIndex, pageSize }));
+    } catch (error) {
+      console.error("Failed to unselect lab:", error);
+      notification.error({
+        message: "Error",
+        description: "Failed to remove the lab from your cart.",
+      });
     }
   };
 
   // Đóng Modal
   const handleModalClose = () => {
     setIsModalVisible(false);
+    setCurrentCartId(null); // Clear the current cartId
   };
 
   const columns = [
@@ -327,7 +373,19 @@ export default function CartProducts() {
         <List
           dataSource={includedLabs}
           renderItem={(lab) => (
-            <List.Item>
+            <List.Item
+              key={lab.id} // Assuming cartId is unique; use lab.id if needed
+              actions={[
+                <Button
+                  key={lab.id}
+                  type="link"
+                  danger
+                  onClick={() => handleUnselectLab(lab.id)}
+                >
+                  <DeleteFilled className="hover:text-red-600 cursor-pointer" />
+                </Button>,
+              ]}
+            >
               <List.Item.Meta
                 avatar={
                   <img
@@ -341,7 +399,7 @@ export default function CartProducts() {
                   <div>
                     <p>{lab.labSummary}</p>
                     <p>Price: ${lab.price}</p>
-                    <p>Created by: {lab.createdByTrainer}</p>
+                    {/* <p>Created by: {lab.createdByTrainer}</p> */}
                   </div>
                 }
               />

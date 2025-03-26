@@ -20,7 +20,7 @@ const items2 = [
     icon: <ProductOutlined />,
     label: "Labs",
     children: [
-      { key: "lp", label: <Link to="/store/list-product">List Lab</Link> },
+      { key: "lp", label: <Link to="/trainer/labs-management">List Lab</Link> },
     ],
   },
 

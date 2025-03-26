@@ -90,7 +90,6 @@
 
 // export default ComboList;
 
-
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCombos } from "../../../redux/slices/comboSlice";
@@ -113,7 +112,13 @@ const ComboList = () => {
       <div className="container mx-auto py-12 px-6 bg-mainColer">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {[...Array(6)].map((_, index) => (
-            <Skeleton key={index} active avatar paragraph={{ rows: 2 }} className="w-full" />
+            <Skeleton
+              key={index}
+              active
+              avatar
+              paragraph={{ rows: 2 }}
+              className="w-full"
+            />
           ))}
         </div>
       </div>
@@ -135,7 +140,11 @@ const ComboList = () => {
                 cover={
                   <div className="relative group">
                     {combo.deviceType === TypeDevice.NEWPRICE ? (
-                      <Badge.Ribbon text="New" color="red" className="text-textColer">
+                      <Badge.Ribbon
+                        text="New"
+                        color="red"
+                        className="text-textColer"
+                      >
                         <img
                           alt={combo.name}
                           src={combo.imageUrl || "/placeholder.jpg"}
@@ -171,17 +180,17 @@ const ComboList = () => {
                   {combo.name}
                 </h2>
                 <p className="text-red-600 font-semibold text-xl">
-                 $ {combo.price.toLocaleString()} 
+                  {combo.price.toLocaleString()} VND
                 </p>
                 <div className="flex items-center mt-2">
                   <Rate
                     disabled
                     allowHalf
                     defaultValue={combo.rating}
-                    className="text-sm text-textColer"
+                    className="text-sm text-yellow-500"
                   />
                 </div>
-                <div className="mt-4 flex gap-3">
+                {/* <div className="mt-4 flex gap-3">
                   <Button
                     className="flex-1 h-10 font-semibold rounded-full bg-headerBg text-white hover:bg-opacity-90 transition"
                     aria-label="Buy now"
@@ -194,7 +203,7 @@ const ComboList = () => {
                   >
                     Add to Cart
                   </Button>
-                </div>
+                </div> */}
               </Card>
             </Link>
           ))}
