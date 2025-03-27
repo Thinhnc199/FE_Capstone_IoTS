@@ -211,6 +211,7 @@ const labSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+      state.labInfo = null;
     },
     resetVideoState: (state) => { // Reset trạng thái video
       state.videoUrl = null;

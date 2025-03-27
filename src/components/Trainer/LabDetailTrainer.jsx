@@ -49,7 +49,7 @@ ErrorBoundary.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-const LabDetail = React.memo(() => {
+const LabDetailTrainer = React.memo(() => {
   const { labId } = useParams();
   const dispatch = useDispatch();
   const { labInfo, playlist, loading, error } = useSelector(
@@ -355,9 +355,16 @@ const LabDetail = React.memo(() => {
           width={800}
           className="rounded-lg"
           bodyStyle={{ padding: 0 }}
+          destroyOnClose // Ensure modal resets state when closed
         >
           {selectedVideo && (
-            <video controls width="100%" autoPlay className="rounded-t-lg">
+            <video
+              controls
+              width="100%"
+              autoPlay
+              className="rounded-t-lg"
+              key={selectedVideo} // Force re-render when video changes
+            >
               <source src={selectedVideo} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
@@ -375,4 +382,4 @@ const LabDetail = React.memo(() => {
   );
 });
 
-export default LabDetail;
+export default LabDetailTrainer;

@@ -1048,7 +1048,8 @@ const ComboTable = () => {
         rowKey="id"
         pagination={false}
         bordered
-        className="shadow-sm"
+        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white  [&_.ant-pagination]:p-2"
+        style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
       />
       <div className="flex justify-between items-center mt-4">
         <p className="text-gray-600">

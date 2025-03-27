@@ -43,7 +43,7 @@ const ComboCard = ({ combo }) => (
     >
       <h2 className="text-lg font-semibold mb-2 truncate">{combo.name}</h2>
       <p className="text-red-600 font-semibold text-xl">
-        {combo.price.toLocaleString()} VND
+        {combo.price.toLocaleString()}₫
       </p>
       <div className="flex items-center mt-2">
         <Rate disabled allowHalf defaultValue={combo.rating} className="text-sm" />

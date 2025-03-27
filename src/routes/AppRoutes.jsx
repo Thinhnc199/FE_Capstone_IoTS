@@ -68,6 +68,7 @@ import CustomerLabDetail from "../pages/labs/CustomerLabDetail";
 import TrainerLabsManagement from "../components/Trainer/TrainerLabsManagement";
 import LabDetailTrainer from "../components/Trainer/LabDetailTrainer";
 import NewCreateLab from "../components/Trainer/NewCreLab";
+import ComboPage from "../pages/Home/ComboPage";
 
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
@@ -76,7 +77,7 @@ const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/about", component: AboutIoTs, layout: MainLayout },
-
+  {path: "/combos", component: ComboPage, layout: MainLayout},
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },

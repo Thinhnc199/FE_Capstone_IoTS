@@ -60,7 +60,7 @@ const LabPlaylist = ({ labId }) => {
         <Card className="h-full overflow-y-auto">
           <h2 className="text-lg font-semibold mb-4">Tutorials Playlist</h2>
           <List
-            dataSource={playlistData} // Sử dụng playlistData
+            dataSource={playlistData}
             renderItem={(item) => (
               <List.Item
                 onClick={() => setSelectedVideo(item)}
@@ -69,10 +69,10 @@ const LabPlaylist = ({ labId }) => {
                 }`}
               >
                 <div className="flex items-center">
-                  <img
-                    src="https://via.placeholder.com/50"
-                    alt={item.title}
-                    className="w-12 h-8 mr-2 rounded"
+                  <video
+                    controls
+                    src={item.videoUrl}
+                    className="w-14 h-10 mr-2 rounded"
                   />
                   <div>
                     <p className="font-medium">{item.title}</p>
