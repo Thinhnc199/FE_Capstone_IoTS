@@ -64,6 +64,8 @@ export const createOrder = createAsyncThunk(
 export const checkSuccessOrder = createAsyncThunk(
   "createOrders/checkSuccessOrder",
   async ({ urlResponse }, { rejectWithValue }) => {
+    console.log("ff", urlResponse);
+
     try {
       const response = await api.post(`/api/Order/check-order-success`, {
         urlResponse,
@@ -109,6 +111,9 @@ export const getfeeShip = createAsyncThunk(
     }
   }
 );
+
+// history order
+
 const initialState = {
   dataCheckOrder: null,
   order: [],

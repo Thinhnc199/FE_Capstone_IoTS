@@ -19,3 +19,13 @@ export const ProductType = {
 //   ACTIVE: 1,
 //   INACTIVE: 0,
 // };
+
+export const TypeStatusOrder = {
+  PENDING: 1,
+  PACKING: 2,
+  DELEVERING: 3,
+  DELEVERED: 4,
+  SUCCESS_FEEDBACK: 5,
+  SUCCESS_ORDER: 6,
+  REFUND: 7,
+};
