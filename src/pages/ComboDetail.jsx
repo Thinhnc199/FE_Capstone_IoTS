@@ -1,60 +1,45 @@
 // import { useEffect, useState, useCallback } from "react";
 // import { useDispatch, useSelector } from "react-redux";
-// import { fetchComboDetails } from "../redux/slices/comboSlice";
+// import { fetchComboDetails, fetchCombos } from "../redux/slices/comboSlice";
 // import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
-// import { useParams } from "react-router-dom";
+// import { useParams, useNavigate } from "react-router-dom";
 // import { InputNumber, Button, message, Skeleton, Row, Col, Modal } from "antd";
 // import { ProductType } from "../redux/constants";
 // import { memo } from "react";
-// import LabDrawer from "./labs/LabDrawer";
+// import LabModal from "./../pages/labs/LabDrawer";
 // import { getLabMemberPagination } from "../redux/slices/labSlice";
-// import { useNavigate } from "react-router-dom";
-// // Type definitions
-// // const { Panel } = Collapse;
+// import ComboCard from "./../pages/Home/components/ComboCard";
 
 // const ComboDetail = () => {
 //   const { comboId } = useParams();
 //   const dispatch = useDispatch();
-//   const { selectedCombo, loading } = useSelector((state) => state.combo);
+//   const { selectedCombo, loading, combos } = useSelector(
+//     (state) => state.combo
+//   ); // Thêm combos
 //   const { pageIndex, pageSize } = useSelector((state) => state.carts);
 //   const [numCart, setNumCart] = useState(1);
 //   const [isAdding, setIsAdding] = useState(false);
 //   const [isModalVisible, setIsModalVisible] = useState(false);
 //   const [selectedImage, setSelectedImage] = useState(null);
-//   const [isDrawerVisible, setIsDrawerVisible] = useState(false); // Trạng thái Drawer
-//   const { labs, loading: labLoading } = useSelector((state) => state.lab); // Lấy labs từ labSlice
+//   const [isLabModalVisible, setIsLabModalVisible] = useState(false); // Trạng thái Modal
+//   const { labs, loading: labLoading } = useSelector((state) => state.lab);
 //   const navigate = useNavigate();
-//   // useEffect(() => {
-//   //   console.log("Updated selectedCombo:", selectedCombo);
-//   // }, [selectedCombo]);
-//   // useEffect(() => {
-//   //   if (comboId) {
-//   //     dispatch(fetchComboDetails(comboId));
-//   //   }
-//   //   // Cleanup function if needed
-//   //   return () => {
-//   //     // Add cleanup logic if necessary
-//   //   };
-//   // }, [dispatch, comboId]);
+
 //   useEffect(() => {
 //     if (comboId) {
 //       dispatch(fetchComboDetails(comboId));
-//       // Gọi API lấy danh sách labs
 //       dispatch(
 //         getLabMemberPagination({
 //           comboId,
-//           params: {
-//             pageIndex: 0,
-//             pageSize: 10,
-//             searchKeyword: "",
-//           },
+//           params: { pageIndex: 0, pageSize: 10, searchKeyword: "" },
 //         })
 //       );
+//       // Fetch 10 related combos
+//       dispatch(fetchCombos({ pageIndex: 1, pageSize: 10, searchKeyword: "" }));
 //     }
 //     return () => {};
 //   }, [dispatch, comboId]);
 
-//   // console.log("Selected comboId:", comboId);
 //   const onChange = useCallback(
 //     (value) => {
 //       if (value > selectedCombo?.data?.quantity) {
@@ -90,7 +75,6 @@
 //         throw new Error(result.payload || "Unknown error");
 //       }
 //     } catch (error) {
-//       // console.error("Add to cart error:", error);
 //       message.error(`Error adding to cart: ${error}`);
 //     } finally {
 //       setIsAdding(false);
@@ -108,11 +92,11 @@
 //   }, []);
 
 //   const handleShowLabs = useCallback(() => {
-//     setIsDrawerVisible(true);
+//     setIsLabModalVisible(true);
 //   }, []);
 
-//   const handleDrawerClose = useCallback(() => {
-//     setIsDrawerVisible(false);
+//   const handleLabModalClose = useCallback(() => {
+//     setIsLabModalVisible(false);
 //   }, []);
 
 //   if (loading) {
@@ -124,7 +108,6 @@
 //   }
 
 //   if (!selectedCombo || Object.keys(selectedCombo).length === 0) {
-//     console.log("No combo details available", selectedCombo);
 //     return (
 //       <div className="flex justify-center items-center min-h-screen bg-gray-100">
 //         <div className="text-center">
@@ -153,53 +136,11 @@
 //     navigate(`/detail/${iotDeviceId}`);
 //   };
 
-//   const relatedProducts = [
-//     // ... same dummy data as before
-//     {
-//       id: 1,
-//       name: "Combo A",
-//       price: 99.99,
-//       imageUrl:
-//         "https://i.pinimg.com/736x/22/7c/80/227c80570a076260040dddc88246d6a2.jpg",
-//     },
-//     {
-//       id: 2,
-//       name: "Combo B",
-//       price: 149.99,
-//       imageUrl:
-//         "https://i.pinimg.com/736x/0a/77/d8/0a77d85e0bbb28562072c1a37123c04e.jpg",
-//     },
-//     {
-//       id: 3,
-//       name: "Combo C",
-//       price: 79.99,
-//       imageUrl:
-//         "https://i.pinimg.com/736x/e1/27/c1/e127c1059e1c4a2cc3d49a62574d7ccd.jpg",
-//     },
-//     {
-//       id: 4,
-//       name: "Combo D",
-//       price: 199.99,
-//       imageUrl:
-//         "https://i.pinimg.com/736x/91/46/05/9146054c17cf25ddac1b3f2bd8ae0624.jpg",
-//     },
-//     {
-//       id: 5,
-//       name: "Combo E",
-//       price: 129.99,
-//       imageUrl:
-//         "https://i.pinimg.com/736x/34/7d/94/347d9463ac6f62fc8a0776b956cc6e05.jpg",
-//     },
-//     // ... other products
-//   ];
-
 //   return (
 //     <div className="min-h-screen py-8 px-4 bg-mainColer">
 //       <div className="container mx-auto max-w-7xl">
-//         {/* Main Content Container */}
 //         <div className="bg-white rounded-lg shadow-sm p-6">
 //           <Row gutter={[16, 16]}>
-//             {/* Left: Image Gallery */}
 //             <Col xs={24} md={8}>
 //               <div>
 //                 <img
@@ -224,7 +165,6 @@
 //               </div>
 //             </Col>
 
-//             {/* Middle: Product Info + Buy Box */}
 //             <Col xs={24} md={8}>
 //               <div>
 //                 <h1 className="text-2xl font-bold text-headerBg mb-2">
@@ -248,7 +188,6 @@
 //                   )}
 //                 </div>
 
-//                 {/* Buy Box Section */}
 //                 <div className="border-t border-gray-200 pt-4">
 //                   <div className="mb-4">
 //                     <label className="block text-sm text-gray-700 mb-1">
@@ -276,7 +215,6 @@
 //                   >
 //                     Show Labs
 //                   </Button>
-
 //                   <Button className="w-full h-10 rounded-md bg-textColer text-white font-semibold hover:bg-opacity-90 border-none">
 //                     Buy Now
 //                   </Button>
@@ -287,7 +225,6 @@
 //               </div>
 //             </Col>
 
-//             {/* Right: Commitment + Promotion */}
 //             <Col xs={24} md={8}>
 //               <div>
 //                 <div className="text-sm text-gray-600 mb-4">
@@ -360,13 +297,11 @@
 //           </Row>
 //         </div>
 
-//         {/* Collapsible Details Section */}
 //         <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
 //           <h2 className="text-2xl font-semibold text-headerBg mb-6 tracking-wide">
 //             Combo Details
 //           </h2>
 
-//           {/* Combo Description */}
 //           <div className="mb-6">
 //             <h3 className="text-lg font-medium text-gray-800 mb-2">
 //               Combo Description
@@ -376,7 +311,6 @@
 //             </p>
 //           </div>
 
-//           {/* Specifications */}
 //           <div className="mb-6">
 //             <h3 className="text-lg font-medium text-gray-800 mb-2">
 //               Specifications
@@ -386,7 +320,6 @@
 //             </p>
 //           </div>
 
-//           {/* Notes */}
 //           <div className="mb-6">
 //             <h3 className="text-lg font-medium text-gray-800 mb-2">Notes</h3>
 //             <p className="text-gray-700 leading-relaxed">
@@ -394,7 +327,6 @@
 //             </p>
 //           </div>
 
-//           {/* Included Devices */}
 //           <div>
 //             <h3 className="text-lg font-medium text-gray-800 mb-4">
 //               Included Devices
@@ -406,7 +338,6 @@
 //                   onClick={() => handleDeviceClick(device.iotDeviceId)}
 //                   className="p-4 bg-bgColer rounded-md border border-gray-200 hover:border-headerBg transition-colors flex flex-row items-start gap-4"
 //                 >
-//                   {/* Thông tin bên trái */}
 //                   <div className="flex-1">
 //                     <p className="text-gray-800 font-semibold">
 //                       {device.deviceName}
@@ -421,8 +352,6 @@
 //                       </span>
 //                     </p>
 //                   </div>
-
-//                   {/* Hình ảnh bên phải */}
 //                   {device.imageUrl && (
 //                     <img
 //                       src={device.imageUrl}
@@ -436,40 +365,36 @@
 //           </div>
 //         </div>
 
-//         {/* Related Products Section */}
+//         {/* Related Combos Section */}
 //         <div className="mt-8">
 //           <h2 className="text-xl font-semibold text-headerBg mb-4">
-//             Related Products
+//             Another Combos
 //           </h2>
 //           <div className="overflow-x-auto flex gap-4 pb-4">
-//             {relatedProducts.map((product) => (
-//               <div
-//                 key={product.id}
-//                 className="min-w-[200px] bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer"
-//               >
-//                 <img
-//                   src={product.imageUrl}
-//                   alt={product.name}
-//                   className="w-full h-32 object-cover rounded mb-2"
-//                 />
-//                 <p className="text-sm font-medium text-textColer truncate">
-//                   {product.name}
-//                 </p>
-//                 <p className="text-sm text-headerBg">${product.price}</p>
-//               </div>
-//             ))}
+//             {combos.length > 0 ? (
+//               combos
+//                 .filter((combo) => combo.isActive === 1)
+//                 .slice(0, 10)
+//                 .map((combo) => (
+//                   <div key={combo.id} className="min-w-[250px]">
+//                     <ComboCard combo={combo} />
+//                   </div>
+//                 ))
+//             ) : (
+//               <p className="text-gray-500">No combos available.</p>
+//             )}
 //           </div>
 //         </div>
 //       </div>
-//       {/* Thêm LabDrawer */}
-//       <LabDrawer
-//         visible={isDrawerVisible}
-//         onClose={handleDrawerClose}
-//         labs={labs?.data?.data || []} // Truyền danh sách labs từ state
-//         comboId={comboId}
-//         onAddToCart={handleAddToCart} // Truyền hàm thêm combo vào giỏ hàng
+
+//       {/* Lab Modal */}
+//       <LabModal
+//         visible={isLabModalVisible}
+//         onClose={handleLabModalClose}
+//         labs={labs?.data?.data || []}
 //       />
-//       {/* Modal for Enlarged Image */}
+
+//       {/* Image Modal */}
 //       <Modal
 //         visible={isModalVisible}
 //         footer={null}
@@ -500,23 +425,24 @@ import { useParams, useNavigate } from "react-router-dom";
 import { InputNumber, Button, message, Skeleton, Row, Col, Modal } from "antd";
 import { ProductType } from "../redux/constants";
 import { memo } from "react";
-import LabModal from "./../pages/labs/LabDrawer";
 import { getLabMemberPagination } from "../redux/slices/labSlice";
 import ComboCard from "./../pages/Home/components/ComboCard";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 
 const ComboDetail = () => {
   const { comboId } = useParams();
   const dispatch = useDispatch();
   const { selectedCombo, loading, combos } = useSelector(
     (state) => state.combo
-  ); // Thêm combos
+  );
   const { pageIndex, pageSize } = useSelector((state) => state.carts);
+  const { labs, loading: labLoading } = useSelector((state) => state.lab);
   const [numCart, setNumCart] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isLabModalVisible, setIsLabModalVisible] = useState(false); // Trạng thái Modal
-  const { labs, loading: labLoading } = useSelector((state) => state.lab);
+  const [addingLabId, setAddingLabId] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -528,7 +454,6 @@ const ComboDetail = () => {
           params: { pageIndex: 0, pageSize: 10, searchKeyword: "" },
         })
       );
-      // Fetch 10 related combos
       dispatch(fetchCombos({ pageIndex: 1, pageSize: 10, searchKeyword: "" }));
     }
     return () => {};
@@ -585,13 +510,44 @@ const ComboDetail = () => {
     setSelectedImage(null);
   }, []);
 
-  const handleShowLabs = useCallback(() => {
-    setIsLabModalVisible(true);
-  }, []);
+  const handleDeviceClick = (iotDeviceId) => {
+    navigate(`/detail/${iotDeviceId}`);
+  };
 
-  const handleLabModalClose = useCallback(() => {
-    setIsLabModalVisible(false);
-  }, []);
+  const handleAddLabToCart = useCallback(
+    async (labId) => {
+      setAddingLabId(labId);
+      try {
+        console.log("Adding lab to cart:", {
+          productId: labId,
+          productType: ProductType.LAB,
+          quantity: 1,
+        });
+        const result = await dispatch(
+          fetchAddCarts({
+            productId: labId,
+            productType: ProductType.LAB,
+            quantity: 1,
+          })
+        );
+        console.log("fetchAddCarts result:", result);
+
+        if (fetchAddCarts.fulfilled.match(result)) {
+          message.success("Lab added to cart successfully!");
+          dispatch(fetchCarts({ pageIndex, pageSize }));
+        } else {
+          const errorMessage = result.payload || "Failed to add lab to cart";
+          throw new Error(errorMessage);
+        }
+      } catch (error) {
+        console.error(`Error adding lab ${labId} to cart:`, error);
+        message.error(`Error: ${error.message}`);
+      } finally {
+        setAddingLabId(null);
+      }
+    },
+    [dispatch, pageIndex, pageSize]
+  );
 
   if (loading) {
     return (
@@ -625,10 +581,6 @@ const ComboDetail = () => {
     ? selectedCombo.data.attachmentsList
     : [];
   const displayedAttachments = attachments.slice(0, 5);
-
-  const handleDeviceClick = (iotDeviceId) => {
-    navigate(`/detail/${iotDeviceId}`);
-  };
 
   return (
     <div className="min-h-screen py-8 px-4 bg-mainColer">
@@ -669,7 +621,7 @@ const ComboDetail = () => {
                 </p>
                 <div className="flex items-center mb-4">
                   <span className="text-3xl font-semibold text-red-600">
-                    {selectedCombo.data.price.toLocaleString()} VND
+                    {selectedCombo.data.price.toLocaleString()}₫
                   </span>
                   {selectedCombo.data.quantity > 0 ? (
                     <span className="ml-4 text-sm text-green-600">
@@ -701,13 +653,6 @@ const ComboDetail = () => {
                     className="w-full h-10 mb-2 rounded-md bg-headerBg text-white font-semibold hover:bg-opacity-90 border-none"
                   >
                     Add to Cart
-                  </Button>
-                  <Button
-                    onClick={handleShowLabs}
-                    loading={labLoading}
-                    className="w-full h-10 mb-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 border-none"
-                  >
-                    Show Labs
                   </Button>
                   <Button className="w-full h-10 rounded-md bg-textColer text-white font-semibold hover:bg-opacity-90 border-none">
                     Buy Now
@@ -793,6 +738,65 @@ const ComboDetail = () => {
 
         <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-headerBg mb-6 tracking-wide">
+            Labs related to combo
+          </h2>
+          <div className="mb-6">
+            {labLoading ? (
+              <Skeleton active paragraph={{ rows: 3 }} />
+            ) : labs?.data?.data?.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {labs.data.data.map((lab) => (
+                  <div
+                    key={lab.id}
+                    className="p-4 bg-bgColer rounded-md border border-gray-200 hover:border-headerBg transition-colors flex flex-row items-start gap-4"
+                  >
+                    {lab.imageUrl && (
+                      <img
+                        src={lab.imageUrl}
+                        alt={lab.title}
+                        className="w-32 h-32 object-cover rounded-md flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-gray-800 font-semibold">
+                        <a href={`/customer/lab-details/${lab.id}`}>
+                          {lab.title}
+                        </a>
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Summary: {lab.summary}
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Price: {lab.price} ₫
+                      </p>
+                      <p className="text-gray-700 text-sm mt-1">
+                        Store:{" "}
+                        <span className="text-headerBg font-medium">
+                          {lab.storeName}
+                        </span>
+                      </p>
+                    </div>
+                    <Button
+                      key={`add-to-cart-${lab.id}`}
+                      type="primary"
+                      size="small"
+                      onClick={() => handleAddLabToCart(lab.id)}
+                      loading={addingLabId === lab.id}
+                    >
+                      <ShoppingCartOutlined />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No labs included in this combo.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Combo Details Section */}
+        <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold text-headerBg mb-6 tracking-wide">
             Combo Details
           </h2>
 
@@ -821,7 +825,7 @@ const ComboDetail = () => {
             </p>
           </div>
 
-          <div>
+          <div className="mb-6">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
               Included Devices
             </h3>
@@ -857,12 +861,80 @@ const ComboDetail = () => {
               ))}
             </div>
           </div>
+
+          {/* Labs Included Section */}
+          {/* <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-800 mb-4">
+            Labs related to combo
+            </h3>
+            {labLoading ? (
+              <Skeleton active paragraph={{ rows: 3 }} />
+            ) : labs?.data?.data?.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {labs.data.data.map((lab) => (
+                  <div
+                    key={lab.id}
+                    className="p-4 bg-bgColer rounded-md border border-gray-200 hover:border-headerBg transition-colors flex flex-row items-start gap-4"
+                  >
+                       {lab.imageUrl && (
+                    <img
+                      src={lab.imageUrl}
+                      alt={lab.title}
+                      className="w-32 h-32 object-cover rounded-md flex-shrink-0"
+                    />
+                  )}
+                    <div className="flex-1">
+                      
+                      <p className="text-gray-800 font-semibold">
+                        <a href={`/customer/lab-details/${lab.id}`}>
+                          {lab.title}
+                        </a>
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Price: {lab.price} VND
+                      </p>
+                      <p className="text-gray-700 text-sm mt-1">
+                        Store:{" "}
+                        <span className="text-headerBg font-medium">
+                          {lab.storeName}
+                        </span>
+                      </p>
+                    </div>
+                    <Button
+                      type="primary"
+                      size="small"
+                      onClick={() =>
+                        dispatch(
+                          fetchAddCarts({
+                            productId: lab.id,
+                            productType: ProductType.LAB,
+                            quantity: 1,
+                          })
+                        ).then((result) => {
+                          if (fetchAddCarts.fulfilled.match(result)) {
+                            message.success("Lab added to cart successfully!");
+                            dispatch(fetchCarts({ pageIndex, pageSize }));
+                          } else {
+                            message.error("Failed to add lab to cart");
+                          }
+                        })
+                      }
+                    >
+                      Add to Cart
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No labs included in this combo.</p>
+            )}
+          </div> */}
         </div>
 
         {/* Related Combos Section */}
         <div className="mt-8">
           <h2 className="text-xl font-semibold text-headerBg mb-4">
-            Another Combos
+            Related Combos
           </h2>
           <div className="overflow-x-auto flex gap-4 pb-4">
             {combos.length > 0 ? (
@@ -875,18 +947,11 @@ const ComboDetail = () => {
                   </div>
                 ))
             ) : (
-              <p className="text-gray-500">No combos available.</p>
+              <p className="text-gray-500">No related combos available.</p>
             )}
           </div>
         </div>
       </div>
-
-      {/* Lab Modal */}
-      <LabModal
-        visible={isLabModalVisible}
-        onClose={handleLabModalClose}
-        labs={labs?.data?.data || []}
-      />
 
       {/* Image Modal */}
       <Modal

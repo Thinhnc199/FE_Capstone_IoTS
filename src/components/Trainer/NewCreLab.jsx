@@ -1,6 +1,6 @@
 import  { useState } from 'react';
 import { Steps } from 'antd';
-import Step1Form from './components/Step1Form';
+import CreateStep1 from './components/CreateStep1';
 import Step2Form from './components/Step2Form';
 
 const NewCreateLab = () => {
@@ -11,7 +11,7 @@ const NewCreateLab = () => {
     {
       title: 'Lab Information',
       content: (
-        <Step1Form
+        <CreateStep1
           onSubmit={(data) => {
             setLabId(data.labId);
             setCurrentStep(1);

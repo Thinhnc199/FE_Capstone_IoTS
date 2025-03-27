@@ -269,7 +269,7 @@ export default function ContextHome() {
         <div className="gap-4 items-end flex justify-between space-x-20">
           <p className="text-2xl md:text-3xl font-semibold">Combo Deals</p>
           <Link
-            to="/combo-list"
+            to="/combos"
             className="text-blue-700 text-xl text-shadow drop-shadow-[0_2px_2px_rgba(0,122,255,0.5)] px-4"
           >
             View all combos

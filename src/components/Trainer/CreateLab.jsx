@@ -56,25 +56,31 @@ const CreateLab = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Track form data between steps
+  const [step1Data, setStep1Data] = useState(null);
+
   useEffect(() => {
     if (location.pathname === "/trainer/create-lab") {
-      // Reset trạng thái thay vì reload
-      setLabId(null); // Đảm bảo labId là null khi tạo mới
-      setCurrentStep(0); // Reset về bước đầu tiên
+      // Reset state for new lab creation
+      setLabId(null);
+      setStep1Data(null);
+      setCurrentStep(0);
     } else if (paramLabId) {
-      // Set labId khi vào route update-lab
+      // Set labId for update mode
       setLabId(paramLabId);
     }
   }, [paramLabId, location.pathname]);
 
   const handleStep1Submit = (data) => {
-    if (location.pathname === "/trainer/create-lab") {
-      setLabId(null); // Đảm bảo labId là null khi tạo mới
-      setCurrentStep(1);
-    } else {
-      setLabId(data.labId || paramLabId); // Chỉ set labId khi update
-      setCurrentStep(1);
-    }
+    // Store the submitted data and move to next step
+    setStep1Data(data);
+    setLabId(data.labId || paramLabId);
+    setCurrentStep(1);
+  };
+
+  const handleStepChange = (step) => {
+    // Allow free navigation between steps
+    setCurrentStep(step);
   };
 
   const steps = [
@@ -83,14 +89,20 @@ const CreateLab = () => {
       content: (
         <Step1Form
           onSubmit={handleStep1Submit}
-          initialData={labId ? { labId } : null}
+          initialData={step1Data || (labId ? { labId } : null)}
           goToStep2={() => setCurrentStep(1)}
         />
       ),
     },
     {
       title: "Video Playlist",
-      content: <Step2Form labId={labId} onBack={() => setCurrentStep(0)} />,
+      content: (
+        <Step2Form
+          labId={labId}
+          onBack={() => setCurrentStep(0)}
+          onNext={() => setCurrentStep(1)}
+        />
+      ),
     },
   ];
 
@@ -105,12 +117,24 @@ const CreateLab = () => {
             Back to Labs
           </Button>
         </div>
-        <Steps current={currentStep} className="mb-8">
+        <Steps
+          current={currentStep}
+          onChange={handleStepChange}
+          className="mb-8"
+        >
           {steps.map((item) => (
             <Steps.Step key={item.title} title={item.title} />
           ))}
         </Steps>
         <div className="steps-content">{steps[currentStep].content}</div>
+        {/* Optional: Add navigation buttons */}
+        <div className="flex justify-between mt-6">
+          {currentStep > 0 && (
+            <Button onClick={() => setCurrentStep(currentStep - 1)}>
+              Previous
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
