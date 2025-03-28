@@ -194,7 +194,7 @@ const orderSlice = createSlice({
     });
     handleAsyncState(builder, getfeeShip, (state, action) => {
       if (action.payload.length > 0) {
-        state.fee = action.payload[0].fee; // Cập nhật fee từ response
+        state.fee = action.payload[0].fee; 
       }
     });
     handleAsyncState(builder, fetchHistoryOrder, (state, action) => {

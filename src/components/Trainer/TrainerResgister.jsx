@@ -218,7 +218,7 @@ const TrainerRegister = () => {
         if (userRequestStatus === "Pending to Approved") setCurrentStep(1);
         if (userRequestStatus === "Rejected") setCurrentStep(0);
         if (userRequestStatus === "Approved")
-          navigate("/trainer/payment-packages");
+          navigate("/payment-packages");
       } catch (error) {
         console.error("Error fetching user request status:", error);
       }

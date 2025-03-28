@@ -195,7 +195,7 @@ const SubmissionSuccess = () => {
         title: "Registration Approved",
         content: "Your registration has been approved! Proceed to payment.",
         okText: "Proceed to Payment",
-        onOk: () => navigate("/store/payment-packages"),
+        onOk: () => navigate("/payment-packages"),
       });
     }
 
