@@ -22,37 +22,40 @@ const ProductStoreTables = ({
   onPageSizeChange,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN").format(price);
+  };
   const handleOpenModal = (user, type) => {
-    setSelectedUser(user);
+    setSelectedProduct(user);
     setModalType(type);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedUser(null);
-    setSelectedRole(null);
+    setSelectedProduct(null);
+
     setModalType(null);
   };
 
   const handleActive = () => {
-    dispatch(activeProducts({ id: selectedUser.id }));
+    dispatch(activeProducts({ id: selectedProduct.id }));
     message.success("Item activated successfully");
     handleCloseModal();
   };
 
   const handleDeActive = () => {
-    dispatch(deactiveProducts({ id: selectedUser.id }));
+    dispatch(deactiveProducts({ id: selectedProduct.id }));
     message.success("Item deactivated successfully");
     handleCloseModal();
   };
 
   const handleUpdateProducts = () => {
-    if (selectedUser && selectedRole) {
+    if (selectedProduct) {
       // dispatch(updateRole({ id: selectedUser.id, roleIdList: [selectedRole] }));
       message.success("User product updated successfully");
       handleCloseModal();
@@ -103,7 +106,11 @@ const ProductStoreTables = ({
     //     </Tag>
     //   ),
     // },
-
+    {
+      title: "price",
+      key: "price",
+      render: (text, record) => <>{formatPrice(record.price)}đ</>,
+    },
     {
       title: "Status",
       key: "status",

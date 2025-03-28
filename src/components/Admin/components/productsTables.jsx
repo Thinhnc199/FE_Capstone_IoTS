@@ -25,6 +25,9 @@ const ProductsTables = ({
 
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN").format(price);
+  };
   const handleOpenModal = (user, type) => {
     setSelectedUser(user);
     setModalType(type);
@@ -84,6 +87,12 @@ const ProductsTables = ({
       dataIndex: "quantity",
       key: "quantity",
     },
+    {
+      title: "price",
+      key: "price",
+      render: (text, record) => <>{formatPrice(record.price)}đ</>,
+    },
+
     // {
     //   title: "Device Type",
 

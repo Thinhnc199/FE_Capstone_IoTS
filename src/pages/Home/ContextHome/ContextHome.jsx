@@ -129,7 +129,7 @@
 import Titles from "../../../components/common/Titles";
 import CountdownTimer from "../components/CountdownTimer";
 import ProductCard from "../components/ProductCard";
-import ComboCard from "../components/ComboCard"; 
+import ComboCard from "../components/ComboCard";
 import { Carousel, Divider } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -198,7 +198,7 @@ export default function ContextHome() {
 
   return (
     <div className="md:px-6 lg:px-10">
-      <div className="flex justify-center items-center pb-6">
+      <div className="flex justify-center items-center pb-0">
         <Divider
           style={{ borderColor: "#007AFF" }}
           className="font-semibold uppercase"

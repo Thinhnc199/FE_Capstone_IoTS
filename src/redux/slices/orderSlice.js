@@ -111,6 +111,39 @@ export const getfeeShip = createAsyncThunk(
     }
   }
 );
+export const fetchHistoryOrder = createAsyncThunk(
+  "createOrders/fetchHistoryOrder",
+  async (
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+      StatusFilter,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(
+        `/api/Order/customer/get-pagination`,
+        {
+          pageIndex,
+          pageSize,
+          searchKeyword,
+          startFilterDate,
+          endFilterDate,
+        },
+        {
+          params: { orderItemStatusFilter: StatusFilter }, // Truyền vào query parameter
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 
 // history order
 
@@ -120,6 +153,12 @@ const initialState = {
   loading: false,
   error: null,
   allfee: 0,
+  pageIndex: 1,
+  pageSize: 10,
+  historyOrders: {
+    totalCount: 0,
+    dataHistoryOrder: [],
+  },
 };
 const orderSlice = createSlice({
   name: "createOrders",
@@ -157,6 +196,10 @@ const orderSlice = createSlice({
       if (action.payload.length > 0) {
         state.fee = action.payload[0].fee; // Cập nhật fee từ response
       }
+    });
+    handleAsyncState(builder, fetchHistoryOrder, (state, action) => {
+      state.historyOrders.totalCount = action.payload.data.totalCount;
+      state.historyOrders.dataHistoryOrder = action.payload.data.data;
     });
   },
 });
