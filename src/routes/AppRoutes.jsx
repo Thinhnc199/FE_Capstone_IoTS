@@ -238,7 +238,7 @@ const publicRoute = [
     layout: StoreLayout,
   },
   {
-    path: "/store/payment-packages",
+    path: "/payment-packages",
     component: PaymentMembershipPage,
     layout: StoreLayout,
   },
@@ -338,7 +338,7 @@ const publicRoute = [
     layout: TrainerIotLayout,
   },
   {
-    path: "/trainer/payment-packages",
+    path: "/payment-packages",
     component: PaymentMembershipPage,
     layout: TrainerLayout,
   },

@@ -294,7 +294,7 @@
 //           navigate("/store/submission-success");
 //         }
 //         if (userRequestStatus === "Approved") {
-//           navigate("/store/payment-packages");
+//           navigate("/payment-packages");
 //         }
 //       } catch (error) {
 //         console.error("Error fetching user request status:", error);
@@ -1259,6 +1259,7 @@
 // };
 
 // export default StoreRegistration;
+
 import {
   Button,
   Form,
@@ -1375,6 +1376,40 @@ const StoreRegistration = () => {
   };
 
   const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const response = await getUserRequestDetails(userId);
+        const userRequestStatus =
+          response?.data?.userRequestInfo?.userRequestStatus?.label;
+
+        if (userRequestStatus) {
+          dispatch({
+            type: "storeRegistration/setRequestStatus",
+            payload: userRequestStatus,
+          }); // ✅ Fixed
+        } else {
+          console.warn("User request status is undefined in API response.");
+        }
+
+        if (userRequestStatus === "Pending to Approved") {
+          // setCurrentStep(3);
+          navigate("/store/submission-success");
+        }
+        if (userRequestStatus === "Approved") {
+          navigate("/payment-packages");
+        }
+      } catch (error) {
+        console.error("Error fetching user request status:", error);
+      }
+    };
+
+    checkUserStatus();
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     if (userId) {
