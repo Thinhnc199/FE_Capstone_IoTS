@@ -69,7 +69,7 @@ import TrainerLabsManagement from "../components/Trainer/TrainerLabsManagement";
 import LabDetailTrainer from "../components/Trainer/LabDetailTrainer";
 import NewCreateLab from "../components/Trainer/NewCreLab";
 import ComboPage from "../pages/Home/ComboPage";
-
+import ManageHistoryOrder from "../components/StoreIoT/ManageHistoryOrder";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -240,6 +240,16 @@ const publicRoute = [
   {
     path: "/store/dashboard",
     component: DashBoardStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/list",
+    component: DashBoardStore,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/manage-order",
+    component: ManageHistoryOrder,
     layout: StoreIotLayout,
   },
   {

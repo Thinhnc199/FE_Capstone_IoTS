@@ -5,6 +5,9 @@ import {
   ProductOutlined,
   WalletOutlined,
   BarChartOutlined,
+  ReadOutlined,
+  AppstoreAddOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -25,7 +28,7 @@ const items2 = [
   },
   {
     key: "sub3",
-    icon: <ProductOutlined />,
+    icon: <AppstoreAddOutlined />,
     label: "Combos",
     children: [
       {
@@ -37,12 +40,17 @@ const items2 = [
   },
   {
     key: "sub4",
-    icon: <ProductOutlined />,
+    icon: <ReadOutlined />,
     label: "Labs",
     children: [
       {
         key: "lm",
         label: <Link to="/store/labs-management">Lab List</Link>,
+      },
+      {
+        key: "sub5",
+
+        label: <Link to="/store/labs-management">labs Request</Link>,
       },
       // {
       //   key: "cm",
@@ -52,13 +60,18 @@ const items2 = [
       // { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
     ],
   },
-  {
-    key: "sub5",
-    icon: <WalletOutlined />,
-    label: <Link to="/store/labs-management">labs Request</Link>,
-  },
+  // {
+  //   key: "sub5",
+  //   icon: <SolutionOutlined />,
+  //   label: <Link to="/store/labs-management">labs Request</Link>,
+  // },
   {
     key: "sub6",
+    icon: <HistoryOutlined />,
+    label: <Link to="/store/manage-order">Orders</Link>,
+  },
+  {
+    key: "sub77",
     icon: <WalletOutlined />,
     label: <Link to="/store/wallet">Wallet</Link>,
   },
