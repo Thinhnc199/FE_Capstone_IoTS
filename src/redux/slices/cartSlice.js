@@ -60,6 +60,17 @@ export const fetchAddCarts = createAsyncThunk(
     }
   }
 );
+export const fetchCartsPreview = createAsyncThunk(
+  "carts/fetchCartsPreview",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/cart/get-preview-cart-order`, {});
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error || "Unknown error");
+    }
+  }
+);
 
 export const updateAddCarts = createAsyncThunk(
   "carts/updateAddCarts",
@@ -160,7 +171,9 @@ export const fetchComboIncludedLabs = createAsyncThunk(
   "carts/fetchComboIncludedLabs",
   async ({ cartId }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/cart/get-all-combo-included-labs/${cartId}`);
+      const response = await api.get(
+        `/api/cart/get-all-combo-included-labs/${cartId}`
+      );
       return response.data.data;
     } catch (error) {
       // if (error.response) {
@@ -175,6 +188,7 @@ export const fetchComboIncludedLabs = createAsyncThunk(
 
 const initialState = {
   cart: [],
+  cartPreview: [],
   loading: false,
   pageIndex: 0,
   pageSize: 100,
@@ -183,6 +197,7 @@ const initialState = {
   endFilterDate: null,
   error: null,
   totalCount: 0,
+  totalCountPreviewCart: 0,
   messages: null,
   totalSelectedItemsPrice: 0,
   isDropdownOpen: false,
@@ -224,6 +239,10 @@ const cartSlice = createSlice({
     handleAsyncState(builder, fetchCarts, (state, action) => {
       state.cart = action.payload.data;
       state.totalCount = action.payload.totalCount;
+    });
+    handleAsyncState(builder, fetchCartsPreview, (state, action) => {
+      state.cartPreview = action.payload.data.data;
+      state.totalCountPreviewCart = action.payload.data.totalCount;
     });
     handleAsyncState(builder, fetchAddCarts, (state, action) => {
       state.cart = action.payload?.data || [];

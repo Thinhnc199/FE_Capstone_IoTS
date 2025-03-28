@@ -57,7 +57,6 @@ const ProductCard = ({ product }) => {
           </div>
           <div className="flex items-center">
             <Rate disabled allowHalf defaultValue={product.rating} />
-            {/* <Text className="text-gray-500 ml-2">(88)</Text> */}
           </div>
         </div>
       </Card>

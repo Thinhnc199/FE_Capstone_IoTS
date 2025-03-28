@@ -1,174 +1,60 @@
-import { Button, Typography, Card, Tabs } from "antd";
-import { useNavigate, Link } from "react-router-dom";
-import {
-  MessageOutlined,
-  ShopOutlined,
-  ArrowDownOutlined,
-} from "@ant-design/icons";
+import { Typography, Card, Tabs, Spin, Button } from "antd";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHistoryOrder } from "../redux/slices/orderSlice";
+import { MessageOutlined, ShopOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 const { TabPane } = Tabs;
 dayjs.locale("vi");
 
-const mockData = [
-  {
-    orderId: 300,
-    applicationSerialNumber: "OD12020250325183646",
-    totalPrice: 175000,
-    address: "quảng ngãi",
-    contactNumber: "0867603194",
-    notes: "",
-    createDate: "2025-03-25T18:36:46.3262076",
-    updatedDate: "2025-03-25T18:36:46.3261952",
-    orderStatusId: 1,
-    shippingFee: 0,
-    orderDetailsGrouped: [
-      {
-        sellerId: 75,
-        sellerName: "chu ba duy",
-        sellerRole: 6,
-        sellerRoleName: "Store",
-        trackingId: "1150027441",
-        orderItemStatus: 1,
-        totalAmount: 175000,
-        items: [
-          {
-            orderItemId: 206,
-            imageUrl:
-              "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2Fcfda188b-3fd2-4bd0-834d-920821e31cd2.png.png?alt=media&token=4fafd47b-c29e-444b-89dc-e50efa0602e7",
-            productId: 33,
-            nameProduct: "tetst2",
-            productType: 1,
-            quantity: 1,
-            price: 175000,
-            warrantyEndDate: null,
-            orderItemStatus: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    orderId: 299,
-    applicationSerialNumber: "OD12020250325182726",
-    totalPrice: 175000,
-    address: "hcm",
-    contactNumber: "0867603192",
-    notes: "string",
-    createDate: "2025-03-25T18:27:26.4361151",
-    updatedDate: "2025-03-25T18:27:26.4360351",
-    orderStatusId: 1,
-    shippingFee: 0,
-    orderDetailsGrouped: [
-      {
-        sellerId: 75,
-        sellerName: "chu ba duy",
-        sellerRole: 6,
-        sellerRoleName: "Store",
-        trackingId: "1050028151",
-        orderItemStatus: 1,
-        totalAmount: 175000,
-        items: [
-          {
-            orderItemId: 205,
-            imageUrl:
-              "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2Fcfda188b-3fd2-4bd0-834d-920821e31cd2.png.png?alt=media&token=4fafd47b-c29e-444b-89dc-e50efa0602e7",
-            productId: 33,
-            nameProduct: "tetst2",
-            productType: 1,
-            quantity: 1,
-            price: 175000,
-            warrantyEndDate: null,
-            orderItemStatus: 1,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    orderId: 298,
-    applicationSerialNumber: "OD12020250325180030",
-    totalPrice: 3050500,
-    address: "quảng ngãi",
-    contactNumber: "0867603194",
-    notes: "",
-    createDate: "2025-03-25T18:00:30.4665429",
-    updatedDate: "2025-03-25T18:00:30.4664584",
-    orderStatusId: 1,
-    shippingFee: 2175500,
-    orderDetailsGrouped: [
-      {
-        sellerId: 75,
-        sellerName: "chu ba duy",
-        sellerRole: 6,
-        sellerRoleName: "Store",
-        trackingId: "1150027439",
-        orderItemStatus: 1,
-        totalAmount: 175000,
-        items: [
-          {
-            orderItemId: 204,
-            imageUrl:
-              "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2F14af80c7-5555-4187-8880-9136ade953a4.png.png?alt=media&token=b9ef5e90-8d28-425e-a2d4-20754b0efe3f",
-            productId: 34,
-            nameProduct: "tetst3",
-            productType: 1,
-            quantity: 5,
-            price: 175000,
-            warrantyEndDate: null,
-            orderItemStatus: 1,
-          },
-        ],
-      },
-    ],
-  },
-];
-
-// Config trạng thái
+// Status configuration
 const statusConfig = {
+  0: {
+    text: "All orders",
+    color: "bg-amber-100 text-amber-800 border-amber-200",
+    icon: "📋",
+    tabName: "All orders",
+  },
   1: {
-    text: "Chờ xử lý",
+    text: "Pending",
     color: "bg-amber-100 text-amber-800 border-amber-200",
     icon: "⏳",
-    tabName: "Chờ xử lý",
+    tabName: "Pending",
   },
   2: {
-    text: "Đang đóng gói",
+    text: "Packing",
     color: "bg-blue-100 text-blue-800 border-blue-200",
     icon: "📦",
-    tabName: "Đóng gói",
+    tabName: "Packing",
   },
   3: {
-    text: "Đang giao",
+    text: "Delivering",
     color: "bg-purple-100 text-purple-800 border-purple-200",
     icon: "🚚",
-    tabName: "Vận chuyển",
-  },
-  4: {
-    text: "Đã giao",
-    color: "bg-green-100 text-green-800 border-green-200",
-    icon: "✅",
-    tabName: "Đã giao",
+    tabName: "Delivering",
   },
   5: {
-    text: "Đã đánh giá",
+    text: "Pending to feedback",
     color: "bg-pink-100 text-pink-800 border-pink-200",
     icon: "⭐",
-    tabName: "Đánh giá",
+    tabName: "Pending to feedback",
   },
   6: {
-    text: "Hoàn thành",
+    text: "Success order",
     color: "bg-emerald-100 text-emerald-800 border-emerald-200",
     icon: "🏆",
-    tabName: "Hoàn thành",
+    tabName: "Success order",
   },
   7: {
-    text: "Hoàn trả",
+    text: "Cancel",
     color: "bg-red-100 text-red-800 border-red-200",
     icon: "↩️",
-    tabName: "Hoàn trả",
+    tabName: "Cancel",
   },
 };
 
@@ -176,11 +62,11 @@ const getStatusTag = (statusId) => {
   const config = statusConfig[statusId] || {
     text: "Unknown",
     color: "bg-gray-100 text-gray-800 border-gray-200",
-    icon: "❓",
+    icon: "",
   };
   return (
     <div
-      className={`inline-flex items-center px-3 py-1 rounded-md text-sm border ${config.color}`}
+      className={`inline-flex items-center px-2 py-1 rounded-sm text-xs border ${config.color}`}
     >
       <span className="mr-1">{config.icon}</span>
       {config.text}
@@ -193,10 +79,7 @@ const formatDate = (dateString) => {
 };
 
 const OrderItem = ({ item }) => (
-  <div
-    className="flex justify-between items-center border-b py-3"
-    key={item.orderItemId}
-  >
+  <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
     <div className="flex items-center">
       <img
         src={item.imageUrl}
@@ -207,7 +90,7 @@ const OrderItem = ({ item }) => (
       />
       <div className="ml-4">
         <p className="font-medium">{item.nameProduct}</p>
-        <p className="text-gray-600">Số lượng: {item.quantity}</p>
+        <p className="text-gray-600">Quantity: {item.quantity}</p>
       </div>
     </div>
     <p className="text-red-500 font-medium">
@@ -216,60 +99,72 @@ const OrderItem = ({ item }) => (
   </div>
 );
 
+OrderItem.propTypes = {
+  item: PropTypes.shape({
+    orderItemId: PropTypes.number.isRequired,
+    imageUrl: PropTypes.string.isRequired,
+    nameProduct: PropTypes.string.isRequired,
+    quantity: PropTypes.number.isRequired,
+    price: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
 const SellerGroup = ({ group }) => (
-  <div className="bg-blue-50 rounded-md p-4 mb-4" key={group.sellerId}>
+  <div className="rounded-md mb-4">
     <div className="flex justify-between items-center border-b pb-3 mb-3">
       <div className="flex items-center space-x-3">
-        <p className="font-bold text-lg">{group.sellerName}</p>
+        <p className="font-bold text-md">{group.sellerName}</p>
         <div className="flex space-x-2">
-          <button className="px-3 py-1 border border-blue-500 bg-blue-500 text-white rounded-sm hover:bg-white hover:text-blue-500 transition-colors text-xs">
+          <button className="px-1 py-1 border border-blue-500 bg-blue-500 text-white rounded-sm hover:bg-white hover:text-blue-500 transition-colors text-xs">
             <MessageOutlined className="mr-2" />
             Chat Now
           </button>
           <Link to={`/shop-infomation/${group.sellerId}`}>
-            <button className="px-3 py-1 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 transition-colors text-xs">
+            <button className="px-1 py-1 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 transition-colors text-xs">
               <ShopOutlined className="mr-2" />
               View Shop
             </button>
           </Link>
         </div>
       </div>
+      <div>{getStatusTag(group.orderItemStatus)}</div>
     </div>
 
     {group.items.map((item) => (
       <OrderItem item={item} key={item.orderItemId} />
     ))}
-
-    <div className="flex justify-end mt-3">
-      <div className="flex items-center space-x-4">
-        <span className="font-medium">Tổng cửa hàng:</span>
-        <span className="text-red-600 font-semibold">
-          {group.totalAmount.toLocaleString("vi-VN")}₫
-        </span>
-      </div>
-    </div>
   </div>
 );
 
+SellerGroup.propTypes = {
+  group: PropTypes.shape({
+    sellerId: PropTypes.number.isRequired,
+    sellerName: PropTypes.string.isRequired,
+    orderItemStatus: PropTypes.number.isRequired,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+        orderItemId: PropTypes.number.isRequired,
+        imageUrl: PropTypes.string.isRequired,
+        nameProduct: PropTypes.string.isRequired,
+        quantity: PropTypes.number.isRequired,
+        price: PropTypes.number.isRequired,
+      })
+    ).isRequired,
+  }).isRequired,
+};
+
 const OrderCard = ({ order }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200">
+  <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
     <div className="flex justify-between items-center border-b pb-4 mb-4">
       <div>
         <div className="flex items-center space-x-2 mb-2">
-          <span className="text-gray-600">Mã đơn hàng:</span>
+          <span className="text-gray-600">Order code:</span>
           <span className="font-bold">{order.applicationSerialNumber}</span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-gray-600">Ngày tạo:</span>
+          <span className="text-gray-600">Create date:</span>
           <span className="font-medium">{formatDate(order.createDate)}</span>
         </div>
-      </div>
-      <div className="flex flex-col items-end">
-        {getStatusTag(order.orderStatusId)}
-        <button className="text-blue-500 flex items-center mt-2">
-          <span className="mr-1">Xem thêm</span>
-          <ArrowDownOutlined />
-        </button>
       </div>
     </div>
 
@@ -279,11 +174,11 @@ const OrderCard = ({ order }) => (
 
     <div className="flex justify-between items-center border-t pt-4">
       <div className="flex items-center space-x-4">
-        <span className="font-medium">Phí vận chuyển:</span>
+        <span className="font-medium">Shipping fee:</span>
         <span>{order.shippingFee.toLocaleString("vi-VN")}₫</span>
       </div>
       <div className="flex items-center space-x-4">
-        <span className="font-medium text-lg">Tổng cộng:</span>
+        <span className="font-medium text-lg">Total:</span>
         <span className="text-red-600 font-bold text-lg">
           {order.totalPrice.toLocaleString("vi-VN")}₫
         </span>
@@ -291,40 +186,76 @@ const OrderCard = ({ order }) => (
     </div>
 
     <div className="flex justify-end space-x-3 mt-6">
-      <Button type="primary" className="bg-blue-500">
-        Xem chi tiết
+      <Button className="bg-red-500 text-white rounded-md border border-red-500">
+        Cancel order
       </Button>
-      <Button danger>Hủy đơn</Button>
     </div>
   </div>
 );
 
-export default function HistoryOrder() {
-  const navigate = useNavigate();
+OrderCard.propTypes = {
+  order: PropTypes.shape({
+    orderId: PropTypes.number.isRequired,
+    applicationSerialNumber: PropTypes.string.isRequired,
+    createDate: PropTypes.string.isRequired,
+    shippingFee: PropTypes.number.isRequired,
+    totalPrice: PropTypes.number.isRequired,
+    orderDetailsGrouped: PropTypes.arrayOf(
+      PropTypes.shape({
+        sellerId: PropTypes.number.isRequired,
+        sellerName: PropTypes.string.isRequired,
+        orderItemStatus: PropTypes.number.isRequired,
+        items: PropTypes.arrayOf(
+          PropTypes.shape({
+            orderItemId: PropTypes.number.isRequired,
+            imageUrl: PropTypes.string.isRequired,
+            nameProduct: PropTypes.string.isRequired,
+            quantity: PropTypes.number.isRequired,
+            price: PropTypes.number.isRequired,
+          })
+        ).isRequired,
+      })
+    ).isRequired,
+  }).isRequired,
+};
 
-  // Phân loại dữ liệu theo trạng thái
-  const dataByStatus = mockData.reduce((acc, order) => {
-    const status = order.orderStatusId;
-    if (!acc[status]) acc[status] = [];
-    acc[status].push(order);
-    return acc;
-  }, {});
+export default function HistoryOrder() {
+  const dispatch = useDispatch();
+  const [statusFilter, setStatusFilter] = useState("");
+  const { historyOrders, pageIndex, pageSize, loading } = useSelector(
+    (state) => state.orders
+  );
+
+  const handleTabChange = (key) => {
+    setStatusFilter(key === "0" ? "" : key);
+  };
+
+  useEffect(() => {
+    dispatch(
+      fetchHistoryOrder({
+        pageIndex,
+        pageSize,
+        StatusFilter: statusFilter,
+      })
+    );
+  }, [dispatch, pageIndex, pageSize, statusFilter]);
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8 px-4">
+    <div className="min-h-screen py-8 px-4 bg-blue-50">
       <div className="max-w-6xl mx-auto">
         <Card
           className="shadow-sm rounded-lg border-0 overflow-hidden"
           bodyStyle={{ padding: 0 }}
         >
-          <div className="bg-white px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200">
             <Title level={4} className="mb-0 text-gray-800">
-              Lịch sử đơn hàng
+              Order History
             </Title>
           </div>
 
           <Tabs
-            defaultActiveKey="1"
+            defaultActiveKey="0"
+            onChange={handleTabChange}
             tabPosition="top"
             className="px-6 pt-2"
             tabBarStyle={{ marginBottom: 0 }}
@@ -336,22 +267,21 @@ export default function HistoryOrder() {
                   <div className="flex items-center px-3 py-2">
                     <span className="mr-2">{config.icon}</span>
                     <span>{config.tabName}</span>
-                    {dataByStatus[key]?.length > 0 && (
-                      <span className="ml-2 bg-gray-200 text-gray-800 rounded-full px-2 py-0.5 text-xs">
-                        {dataByStatus[key]?.length || 0}
-                      </span>
-                    )}
                   </div>
                 }
               >
                 <div className="py-4">
-                  {dataByStatus[key]?.length > 0 ? (
-                    dataByStatus[key].map((order) => (
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <Spin size="large" />
+                    </div>
+                  ) : historyOrders.dataHistoryOrder?.length > 0 ? (
+                    historyOrders.dataHistoryOrder.map((order) => (
                       <OrderCard order={order} key={order.orderId} />
                     ))
                   ) : (
                     <div className="text-center py-8 text-gray-500">
-                      Không có đơn hàng nào trong mục này
+                      There are no orders in this category.
                     </div>
                   )}
                 </div>
