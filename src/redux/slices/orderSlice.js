@@ -144,6 +144,97 @@ export const fetchHistoryOrder = createAsyncThunk(
     }
   }
 );
+export const fetchHistoryOrderStoreTrainer = createAsyncThunk(
+  "createOrders/fetchHistoryOrderStoreTrainer",
+  async (
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+      StatusFilter,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(
+        `/api/Order/store-trainer/get-pagination`,
+        {
+          pageIndex,
+          pageSize,
+          searchKeyword,
+          startFilterDate,
+          endFilterDate,
+        },
+        {
+          params: { orderItemStatusFilter: StatusFilter }, // Truyền vào query parameter
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+export const changePackingStatus = createAsyncThunk(
+  "createOrders/changePackingStatus",
+  async ({ orderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/Order/order-status/packing/${orderId}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+export const changeDeliveringStatus = createAsyncThunk(
+  "createOrders/changeDeliveringStatus",
+  async ({ orderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/Order/order-status/delivering/${orderId}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+export const changeFeedbackStatus = createAsyncThunk(
+  "createOrders/changeFeedbackStatus",
+  async ({ orderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/Order/order-status/pending-to-feedback/${orderId}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getPrintLabel = createAsyncThunk(
+  "createOrders/getPrintLabel",
+  async ({ trackingId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/ghtk/print-label/${trackingId}`, {
+        responseType: "blob",
+      });
+
+      const contentDisposition = response.headers["content-disposition"];
+      const filename = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : `shipping-label-${trackingId}.pdf`;
+
+      return { blob: response.data, filename };
+    } catch (error) {
+      return rejectWithValue(error.toString());
+    }
+  }
+);
 
 // history order
 
@@ -154,8 +245,12 @@ const initialState = {
   error: null,
   allfee: 0,
   pageIndex: 1,
-  pageSize: 10,
+  pageSize: 100,
   historyOrders: {
+    totalCount: 0,
+    dataHistoryOrder: [],
+  },
+  historyOrdersStoreTrainer: {
     totalCount: 0,
     dataHistoryOrder: [],
   },
@@ -194,13 +289,24 @@ const orderSlice = createSlice({
     });
     handleAsyncState(builder, getfeeShip, (state, action) => {
       if (action.payload.length > 0) {
-        state.fee = action.payload[0].fee; 
+        state.fee = action.payload[0].fee;
       }
     });
     handleAsyncState(builder, fetchHistoryOrder, (state, action) => {
       state.historyOrders.totalCount = action.payload.data.totalCount;
       state.historyOrders.dataHistoryOrder = action.payload.data.data;
     });
+
+    handleAsyncState(
+      builder,
+      fetchHistoryOrderStoreTrainer,
+      (state, action) => {
+        state.historyOrdersStoreTrainer.totalCount =
+          action.payload.data.totalCount;
+        state.historyOrdersStoreTrainer.dataHistoryOrder =
+          action.payload.data.data;
+      }
+    );
   },
 });
 export const {

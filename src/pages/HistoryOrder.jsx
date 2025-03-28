@@ -267,6 +267,12 @@ export default function HistoryOrder() {
                   <div className="flex items-center px-3 py-2">
                     <span className="mr-2">{config.icon}</span>
                     <span>{config.tabName}</span>
+                    {historyOrders.totalCount > 0 &&
+                      key === (statusFilter || "0") && (
+                        <span className="ml-2 bg-gray-200 text-gray-800 rounded-full px-2 py-0.5 text-xs">
+                          {historyOrders.totalCount}
+                        </span>
+                      )}
                   </div>
                 }
               >

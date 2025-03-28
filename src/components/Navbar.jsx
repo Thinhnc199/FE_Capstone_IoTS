@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPaginatedMaterialCategories } from "../redux/slices/materialCategorySlice";
 import {
@@ -41,6 +42,7 @@ const { Search } = Input;
 const Navbar = () => {
   const categoryButtonRef = useRef(null);
   const dispatch = useDispatch();
+  const location = useLocation();
   const isDropdownOpen = useSelector((state) => state.carts.isOpenDropdown);
   const { activeData } = useSelector((state) => state.materialCategory);
   const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
@@ -93,7 +95,7 @@ const Navbar = () => {
     } else {
       dispatch(resetCart());
     }
-  }, [token, dispatch]);
+  }, [token, dispatch, location]);
   useEffect(() => {
     dispatch(fetchPaginatedMaterialCategories({ pageIndex, pageSize }));
   }, [token, dispatch]);
@@ -233,11 +235,14 @@ const Navbar = () => {
                     {totalSelectedItemsPrice.toLocaleString()}₫
                   </p>
                 </div>
-                <Link to="/checkout">
-                  <Button className="bg-headerBg text-white w-full">
-                    Payment
-                  </Button>
-                </Link>
+                {/* <Link to="/checkout"> */}
+                <Button
+                  onClick={() => navigate("/checkout")}
+                  className="bg-headerBg text-white w-full"
+                >
+                  Payment
+                </Button>
+                {/* </Link> */}
               </div>
             ),
           },
