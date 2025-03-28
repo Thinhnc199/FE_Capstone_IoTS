@@ -371,6 +371,11 @@ const publicRoute = [
     component: LabDetailTrainer,
     layout: TrainerIotLayout,
   },
+  {
+    path: "/test-his",
+    component: Register,
+    layout: MainLayout,
+  },
 ];
 
 const privateRoute = [];
