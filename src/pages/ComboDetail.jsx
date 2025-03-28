@@ -779,7 +779,7 @@ const ComboDetail = () => {
                     <Button
                       key={`add-to-cart-${lab.id}`}
                       type="primary"
-                      size="small"
+                      size="large"
                       onClick={() => handleAddLabToCart(lab.id)}
                       loading={addingLabId === lab.id}
                     >
@@ -861,74 +861,6 @@ const ComboDetail = () => {
               ))}
             </div>
           </div>
-
-          {/* Labs Included Section */}
-          {/* <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">
-            Labs related to combo
-            </h3>
-            {labLoading ? (
-              <Skeleton active paragraph={{ rows: 3 }} />
-            ) : labs?.data?.data?.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {labs.data.data.map((lab) => (
-                  <div
-                    key={lab.id}
-                    className="p-4 bg-bgColer rounded-md border border-gray-200 hover:border-headerBg transition-colors flex flex-row items-start gap-4"
-                  >
-                       {lab.imageUrl && (
-                    <img
-                      src={lab.imageUrl}
-                      alt={lab.title}
-                      className="w-32 h-32 object-cover rounded-md flex-shrink-0"
-                    />
-                  )}
-                    <div className="flex-1">
-                      
-                      <p className="text-gray-800 font-semibold">
-                        <a href={`/customer/lab-details/${lab.id}`}>
-                          {lab.title}
-                        </a>
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Price: {lab.price} VND
-                      </p>
-                      <p className="text-gray-700 text-sm mt-1">
-                        Store:{" "}
-                        <span className="text-headerBg font-medium">
-                          {lab.storeName}
-                        </span>
-                      </p>
-                    </div>
-                    <Button
-                      type="primary"
-                      size="small"
-                      onClick={() =>
-                        dispatch(
-                          fetchAddCarts({
-                            productId: lab.id,
-                            productType: ProductType.LAB,
-                            quantity: 1,
-                          })
-                        ).then((result) => {
-                          if (fetchAddCarts.fulfilled.match(result)) {
-                            message.success("Lab added to cart successfully!");
-                            dispatch(fetchCarts({ pageIndex, pageSize }));
-                          } else {
-                            message.error("Failed to add lab to cart");
-                          }
-                        })
-                      }
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No labs included in this combo.</p>
-            )}
-          </div> */}
         </div>
 
         {/* Related Combos Section */}
