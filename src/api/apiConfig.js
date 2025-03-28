@@ -34,14 +34,14 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       console.error("Unauthorized error:", error.response?.data);
       localStorage.clear();
-      showNotification("warning", "Session Expired", "Redirecting to login...");
+      showNotification("warning", "Token Expired", "Redirecting to login...");
 
       // ✅ Delay redirect to prevent instant UI refresh
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
 
-      return Promise.reject("Session expired. Please log in again.");
+      return Promise.reject("Token expired. Please log in again.");
     }
 
     return Promise.reject(
@@ -51,7 +51,6 @@ api.interceptors.response.use(
 );
 
 // ✅ Helper function for toast notifications
-// 🔹 Function to show notifications
 const showNotification = (type, message, description) => {
   notification[type]({
     message,
@@ -59,28 +58,24 @@ const showNotification = (type, message, description) => {
     placement: "topRight",
     duration: 3,
     style: {
+      backgroundColor: "#ffffff", 
+      color: "#333333", 
+      borderRadius: "8px", 
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", 
+      border: "1px solid #f0f0f0", 
       right: "20px",
-      top: "40px",
+      top: "50px",
       position: "fixed",
       zIndex: 10000,
-      width: "320px",
+      width: "380px",
     },
   });
 };
 
-// const showNotification = (type, message, description) => {
-//   notification[type]({
-//     message,
-//     description,
-//     placement: "topRight",
-//     duration: 3,
-//   });
-// };
-
 // ✅ Error Handling
 const handleApiError = (error) => {
   console.error("API Call Error:", error);
-  showNotification("error", "API Error", error);
+  showNotification("error", "Error", error);
   throw error;
 };
 
@@ -273,7 +268,7 @@ export const uploadFiles = async (file) => {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    console.log("Upload Success:", response.data); // Debug dữ liệu trả về
+    console.log("Upload Success:", response.data); 
 
     if (response.data && response.data.data && response.data.data.id) {
       return response.data.data.id; // Trả về URL ảnh

@@ -480,8 +480,18 @@ const LabDetail = React.memo(() => {
   const [isComboModalVisible, setIsComboModalVisible] = useState(false); // State cho modal combo
   const [selectedCombo, setSelectedCombo] = useState(null); // State cho dữ liệu combo
 
-  const openVideoModal = (videoUrl) => setSelectedVideo(videoUrl);
-  const closeVideoModal = () => setSelectedVideo(null);
+  // const openVideoModal = (videoUrl) => setSelectedVideo(videoUrl);
+  // const closeVideoModal = () => setSelectedVideo(null);
+// Ensure openVideoModal sets the correct video URL
+const openVideoModal = (videoUrl) => {
+  console.log("Opening video:", videoUrl); // Debug log to verify URL
+  setSelectedVideo(videoUrl);
+};
+
+const closeVideoModal = () => {
+  setSelectedVideo(null);
+  setIsVideoPlaying(false); // Reset video playing state if needed
+};
 
   const handleThumbnailClick = () => {
     setIsVideoPlaying(true);
@@ -761,7 +771,7 @@ const LabDetail = React.memo(() => {
                   </div>
                 </Col>
 
-                {/* Video Playlist */}
+                {/* Video Playlist
                 <Col xs={24} lg={8}>
                   <Card
                     title={
@@ -833,6 +843,75 @@ const LabDetail = React.memo(() => {
                       </Text>
                     )}
                   </Card>
+                </Col> */}
+                {/* Video Playlist */}
+                <Col xs={24} lg={8}>
+                  <Card
+                    title={
+                      <Title level={4} className="text-headerBg">
+                        Labs Content
+                      </Title>
+                    }
+                    bordered={false}
+                    className="shadow-lg rounded-xl bg-white"
+                  >
+                    {sortedVideoList.length > 0 ? (
+                      <List
+                        dataSource={sortedVideoList}
+                        renderItem={(item, index) => (
+                          <List.Item
+                            className="border-b border-border py-4 hover:bg-bgColer transition-all duration-200"
+                          >
+                            <div className="flex items-center w-full justify-between">
+                              <div className="flex items-center flex-1">
+                                <Text className="text-muted-foreground mr-3">
+                                  {index + 1}.
+                                </Text>
+                                <div>
+                                  <Text strong className="text-textColer">
+                                    {item.title}
+                                  </Text>
+                                  <Text className="block text-sm text-muted-foreground">
+                                    {item.description}
+                                  </Text>
+                                </div>
+                              </div>
+                              <div className="relative ml-4">
+                                {item.videoUrl ? (
+                                  <div
+                                    className="relative w-20 h-12 rounded-md overflow-hidden cursor-pointer"
+                                    onClick={() => openVideoModal(item.videoUrl)} // Ensure unique videoUrl is passed
+                                  >
+                                    <video
+                                      width="100%"
+                                      height="100%"
+                                      className="object-cover"
+                                      muted
+                                    >
+                                      <source src={item.videoUrl} type="video/mp4" />
+                                      Your browser does not support the video tag.
+                                    </video>
+                                    <PlayCircleOutlined
+                                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-headerBg text-2xl opacity-75 hover:opacity-100 transition-opacity duration-200"
+                                      style={{ zIndex: 10 }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <Text className="text-muted-foreground text-sm">
+                                    No video
+                                  </Text>
+                                )}
+                              </div>
+                            </div>
+                          </List.Item>
+                        )}
+                      />
+                    ) : (
+                      <Text type="secondary" className="text-muted-foreground">
+                        No videos in playlist.
+                      </Text>
+                    )}
+                  </Card>
                 </Col>
               </Row>
             </div>
@@ -849,6 +928,28 @@ const LabDetail = React.memo(() => {
           width={800}
           className="rounded-lg"
           bodyStyle={{ padding: 0 }}
+          destroyOnClose // Ensure modal resets state when closed
+        >
+          {selectedVideo && (
+            <video
+              controls
+              width="100%"
+              autoPlay
+              className="rounded-t-lg"
+              key={selectedVideo} // Force re-render when video changes
+            >
+              <source src={selectedVideo} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          )}
+        </Modal>
+        {/* <Modal
+          open={!!selectedVideo}
+          onCancel={closeVideoModal}
+          footer={null}
+          width={800}
+          className="rounded-lg"
+          bodyStyle={{ padding: 0 }}
         >
           {selectedVideo && (
             <video controls width="100%" autoPlay className="rounded-t-lg">
@@ -856,7 +957,7 @@ const LabDetail = React.memo(() => {
               Your browser does not support the video tag.
             </video>
           )}
-        </Modal>
+        </Modal> */}
 
         {/* Combo Detail Modal */}
         <ComboDetailModal

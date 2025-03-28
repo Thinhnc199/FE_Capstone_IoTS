@@ -403,7 +403,7 @@ export default function CartProducts() {
                 description={
                   <div>
                     <p>{lab.labSummary}</p>
-                    <p>Price: ${lab.price}</p>
+                    <p>Price: {lab.price}₫</p>
                     {/* <p>Created by: {lab.createdByTrainer}</p> */}
                   </div>
                 }

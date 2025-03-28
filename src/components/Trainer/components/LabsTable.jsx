@@ -353,7 +353,6 @@ import { fetchCombos } from "./../../../redux/slices/comboSlice";
 import debounce from "lodash/debounce";
 import ComboDetailModal from "./../../../components/StoreIoT/components/ComboDetailModal";
 import { fetchComboDetails } from "./../../../redux/slices/comboSlice";
-
 const { Option } = Select;
 
 const LabsTable = ({ role, comboId, userId, storeId }) => {
@@ -361,6 +360,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   const navigate = useNavigate();
   const { labs, loading: labLoading } = useSelector((state) => state.lab);
   const { combos, loading: comboLoading } = useSelector((state) => state.combo);
+
   const [pagination, setPagination] = useState({
     pageIndex: 1,
     pageSize: 5,
@@ -513,7 +513,8 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   };
 
   const getDetailPath = (recordId) => {
-    switch (role) {
+    // console.log(typeof role, role, role.trim());
+    switch (role.trim()) {
       case "store":
         return `/store/detail-labRequest/${recordId}`;
       case "trainer":
@@ -533,7 +534,9 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       dataIndex: "id",
       key: "id",
       render: (text, record) => (
-        <Link to={getDetailPath(record.id)}>{text}</Link>
+        <div>
+          <Link to={getDetailPath(record.id)}>{text}</Link>
+        </div>
       ),
     },
     {
@@ -554,7 +557,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       key: "title",
       sorter: (a, b) => a.title.localeCompare(b.title),
       render: (text, record) => (
-        <Link to={`/trainer/detail-lab/${record.id}`}>{text}</Link>
+        <Link to={getDetailPath(record.id)}>{text}</Link>
       ),
     },
     {
@@ -616,7 +619,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   const handleCreateLab = () => {
     setTimeout(() => {
       navigate("/trainer/create-lab");
-    }, 500);
+    }, 300);
   };
 
   return (
@@ -696,6 +699,8 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
         }}
         onChange={handleTableChange}
         rowKey="id"
+        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white  [&_.ant-pagination]:p-2"
+        style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
       />
     </div>
   );

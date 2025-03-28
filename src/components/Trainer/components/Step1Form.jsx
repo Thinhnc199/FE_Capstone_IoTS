@@ -20,10 +20,9 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import {
-  createLabInformation,
   getLabInformation,
   uploadLabVideo,
-  updateLabInformation, // Thêm import mới
+  updateLabInformation,
 } from "./../../../redux/slices/labSlice";
 import { fetchCombos } from "./../../../redux/slices/comboSlice";
 import { uploadFiles } from "./../../../api/apiConfig";
@@ -108,6 +107,14 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
   }, [videoFile, dispatch, isEditMode]);
 
   const handleFinish = async (values) => {
+    if (!initialData?.labId) {
+      notification.error({
+        message: "No lab ID provided",
+        description: "Please provide a lab ID to update",
+      });
+      return;
+    }
+
     const labData = {
       title: values.title,
       summary: values.summary,
@@ -121,32 +128,16 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
     };
 
     try {
-      if (initialData?.labId && isEditMode) {
-        // Update mode
-        await dispatch(
-          updateLabInformation({ labId: initialData.labId, data: labData })
-        ).unwrap();
-        notification.success({ message: "Lab updated successfully!" });
-        onSubmit({ ...labData, labId: initialData.labId });
-        setIsEditMode(false);
-      } else {
-        // Create mode
-        const response = await dispatch(createLabInformation(labData)).unwrap();
-        notification.success({ message: "Lab created successfully!" });
-        const labId = response?.data?.id;
-        if (labId) {
-          onSubmit({ ...labData, labId });
-          goToStep2();
-        } else {
-          throw new Error("Lab ID not found in response");
-        }
-      }
+      await dispatch(
+        updateLabInformation({ labId: initialData.labId, data: labData })
+      ).unwrap();
+      notification.success({ message: "Lab updated successfully!" });
+      onSubmit({ ...labData, labId: initialData.labId });
+      setIsEditMode(false);
+      goToStep2();
     } catch (error) {
       notification.error({
-        message:
-          initialData?.labId && isEditMode
-            ? "Failed to update lab"
-            : "Failed to create lab",
+        message: "Failed to update lab",
         description: error.message,
       });
     }
@@ -490,7 +481,7 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
             size="large"
             className="bg-blue-500 hover:bg-blue-600"
           >
-            {initialData?.labId && isEditMode ? "Update" : "Submit"}
+            Update
           </Button>
         )}
       </div>
@@ -586,7 +577,7 @@ Step1Form.propTypes = {
     imageUrl: PropTypes.string,
     previewVideoUrl: PropTypes.string,
     price: PropTypes.number,
-    labId: PropTypes.number,
+    labId: PropTypes.number.isRequired,
   }),
   goToStep2: PropTypes.func.isRequired,
 };
@@ -594,6 +585,7 @@ Step1Form.propTypes = {
 Step1Form.defaultProps = {
   initialData: {},
 };
+
 export default Step1Form;
 
 // import { useState, useEffect, useRef } from "react";
