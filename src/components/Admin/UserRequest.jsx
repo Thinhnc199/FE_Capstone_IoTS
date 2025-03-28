@@ -33,7 +33,7 @@ export default function UserRequest() {
     dispatch,
     pageIndex,
     pageSize,
-    filters[currentTab].searchKeyword, // Theo dõi thay đổi của filter trong tab hiện tại
+    filters[currentTab].searchKeyword,
     filters[currentTab].startFilterDate,
     filters[currentTab].endFilterDate,
   ]);

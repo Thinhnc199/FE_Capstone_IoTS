@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCombos } from "./../../redux/slices/comboSlice";
 import { Input, Select } from "antd";
-import ComboList from "./components/ComboList"; // Import the separate ComboList component
+import ComboList from "./components/ComboList";
 
 const { Option } = Select;
 

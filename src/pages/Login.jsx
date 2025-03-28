@@ -93,7 +93,7 @@ const Login = () => {
             navigate("/store/welcome");
           } else if (isActive === 2) {
             if (requestStatus === "Approved") {
-              navigate("/store/payment-packages");
+              navigate("/payment-packages");
             } else if (requestStatus === "Pending to Approved") {
               navigate("/store/submission-success");
             } else {
