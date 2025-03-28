@@ -1646,9 +1646,9 @@ const StoreRegistration = () => {
           setStoreId(storeResponse.payload.data.id);
         }
       }
-      notification.success({
-        message: "Store details submitted successfully!",
-      });
+      // notification.success({
+      //   message: "Store details submitted successfully!",
+      // });
     } catch (error) {
       notification.error({
         message: "Submit Failed",

@@ -78,7 +78,7 @@ const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/about", component: AboutIoTs, layout: MainLayout },
-  {path: "/combos", component: ComboPage, layout: MainLayout},
+  { path: "/combos", component: ComboPage, layout: MainLayout },
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
   { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
