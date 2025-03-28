@@ -22,37 +22,40 @@ const ProductStoreTables = ({
   onPageSizeChange,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN").format(price);
+  };
   const handleOpenModal = (user, type) => {
-    setSelectedUser(user);
+    setSelectedProduct(user);
     setModalType(type);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedUser(null);
-    setSelectedRole(null);
+    setSelectedProduct(null);
+
     setModalType(null);
   };
 
   const handleActive = () => {
-    dispatch(activeProducts({ id: selectedUser.id }));
+    dispatch(activeProducts({ id: selectedProduct.id }));
     message.success("Item activated successfully");
     handleCloseModal();
   };
 
   const handleDeActive = () => {
-    dispatch(deactiveProducts({ id: selectedUser.id }));
+    dispatch(deactiveProducts({ id: selectedProduct.id }));
     message.success("Item deactivated successfully");
     handleCloseModal();
   };
 
   const handleUpdateProducts = () => {
-    if (selectedUser && selectedRole) {
+    if (selectedProduct) {
       // dispatch(updateRole({ id: selectedUser.id, roleIdList: [selectedRole] }));
       message.success("User product updated successfully");
       handleCloseModal();
@@ -93,17 +96,21 @@ const ProductStoreTables = ({
       dataIndex: "quantity",
       key: "quantity",
     },
+    // {
+    //   title: "Device Type",
+
+    //   key: "deviceType",
+    //   render: (text, record) => (
+    //     <Tag color={record.deviceType === 1 ? "green" : "red"}>
+    //       {record.deviceType === 1 ? "New" : "Like new"}
+    //     </Tag>
+    //   ),
+    // },
     {
-      title: "Device Type",
-
-      key: "deviceType",
-      render: (text, record) => (
-        <Tag color={record.deviceType === 1 ? "green" : "red"}>
-          {record.deviceType === 1 ? "New" : "Like new"}
-        </Tag>
-      ),
+      title: "price",
+      key: "price",
+      render: (text, record) => <>{formatPrice(record.price)}đ</>,
     },
-
     {
       title: "Status",
       key: "status",
@@ -120,9 +127,20 @@ const ProductStoreTables = ({
         <Dropdown
           menu={{
             items: [
+              {
+                key: "2",
+                label: (
+                  <span
+                    onClick={() => handleOpenModal(record, "updateProduct")}
+                  >
+                    <EditOutlined className="text-black mr-2" />
+                    Update Product
+                  </span>
+                ),
+              },
               record.isActive
                 ? {
-                    key: "2",
+                    key: "3",
                     label: (
                       <span onClick={() => handleOpenModal(record, "deactive")}>
                         <CloseCircleOutlined className="text-red-500 mr-2" />
@@ -139,17 +157,6 @@ const ProductStoreTables = ({
                       </span>
                     ),
                   },
-              {
-                key: "3",
-                label: (
-                  <span
-                    onClick={() => handleOpenModal(record, "updateProduct")}
-                  >
-                    <EditOutlined className="text-black mr-2" />
-                    Update Product
-                  </span>
-                ),
-              },
             ],
           }}
           trigger={["click"]}

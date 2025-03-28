@@ -44,10 +44,10 @@ const items2 = [
         key: "lm",
         label: <Link to="/store/labs-management">Lab List</Link>,
       },
-      {
-        key: "cm",
-        label: <Link to="/store/combo-labs">Combo Labs</Link>,
-      },
+      // {
+      //   key: "cm",
+      //   label: <Link to="/store/combo-labs">Combo Labs</Link>,
+      // },
 
       // { key: "5", label: <Link to="/store/add-device">Create Device</Link> },
     ],

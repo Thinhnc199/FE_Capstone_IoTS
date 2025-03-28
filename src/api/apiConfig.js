@@ -58,11 +58,11 @@ const showNotification = (type, message, description) => {
     placement: "topRight",
     duration: 3,
     style: {
-      backgroundColor: "#ffffff", 
-      color: "#333333", 
-      borderRadius: "8px", 
-      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", 
-      border: "1px solid #f0f0f0", 
+      backgroundColor: "#ffffff",
+      color: "#333333",
+      borderRadius: "8px",
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+      border: "1px solid #f0f0f0",
       right: "20px",
       top: "50px",
       position: "fixed",
@@ -268,7 +268,7 @@ export const uploadFiles = async (file) => {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    console.log("Upload Success:", response.data); 
+    console.log("Upload Success:", response.data);
 
     if (response.data && response.data.data && response.data.data.id) {
       return response.data.data.id; // Trả về URL ảnh

@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchProductDetails } from "../redux/slices/productSlice";
@@ -7,12 +7,13 @@ import { StarOutlined, ShopOutlined, MessageOutlined } from "@ant-design/icons";
 import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
 import { ProductType } from "../redux/constants";
 import ErrorProduct from "./ErrorProduct";
+
 export default function DetailProducts() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const productDetail = useSelector((state) => state.products.ProductsDetail);
   const product = productDetail.data;
-
+  const navigate = useNavigate();
   const [allImages, setAllImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [numCart, setNumCart] = useState(1);
@@ -75,6 +76,31 @@ export default function DetailProducts() {
       if (fetchAddCarts.fulfilled.match(result)) {
         message.success("Product has been added to cart!");
         dispatch(fetchCarts({ pageIndex, pageSize }));
+      } else {
+        throw new Error(result.payload || "Unknown error");
+      }
+    } catch (error) {
+      message.error(`Error adding to cart: ${error.message}`);
+    }
+  };
+  const HandleBuynow = async () => {
+    if (product.quantity <= 0) {
+      message.warning("The product is out of stock.");
+      return;
+    }
+
+    try {
+      const result = await dispatch(
+        fetchAddCarts({
+          productId: id,
+          productType: ProductType.DEVICE,
+          quantity: numCart,
+        })
+      );
+
+      if (fetchAddCarts.fulfilled.match(result)) {
+        dispatch(fetchCarts({ pageIndex, pageSize }));
+        navigate("/cart");
       } else {
         throw new Error(result.payload || "Unknown error");
       }
@@ -176,19 +202,28 @@ export default function DetailProducts() {
                 className="w-16 h-10 flex justify-center items-center"
               />
             </div>
-            <Button
+            {/* <Button
               onClick={HandleAddToCart}
               className="h-10 w-full bg-yellow-500 text-white font-semibold uppercase hover:scale-101"
             >
               Add to cart
-            </Button>
-            <div className="flex justify-center items-center space-x-2 ">
-              <Button className="w-[50%] h-10 bg-headerBg text-white font-semibold uppercase hover:scale-101">
+            </Button> */}
+            <div className="flex justify-between items-center space-x-2 ">
+              <Button
+                onClick={HandleAddToCart}
+                className="h-10 w-[50%] bg-yellow-500 text-white font-semibold uppercase hover:scale-101"
+              >
+                Add to cart
+              </Button>
+              <Button
+                onClick={HandleBuynow}
+                className="w-[50%] h-10 bg-headerBg text-white font-semibold uppercase hover:scale-101"
+              >
                 Buy Now
               </Button>
-              <Button className="w-[50%] h-10 bg-headerBg text-white font-semibold uppercase hover:scale-101">
+              {/* <Button className="w-[50%] h-10 bg-headerBg text-white font-semibold uppercase hover:scale-101">
                 Add course
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
