@@ -1,12 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../../assets/icons/3.svg";
 import { useSelector, useDispatch } from "react-redux";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import AddressForm from "./components/AddressForm";
 import { getfeeShip } from "../../redux/slices/orderSlice";
 import {
-  fetchCarts,
+  fetchCartsPreview,
   fetchGetTotalPrice,
   resetCart,
 } from "../../redux/slices/cartSlice";
@@ -26,16 +26,22 @@ export default function Checkout() {
   const [notes, setNotes] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
-    (state) => state.carts
-  );
+  const {
+    totalSelectedItemsPrice,
+    cartPreview,
+    // cart,
+    totalCountPreviewCart,
+  } = useSelector((state) => state.carts);
+  console.log("cartPreview", cartPreview);
+  // console.log("cart", cart);
   const { fee } = useSelector((state) => state.orders);
   const token = localStorage.getItem("token");
   const isValidPhone = (value) => /^\d{10,11}$/.test(value);
 
   useEffect(() => {
     if (token) {
-      dispatch(fetchCarts({ pageIndex, pageSize }));
+      // dispatch(fetchCarts({ pageIndex, pageSize }));
+      dispatch(fetchCartsPreview());
       dispatch(fetchGetTotalPrice());
     } else {
       dispatch(resetCart());
@@ -59,13 +65,7 @@ export default function Checkout() {
       dispatch(resetCart());
     }
   }, [selectedDeliverOption, selectedAddressId]);
-  //totalItems
 
-  const totalItems = useMemo(() => {
-    if (!Array.isArray(cart)) return 0;
-    return cart.reduce((total, item) => total + (item.quantity || 0), 0);
-  }, [cart]);
-  //handeleAddressChange
   const handleAddressChange = (newFullAddress, ids) => {
     setSelectedProvinceId(ids.provinceId);
     setSelectedDistrictId(ids.districtId);
@@ -211,15 +211,15 @@ export default function Checkout() {
         {/* Order Summary */}
         <div className="flex-1 lg:flex-[4] sm:flex-[4] border p-4 rounded-md shadow-sm bg-white max-w-screen-lg mx-auto overflow-y-auto h-[calc(100vh-4rem)]">
           <p className="font-semibold text-lg">
-            Order Summary ({totalItems} items)
+            Order Summary ({totalCountPreviewCart} items)
           </p>
           <Divider className="bg-gray-200" />
-          {cart.length === 0 ? (
+          {cartPreview === 0 ? (
             <p className="text-center text-gray-500">
               No products in your cart
             </p>
           ) : (
-            cart
+            cartPreview
               .filter((carts) => carts.isSelected)
               .map((carts, index) => (
                 <div

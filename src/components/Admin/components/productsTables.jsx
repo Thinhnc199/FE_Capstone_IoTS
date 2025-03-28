@@ -84,16 +84,16 @@ const ProductsTables = ({
       dataIndex: "quantity",
       key: "quantity",
     },
-    {
-      title: "Device Type",
+    // {
+    //   title: "Device Type",
 
-      key: "deviceType",
-      render: (text, record) => (
-        <Tag color={record.deviceType === 1 ? "green" : "red"}>
-          {record.deviceType === 1 ? "New" : "Like new"}
-        </Tag>
-      ),
-    },
+    //   key: "deviceType",
+    //   render: (text, record) => (
+    //     <Tag color={record.deviceType === 1 ? "green" : "red"}>
+    //       {record.deviceType === 1 ? "New" : "Like new"}
+    //     </Tag>
+    //   ),
+    // },
 
     {
       title: "Status",

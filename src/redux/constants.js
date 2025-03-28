@@ -25,7 +25,7 @@ export const TypeStatusOrder = {
   PACKING: 2,
   DELEVERING: 3,
   DELEVERED: 4,
-  SUCCESS_FEEDBACK: 5,
+  PENDING_TO_FEEDBACK: 5,
   SUCCESS_ORDER: 6,
-  REFUND: 7,
+  CANCLE: 7,
 };

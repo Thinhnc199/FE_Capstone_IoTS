@@ -178,7 +178,7 @@ export default function CartProducts() {
   // State để quản lý Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentCartId, setCurrentCartId] = useState(null); // Track the current cart item being viewed
-
+  const dataSource = Array.isArray(cart) ? cart : [];
   const handleDelete = async (cartId) => {
     try {
       await dispatch(deleteCarts({ cartId })).unwrap();
@@ -333,7 +333,12 @@ export default function CartProducts() {
         {/* Bảng sản phẩm - Nằm bên trái */}
         <div className="flex-1 border p-4">
           {totalCount > 0 ? (
-            <Table columns={columns} dataSource={cart} pagination={false} />
+            <Table
+              columns={columns}
+              dataSource={dataSource}
+              pagination={false}
+              rowKey={(record) => record.id}
+            />
           ) : (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}

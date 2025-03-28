@@ -93,16 +93,16 @@ const ProductStoreTables = ({
       dataIndex: "quantity",
       key: "quantity",
     },
-    {
-      title: "Device Type",
+    // {
+    //   title: "Device Type",
 
-      key: "deviceType",
-      render: (text, record) => (
-        <Tag color={record.deviceType === 1 ? "green" : "red"}>
-          {record.deviceType === 1 ? "New" : "Like new"}
-        </Tag>
-      ),
-    },
+    //   key: "deviceType",
+    //   render: (text, record) => (
+    //     <Tag color={record.deviceType === 1 ? "green" : "red"}>
+    //       {record.deviceType === 1 ? "New" : "Like new"}
+    //     </Tag>
+    //   ),
+    // },
 
     {
       title: "Status",
@@ -120,9 +120,20 @@ const ProductStoreTables = ({
         <Dropdown
           menu={{
             items: [
+              {
+                key: "2",
+                label: (
+                  <span
+                    onClick={() => handleOpenModal(record, "updateProduct")}
+                  >
+                    <EditOutlined className="text-black mr-2" />
+                    Update Product
+                  </span>
+                ),
+              },
               record.isActive
                 ? {
-                    key: "2",
+                    key: "3",
                     label: (
                       <span onClick={() => handleOpenModal(record, "deactive")}>
                         <CloseCircleOutlined className="text-red-500 mr-2" />
@@ -139,17 +150,6 @@ const ProductStoreTables = ({
                       </span>
                     ),
                   },
-              {
-                key: "3",
-                label: (
-                  <span
-                    onClick={() => handleOpenModal(record, "updateProduct")}
-                  >
-                    <EditOutlined className="text-black mr-2" />
-                    Update Product
-                  </span>
-                ),
-              },
             ],
           }}
           trigger={["click"]}

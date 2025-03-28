@@ -59,7 +59,7 @@ const mockData = [
     notes: "string",
     createDate: "2025-03-25T18:27:26.4361151",
     updatedDate: "2025-03-25T18:27:26.4360351",
-    orderStatusId: 1,
+    orderStatusId: 2,
     shippingFee: 0,
     orderDetailsGrouped: [
       {
@@ -120,6 +120,41 @@ const mockData = [
             warrantyEndDate: null,
             orderItemStatus: 1,
           },
+          {
+            orderItemId: 205,
+            imageUrl:
+              "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2F14af80c7-5555-4187-8880-9136ade953a4.png.png?alt=media&token=b9ef5e90-8d28-425e-a2d4-20754b0efe3f",
+            productId: 34,
+            nameProduct: "tetst4",
+            productType: 1,
+            quantity: 5,
+            price: 156000,
+            warrantyEndDate: null,
+            orderItemStatus: 1,
+          },
+        ],
+      },
+      {
+        sellerId: 75,
+        sellerName: "a vu map",
+        sellerRole: 6,
+        sellerRoleName: "Store",
+        trackingId: "1150027439",
+        orderItemStatus: 2,
+        totalAmount: 175000,
+        items: [
+          {
+            orderItemId: 234,
+            imageUrl:
+              "https://firebasestorage.googleapis.com/v0/b/iot-trading-system-firebase.firebasestorage.app/o/image%2F14af80c7-5555-4187-8880-9136ade953a4.png.png?alt=media&token=b9ef5e90-8d28-425e-a2d4-20754b0efe3f",
+            productId: 34,
+            nameProduct: "tetst3",
+            productType: 1,
+            quantity: 5,
+            price: 175000,
+            warrantyEndDate: null,
+            orderItemStatus: 1,
+          },
         ],
       },
     ],
@@ -128,47 +163,53 @@ const mockData = [
 
 // Config trạng thái
 const statusConfig = {
+  0: {
+    text: "All order",
+    color: "bg-amber-100 text-amber-800 border-amber-200",
+    icon: "📋",
+    tabName: "All order",
+  },
   1: {
-    text: "Chờ xử lý",
+    text: "Pending",
     color: "bg-amber-100 text-amber-800 border-amber-200",
     icon: "⏳",
-    tabName: "Chờ xử lý",
+    tabName: "Pending",
   },
   2: {
-    text: "Đang đóng gói",
+    text: "Packing",
     color: "bg-blue-100 text-blue-800 border-blue-200",
     icon: "📦",
-    tabName: "Đóng gói",
+    tabName: "Packing",
   },
   3: {
-    text: "Đang giao",
+    text: "Delevering",
     color: "bg-purple-100 text-purple-800 border-purple-200",
     icon: "🚚",
-    tabName: "Vận chuyển",
+    tabName: "Delevering",
   },
-  4: {
-    text: "Đã giao",
-    color: "bg-green-100 text-green-800 border-green-200",
-    icon: "✅",
-    tabName: "Đã giao",
-  },
+  // 4: {
+  //   text: "Delevered",
+  //   color: "bg-green-100 text-green-800 border-green-200",
+  //   icon: "✅",
+  //   tabName: "Delevered",
+  // },
   5: {
-    text: "Đã đánh giá",
+    text: "Pending to feeback",
     color: "bg-pink-100 text-pink-800 border-pink-200",
     icon: "⭐",
-    tabName: "Đánh giá",
+    tabName: "Pending to feeback",
   },
   6: {
-    text: "Hoàn thành",
+    text: "Success order",
     color: "bg-emerald-100 text-emerald-800 border-emerald-200",
     icon: "🏆",
-    tabName: "Hoàn thành",
+    tabName: "Success order",
   },
   7: {
-    text: "Hoàn trả",
+    text: "Cancle",
     color: "bg-red-100 text-red-800 border-red-200",
     icon: "↩️",
-    tabName: "Hoàn trả",
+    tabName: "Cancle",
   },
 };
 
@@ -217,10 +258,10 @@ const OrderItem = ({ item }) => (
 );
 
 const SellerGroup = ({ group }) => (
-  <div className="bg-blue-50 rounded-md p-4 mb-4" key={group.sellerId}>
+  <div className="bg-blue-50 rounded-md mb-4" key={group.sellerId}>
     <div className="flex justify-between items-center border-b pb-3 mb-3">
       <div className="flex items-center space-x-3">
-        <p className="font-bold text-lg">{group.sellerName}</p>
+        <p className="font-bold text-md">{group.sellerName}</p>
         <div className="flex space-x-2">
           <button className="px-3 py-1 border border-blue-500 bg-blue-500 text-white rounded-sm hover:bg-white hover:text-blue-500 transition-colors text-xs">
             <MessageOutlined className="mr-2" />
@@ -232,6 +273,7 @@ const SellerGroup = ({ group }) => (
               View Shop
             </button>
           </Link>
+          {getStatusTag(group.orderStatusId)}
         </div>
       </div>
     </div>
@@ -240,14 +282,14 @@ const SellerGroup = ({ group }) => (
       <OrderItem item={item} key={item.orderItemId} />
     ))}
 
-    <div className="flex justify-end mt-3">
+    {/* <div className="flex justify-end mt-3">
       <div className="flex items-center space-x-4">
         <span className="font-medium">Tổng cửa hàng:</span>
         <span className="text-red-600 font-semibold">
           {group.totalAmount.toLocaleString("vi-VN")}₫
         </span>
       </div>
-    </div>
+    </div> */}
   </div>
 );
 
@@ -303,12 +345,12 @@ export default function HistoryOrder() {
   const navigate = useNavigate();
 
   // Phân loại dữ liệu theo trạng thái
-  const dataByStatus = mockData.reduce((acc, order) => {
+  const dataByStatus = { 0: [...mockData] }; // Mục "All order" chứa tất cả đơn
+  mockData.forEach((order) => {
     const status = order.orderStatusId;
-    if (!acc[status]) acc[status] = [];
-    acc[status].push(order);
-    return acc;
-  }, {});
+    if (!dataByStatus[status]) dataByStatus[status] = [];
+    dataByStatus[status].push(order);
+  });
 
   return (
     <div className="bg-gray-50 min-h-screen py-8 px-4">
@@ -324,7 +366,7 @@ export default function HistoryOrder() {
           </div>
 
           <Tabs
-            defaultActiveKey="1"
+            defaultActiveKey="0"
             tabPosition="top"
             className="px-6 pt-2"
             tabBarStyle={{ marginBottom: 0 }}

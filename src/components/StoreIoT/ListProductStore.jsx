@@ -9,12 +9,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { DatePicker, Button } from "antd";
+import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import SearchAndFilterProducts from "./components/SearchAndFilterProducts";
 import ProductStoreTables from "./components/productStoreTables";
-
-const { RangePicker } = DatePicker;
 
 export default function ListProductStore() {
   const dispatch = useDispatch();
@@ -40,6 +38,7 @@ export default function ListProductStore() {
         endFilterDate,
       })
     );
+    window.scrollTo(0, 0);
   }, [
     dispatch,
     pageIndex,
@@ -57,12 +56,6 @@ export default function ListProductStore() {
 
   const handlePageSizeChange = (value) => {
     dispatch(setPageSize(value));
-  };
-
-  const onDateChange = (dates, dateStrings) => {
-    dispatch(setStartFilterDate(dateStrings[0])); // Ensure payload matches reducer expectations
-    dispatch(setEndFilterDate(dateStrings[1])); // Ensure payload matches reducer expectations
-    // console.log("Start Date:", dateStrings[0], "End Date:", dateStrings[1]);
   };
 
   const handleCreateProduct = () => {
@@ -86,10 +79,6 @@ export default function ListProductStore() {
                   dispatch(setEndFilterDate(endDate));
                 }}
               />
-            </div>
-            <div className="flex flex-col items-start">
-              <p className="font-semibold text-sm">Filter date</p>
-              <RangePicker onChange={onDateChange} style={{ width: 300 }} />
             </div>
           </div>
 
