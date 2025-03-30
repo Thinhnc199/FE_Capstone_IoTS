@@ -243,6 +243,7 @@ export default function ProfilePage() {
         visible={isEditingPassword}
         onCancel={() => setIsEditingPassword(false)}
         footer={null}
+        zIndex={1111}
       >
         <Form form={form} onFinish={handleUpdatePassword}>
           <Form.Item
