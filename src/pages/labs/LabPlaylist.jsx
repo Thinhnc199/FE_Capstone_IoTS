@@ -39,13 +39,13 @@ const LabPlaylist = ({ labId }) => {
         {selectedVideo ? (
           <>
             <h2 className="text-xl font-semibold">{selectedVideo.title}</h2>
-
             <video
               controls
               src={selectedVideo.videoUrl}
-              className="w-full rounded-lg shadow"
+              className="w-full rounded-lg shadow mt-5"
               style={{ maxHeight: "500px" }}
             />
+            
             <div className="mt-4">
               <h2 className="text-xl font-semibold">Description:</h2>
               <p className="text-gray-600">{selectedVideo.description}</p>

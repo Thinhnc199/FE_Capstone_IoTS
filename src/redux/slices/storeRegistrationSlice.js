@@ -66,6 +66,8 @@ export const submitStoreInfo = createAsyncThunk(
       const response = await createOrUpdateStore(userId, storeData);
       return response.data; 
     } catch (error) {
+      // message.error(error);
+      showNotification("error", "Submit Failed", error );
       return rejectWithValue(error.response?.data || "Failed to submit store info");
     }
   }

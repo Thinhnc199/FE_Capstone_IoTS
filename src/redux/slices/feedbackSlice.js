@@ -40,7 +40,7 @@ const feedbackSlice = createSlice({
       })
       .addCase(fetchFeedbackHistory.fulfilled, (state, action) => {
         state.loading = false;
-        state.feedbackHistory = action.payload.data;
+        state.feedbackHistory = action.payload.data.data;
       })
       .addCase(fetchFeedbackHistory.rejected, (state, action) => {
         state.loading = false;

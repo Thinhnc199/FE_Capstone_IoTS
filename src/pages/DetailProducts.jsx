@@ -2,9 +2,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchProductDetails } from "../redux/slices/productSlice";
-import { Tabs, InputNumber, Button, message, Spin } from "antd";
+import { Tabs, InputNumber, Button, message, Spin, Rate } from "antd";
 import { StarOutlined, ShopOutlined, MessageOutlined } from "@ant-design/icons";
 import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
+import { fetchFeedbackHistory } from "../redux/slices/feedbackSlice";
 import { ProductType } from "../redux/constants";
 import ErrorProduct from "./ErrorProduct";
 
@@ -18,6 +19,7 @@ export default function DetailProducts() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [numCart, setNumCart] = useState(1);
   const { pageIndex, pageSize } = useSelector((state) => state.carts);
+  const feedback = useSelector((state) => state.feedback);
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price);
   };
@@ -28,6 +30,22 @@ export default function DetailProducts() {
   // useEffect(() => {
   //   dispatch(fetchCarts({ pageIndex, pageSize }));
   // }, [dispatch, id]);
+
+  // Gọi API feedback history
+  useEffect(() => {
+    const payload = {
+      advancedFilter: {
+        productId: parseInt(id),
+        productType: 1,
+      },
+      paginationRequest: {
+        pageIndex: 0,
+        pageSize: 10,
+        searchKeyword: "",
+      },
+    };
+    dispatch(fetchFeedbackHistory(payload));
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (product) {
@@ -109,7 +127,7 @@ export default function DetailProducts() {
     }
   };
 
-  if (productDetail.loading)
+  if (productDetail.loading || feedback.loading)
     return (
       <Spin
         size="large"
@@ -515,22 +533,62 @@ export default function DetailProducts() {
               {
                 key: "2",
                 label: "Reviews",
-                children:
-                  product.reviews?.length > 0 ? (
-                    product.reviews.map((review, index) => (
-                      <div key={index} className="p-2 border-b">
-                        <p className="font-semibold">
-                          {review.user || "Anonymous"}
+                children: (
+                  <div className="space-y-4">
+                    {feedback.feedbackHistory?.length > 0 ? (
+                      feedback.feedbackHistory.map((review, index) => (
+                        <div
+                          key={index}
+                          className="p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors rounded-md"
+                        >
+                          {/* Header: Tên người dùng và Rating */}
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="font-semibold text-gray-800">
+                              {`Anonymous ${review.createdBy}`}
+                            </p>
+                            <Rate
+                              disabled
+                              defaultValue={review.rating}
+                              className="text-sm"
+                            />
+                          </div>
+
+                          {/* Thời gian tạo */}
+                          <p className="text-xs text-gray-500 mb-2">
+                            {new Date(review.createdDate).toLocaleString(
+                              "en-EN",
+                              {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              }
+                            )}
+                          </p>
+
+                          {/* Nội dung feedback */}
+                          <p className="text-gray-700 text-sm leading-relaxed">
+                            {review.content || "No comment"}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500 italic mb-4">
+                          There are currently no reviews for this product. Be
+                          the first to share your thoughts!
                         </p>
-                        <p>{review.comment || "No comment"}</p>
+                        {/* <Button
+                          type="primary"
+                          className="bg-blue-500 hover:bg-blue-600"
+                          onClick={() => {
+                            message.info("Review submission feature coming soon!");
+                          }}
+                        >
+                          Submit Your Review
+                        </Button> */}
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 italic">
-                      There are currently no reviews for this product. Be the
-                      first to review this product. Submit your review.
-                    </p>
-                  ),
+                    )}
+                  </div>
+                ),
               },
             ]}
           />
