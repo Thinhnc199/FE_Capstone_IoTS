@@ -2042,7 +2042,7 @@ const StoreRegistration = () => {
                 defaultAddressId={selectedAddressId}
               />
             </Form.Item>
-            {storeDetails &&
+            {/* {storeDetails &&
               storeDetails.addressName &&
               storeDetails.wardName &&
               storeDetails.districtName &&
@@ -2054,7 +2054,7 @@ const StoreRegistration = () => {
                     {storeDetails.districtName}, {storeDetails.provinceName}
                   </p>
                 </div>
-              )}
+              )} */}
             <Form.Item
               label="Address"
               name="address"
