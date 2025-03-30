@@ -1,7 +1,7 @@
 // api/apiConfig.js
 import axios from "axios";
 import { notification } from "antd";
-
+import { message } from "antd";
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -228,11 +228,16 @@ export const getUserRequestDetails = async (userId) => {
 };
 
 export const createOrUpdateStore = async (userId, storeData) => {
-  const response = await api.post(
-    `/api/store/create-or-update-store/${userId}`,
-    storeData
-  );
-  return response.data;
+  try {
+    const response = await api.post(
+      `/api/store/create-or-update-store/${userId}`,
+      storeData
+    );
+    message.success(response.data.message);
+    return response.data;
+  } catch (error) {
+    message.error(error);
+  }
 };
 
 // export const createOrUpdateBusinessLicense = async (licenseData) => {

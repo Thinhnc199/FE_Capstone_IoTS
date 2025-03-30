@@ -72,15 +72,10 @@ export const checkSuccessOrder = createAsyncThunk(
       const response = await api.post(`/api/Order/check-order-success`, {
         urlResponse,
       });
+      message.success(response.data.message);
       return response.data;
     } catch (error) {
-      if (error.response) {
-        return rejectWithValue(
-          error.response.data.errors ||
-            error.response.data.message ||
-            "Something went wrong"
-        );
-      }
+      message.warning("warning", error);
       return rejectWithValue(error.message || "Unknown error");
     }
   }
