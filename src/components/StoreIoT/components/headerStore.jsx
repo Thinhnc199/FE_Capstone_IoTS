@@ -31,6 +31,7 @@ export default function HeaderStore() {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
+    localStorage.removeItem("storeId");
     navigate("/login");
   };
   const items = [

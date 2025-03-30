@@ -84,6 +84,8 @@ const Navbar = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
+    localStorage.removeItem("storeId");
+
     setIsModalVisible(false);
     navigate("/login");
   };
