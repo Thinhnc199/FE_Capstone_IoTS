@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
+import { message } from "antd";
 // const returnUrl = "http://localhost:5173/checkout-process-order";
 
 const returnUrl = "https://fe-capstone-io-ts.vercel.app/checkout-process-order";
@@ -184,8 +185,10 @@ export const changePackingStatus = createAsyncThunk(
       const response = await api.post(
         `/api/Order/order-status/packing/${orderId}`
       );
+      message.success(response.data.message);
       return response.data;
     } catch (error) {
+      message.error(error);
       return rejectWithValue(error);
     }
   }
@@ -197,21 +200,29 @@ export const changeDeliveringStatus = createAsyncThunk(
       const response = await api.post(
         `/api/Order/order-status/delivering/${orderId}`
       );
+      message.success(response.data.message);
       return response.data;
     } catch (error) {
+      message.error(error);
       return rejectWithValue(error);
     }
   }
 );
 export const changeFeedbackStatus = createAsyncThunk(
   "createOrders/changeFeedbackStatus",
-  async ({ orderId }, { rejectWithValue }) => {
+  async ({ orderId, sellerId }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `/api/Order/order-status/pending-to-feedback/${orderId}`
+        `/api/Order/order-status/pending-to-feedback/${orderId}`,
+        null,
+        {
+          params: { sellerId },
+        }
       );
+      message.success(response.data.message);
       return response.data;
     } catch (error) {
+      message.error(error);
       return rejectWithValue(error);
     }
   }
@@ -228,9 +239,10 @@ export const getPrintLabel = createAsyncThunk(
       const filename = contentDisposition
         ? contentDisposition.split("filename=")[1].replace(/"/g, "")
         : `shipping-label-${trackingId}.pdf`;
-
+      message.success("success to received Order ");
       return { blob: response.data, filename };
     } catch (error) {
+      message.warning("Failed to update status:", error);
       return rejectWithValue(error.toString());
     }
   }

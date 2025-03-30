@@ -6,7 +6,6 @@ import {
   fetchHistoryOrderStoreTrainer,
   changePackingStatus,
   changeDeliveringStatus,
-  changeFeedbackStatus,
   getPrintLabel,
 } from "../../redux/slices/orderSlice";
 import dayjs from "dayjs";
@@ -270,11 +269,14 @@ export default function ManageHistoryOrder() {
     );
   }, [dispatch, pageIndex, pageSize, statusFilter]);
   const handleProceedToPacking = async (orderId) => {
-    try {
-      await dispatch(changePackingStatus({ orderId })).unwrap();
-    } catch (error) {
-      console.error("Failed to update status:", error);
-    }
+    await dispatch(changePackingStatus({ orderId })).unwrap();
+    dispatch(
+      fetchHistoryOrderStoreTrainer({
+        pageIndex,
+        pageSize,
+        StatusFilter: statusFilter,
+      })
+    );
   };
 
   const handleCreateShippingLabel = async (trackingId) => {
@@ -290,10 +292,9 @@ export default function ManageHistoryOrder() {
       link.click();
       link.remove(); // Dọn dẹp sau khi tải
 
-      // (Tùy chọn) Hiển thị thông báo thành công
-      message.success("Đã tải xuống nhãn vận chuyển!");
+      message.success("Shipping label downloaded!");
     } catch (error) {
-      message.error("Lỗi khi tải nhãn: " + error);
+      message.error("Error loading label: " + error);
     }
   };
 
@@ -308,13 +309,6 @@ export default function ManageHistoryOrder() {
     );
   };
 
-  const handleUpdateToPendingFeedback = (orderId) => {
-    dispatch(
-      changeFeedbackStatus({
-        orderId: orderId,
-      })
-    );
-  };
   return (
     <div className="min-h-screen  bg-blue-50">
       <div className="max-w-auto ">
@@ -364,9 +358,6 @@ export default function ManageHistoryOrder() {
                         onProceedToPacking={handleProceedToPacking}
                         onCreateShippingLabel={handleCreateShippingLabel}
                         onUpdateToDelivering={handleUpdateToDelivering}
-                        onUpdateToPendingFeedback={
-                          handleUpdateToPendingFeedback
-                        }
                       />
                     ))
                   ) : (
