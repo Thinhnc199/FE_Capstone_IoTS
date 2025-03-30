@@ -419,6 +419,7 @@ const Navbar = () => {
         onCancel={() => setIsModalVisible(false)}
         okText="Logout"
         cancelText="Cancel"
+        zIndex={1111}
       >
         <p>Are you sure you want to logout?</p>
       </Modal>
