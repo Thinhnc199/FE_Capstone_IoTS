@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
 import { message } from "antd";
+
 // const returnUrl = "http://localhost:5173/checkout-process-order";
 
 const returnUrl = "https://fe-capstone-io-ts.vercel.app/checkout-process-order";
@@ -247,11 +248,23 @@ export const getPrintLabel = createAsyncThunk(
     }
   }
 );
+export const getTrackingGhtk = createAsyncThunk(
+  "createOrders/getTrackingGhtk",
+  async ({ trackingId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/ghtk/${trackingId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.toString());
+    }
+  }
+);
 
 // history order
 
 const initialState = {
   dataCheckOrder: null,
+  dataTrackingGhtk: "",
   order: [],
   loading: false,
   error: null,
@@ -299,11 +312,15 @@ const orderSlice = createSlice({
     handleAsyncState(builder, checkSuccessOrder, (state, action) => {
       state.dataCheckOrder = action.payload;
     });
+    handleAsyncState(builder, getTrackingGhtk, (state, action) => {
+      state.dataTrackingGhtk = action.payload.data;
+    });
     handleAsyncState(builder, getfeeShip, (state, action) => {
       if (action.payload.length > 0) {
         state.fee = action.payload[0].fee;
       }
     });
+
     handleAsyncState(builder, fetchHistoryOrder, (state, action) => {
       state.historyOrders.totalCount = action.payload.data.totalCount;
       state.historyOrders.dataHistoryOrder = action.payload.data.data;

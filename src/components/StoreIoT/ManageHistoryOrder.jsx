@@ -2,6 +2,8 @@ import { Typography, Card, Tabs, Spin, Button, message, Modal } from "antd";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { TruckOutlined } from "@ant-design/icons";
+import { getTrackingGhtk } from "../../redux/slices/orderSlice";
 import {
   fetchHistoryOrderStoreTrainer,
   changePackingStatus,
@@ -142,88 +144,113 @@ const OrderCard = ({
   onProceedToPacking,
   onCreateShippingLabel,
   onUpdateToDelivering,
-}) => (
-  <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
-    <div className="flex justify-between items-center border-b pb-4 mb-4">
-      <div>
-        <div className="flex items-center space-x-2 mb-2">
-          <span className="text-gray-600">Order code:</span>
-          <span className="font-bold">{order.applicationSerialNumber}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-600">Create date:</span>
-          <span className="font-medium">{formatDate(order.createDate)}</span>
-        </div>
-      </div>
-      {Array.isArray(order.orderDetailsGrouped) &&
-        order.orderDetailsGrouped.length > 0 && (
-          <div>
-            {getStatusTag(order.orderDetailsGrouped[0].orderItemStatus)}
+  onTrackClick,
+}) => {
+  const trackingId = order.orderDetailsGrouped[0]?.trackingId;
+  return (
+    <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
+      <div className="flex justify-between items-center border-b pb-4 mb-4">
+        <div>
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="text-gray-600">Order code:</span>
+            <span className="font-bold">{order.applicationSerialNumber}</span>
           </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-600">Create date:</span>
+            <span className="font-medium">{formatDate(order.createDate)}</span>
+          </div>
+        </div>
+        <div className="flex flex-col justify-center ">
+          {" "}
+          <div className="flex justify-end items-center">
+            {order.orderDetailsGrouped.some(
+              (group) => group.orderItemStatus === 3
+            ) &&
+              trackingId && (
+                <>
+                  {" "}
+                  <Button
+                    className=" border-none shadow-none flex items-center "
+                    onClick={() => onTrackClick(trackingId)} // Gọi hàm theo dõi khi nhấn
+                  >
+                    <TruckOutlined className="text-green-500 hover:text-green-700 text-lg" />
+                  </Button>
+                  <span>|</span>
+                </>
+              )}
+
+            {order.orderStatusId === 1 ? (
+              <p className="text-green-600 pl-3">PAID</p>
+            ) : (
+              <p className="text-red-600">CANCELLED</p>
+            )}
+          </div>
+          <div>
+            {" "}
+            {Array.isArray(order.orderDetailsGrouped) &&
+              order.orderDetailsGrouped.length > 0 && (
+                <div>
+                  {getStatusTag(order.orderDetailsGrouped[0].orderItemStatus)}
+                </div>
+              )}
+          </div>
+        </div>
+      </div>
+
+      {order.orderDetailsGrouped.map((group) => (
+        <SellerGroup group={group} key={`${order.orderId}-${group.sellerId}`} />
+      ))}
+
+      <div className="flex justify-between items-center border-t pt-4">
+        <div className="flex items-center space-x-4"></div>
+        <div className="flex items-center space-x-4">
+          <span className="font-medium text-lg">Total:</span>
+          <span className="text-red-600 font-bold text-lg">
+            {order.orderDetailsGrouped[0].totalAmount.toLocaleString("vi-VN")}₫
+          </span>
+        </div>
+      </div>
+
+      {/* Các nút chức năng */}
+      <div className="flex justify-end space-x-3 mt-6">
+        {order.orderDetailsGrouped[0].orderItemStatus === 1 && (
+          <Button
+            className="bg-blue-500 text-white rounded-md border border-blue-500"
+            onClick={() => onProceedToPacking(order.orderId)}
+          >
+            Proceed to Packing
+          </Button>
         )}
-    </div>
 
-    {order.orderDetailsGrouped.map((group) => (
-      <SellerGroup group={group} key={`${order.orderId}-${group.sellerId}`} />
-    ))}
-
-    <div className="flex justify-between items-center border-t pt-4">
-      <div className="flex items-center space-x-4"></div>
-      <div className="flex items-center space-x-4">
-        <span className="font-medium text-lg">Total:</span>
-        <span className="text-red-600 font-bold text-lg">
-          {order.orderDetailsGrouped[0].totalAmount.toLocaleString("vi-VN")}₫
-        </span>
+        {order.orderDetailsGrouped[0].orderItemStatus === 2 && (
+          <>
+            <Button
+              className="bg-green-500 text-white rounded-md border border-green-500"
+              onClick={() =>
+                onCreateShippingLabel(order.orderDetailsGrouped[0].trackingId)
+              }
+            >
+              Create Shipping Label
+            </Button>
+            <Button
+              className="bg-purple-500 text-white rounded-md border border-purple-500"
+              onClick={() => onUpdateToDelivering(order.orderId)}
+            >
+              Update to Delivering
+            </Button>
+          </>
+        )}
       </div>
     </div>
-
-    {/* Các nút chức năng */}
-    <div className="flex justify-end space-x-3 mt-6">
-      {order.orderDetailsGrouped[0].orderItemStatus === 1 && (
-        <Button
-          className="bg-blue-500 text-white rounded-md border border-blue-500"
-          onClick={() => onProceedToPacking(order.orderId)}
-        >
-          Proceed to Packing
-        </Button>
-      )}
-
-      {order.orderDetailsGrouped[0].orderItemStatus === 2 && (
-        <>
-          <Button
-            className="bg-green-500 text-white rounded-md border border-green-500"
-            onClick={() =>
-              onCreateShippingLabel(order.orderDetailsGrouped[0].trackingId)
-            }
-          >
-            Create Shipping Label
-          </Button>
-          <Button
-            className="bg-purple-500 text-white rounded-md border border-purple-500"
-            onClick={() => onUpdateToDelivering(order.orderId)}
-          >
-            Update to Delivering
-          </Button>
-        </>
-      )}
-
-      {/* {order.orderDetailsGrouped[0].orderItemStatus === 3 && (
-        <Button
-          className="bg-pink-500 text-white rounded-md border border-pink-500"
-          onClick={() => onUpdateToPendingFeedback(order.orderId)}
-        >
-          Update to Pending Feedback
-        </Button>
-      )} */}
-    </div>
-  </div>
-);
+  );
+};
 
 OrderCard.propTypes = {
   order: PropTypes.shape({
     orderId: PropTypes.number.isRequired,
     applicationSerialNumber: PropTypes.string.isRequired,
     createDate: PropTypes.string.isRequired,
+    orderStatusId: PropTypes.string.isRequired,
     orderDetailsGrouped: PropTypes.arrayOf(
       PropTypes.shape({
         sellerId: PropTypes.number.isRequired,
@@ -248,10 +275,12 @@ OrderCard.propTypes = {
   onCreateShippingLabel: PropTypes.func.isRequired,
   onUpdateToDelivering: PropTypes.func.isRequired,
   onUpdateToPendingFeedback: PropTypes.func.isRequired,
+  onTrackClick: PropTypes.func.isRequired,
 };
 export default function ManageHistoryOrder() {
   const dispatch = useDispatch();
   const [statusFilter, setStatusFilter] = useState("");
+  const [trackingInfo, setTrackingInfo] = useState(null);
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
   const showConfirmModal = (title, content, onConfirm) => {
@@ -329,7 +358,17 @@ export default function ManageHistoryOrder() {
       }
     );
   };
-
+  const handleTrackClick = async (trackingId) => {
+    try {
+      const result = await dispatch(getTrackingGhtk({ trackingId })).unwrap();
+      setTrackingInfo(result); // Lưu thông tin tracking vào state
+    } catch (error) {
+      console.error("Failed to fetch tracking info:", error);
+    }
+  };
+  const handleCloseTrackingModal = () => {
+    setTrackingInfo(null); // Đóng popup bằng cách reset trackingInfo
+  };
   return (
     <div className="min-h-screen  bg-blue-50">
       <div className="max-w-auto ">
@@ -379,6 +418,7 @@ export default function ManageHistoryOrder() {
                         onProceedToPacking={handleProceedToPacking}
                         onCreateShippingLabel={handleCreateShippingLabel}
                         onUpdateToDelivering={handleUpdateToDelivering}
+                        onTrackClick={handleTrackClick}
                       />
                     ))
                   ) : (
@@ -392,6 +432,50 @@ export default function ManageHistoryOrder() {
           </Tabs>
         </Card>
       </div>
+
+      {/* Popup hiển thị thông tin tracking */}
+      {trackingInfo && (
+        <Modal
+          title={
+            <div className="flex items-center space-x-3">
+              <img
+                src="/public/images/Logo-GHTK.png"
+                alt="GHTK Logo"
+                className="w-[50%] object-contain"
+                onError={(e) =>
+                  (e.target.src =
+                    "https://img.upanh.tv/2025/03/31/Logo-GHTK-1024x346.png")
+                }
+              />
+            </div>
+          }
+          visible={!!trackingInfo}
+          onCancel={handleCloseTrackingModal}
+          zIndex={1111}
+          footer={[
+            <Button key="close" onClick={handleCloseTrackingModal}>
+              Close
+            </Button>,
+          ]}
+        >
+          <div className="space-y-2 text-gray-700">
+            {[
+              { label: "Tracking ID:", value: trackingInfo.labelId },
+              { label: "Status:", value: trackingInfo.statusText },
+              { label: "Created Date:", value: trackingInfo.created },
+              { label: "Estimated Delivery:", value: trackingInfo.deliverDate },
+              { label: "Customer Name:", value: trackingInfo.customerFullname },
+              { label: "Phone Number:", value: trackingInfo.customerTel },
+              { label: "Address:", value: trackingInfo.address },
+            ].map((item, index) => (
+              <div key={index} className="flex justify-between">
+                <span className="font-semibold">{item.label}</span>
+                <span className="text-right">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
