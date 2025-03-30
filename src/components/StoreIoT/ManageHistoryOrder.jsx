@@ -1,4 +1,4 @@
-import { Typography, Card, Tabs, Spin, Button, message } from "antd";
+import { Typography, Card, Tabs, Spin, Button, message, Modal } from "antd";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -254,7 +254,15 @@ export default function ManageHistoryOrder() {
   const [statusFilter, setStatusFilter] = useState("");
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
-
+  const showConfirmModal = (title, content, onConfirm) => {
+    Modal.confirm({
+      title,
+      content,
+      okText: "Yes, Confirm",
+      cancelText: "Cancel",
+      onOk: onConfirm,
+    });
+  };
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
   };
@@ -268,14 +276,21 @@ export default function ManageHistoryOrder() {
       })
     );
   }, [dispatch, pageIndex, pageSize, statusFilter]);
+
   const handleProceedToPacking = async (orderId) => {
-    await dispatch(changePackingStatus({ orderId })).unwrap();
-    dispatch(
-      fetchHistoryOrderStoreTrainer({
-        pageIndex,
-        pageSize,
-        StatusFilter: statusFilter,
-      })
+    showConfirmModal(
+      "Confirm proceed to packing",
+      "Are you sure you want to proceed to packing this order?",
+      async () => {
+        await dispatch(changePackingStatus({ orderId })).unwrap();
+        dispatch(
+          fetchHistoryOrderStoreTrainer({
+            pageIndex,
+            pageSize,
+            StatusFilter: statusFilter,
+          })
+        );
+      }
     );
   };
 
@@ -299,13 +314,19 @@ export default function ManageHistoryOrder() {
   };
 
   const handleUpdateToDelivering = async (orderId) => {
-    await dispatch(changeDeliveringStatus({ orderId }));
-    dispatch(
-      fetchHistoryOrderStoreTrainer({
-        pageIndex,
-        pageSize,
-        StatusFilter: statusFilter,
-      })
+    showConfirmModal(
+      "Confirm update to Delivering",
+      "Are you sure you want to update this order to Delivering?",
+      async () => {
+        await dispatch(changeDeliveringStatus({ orderId }));
+        dispatch(
+          fetchHistoryOrderStoreTrainer({
+            pageIndex,
+            pageSize,
+            StatusFilter: statusFilter,
+          })
+        );
+      }
     );
   };
 

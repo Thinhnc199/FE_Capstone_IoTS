@@ -1,4 +1,4 @@
-import { Typography, Card, Tabs, Spin, Button } from "antd";
+import { Typography, Card, Tabs, Spin, Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -268,18 +268,32 @@ export default function HistoryOrder() {
   const { historyOrders, pageIndex, pageSize, loading } = useSelector(
     (state) => state.orders
   );
-
+  const showConfirmModal = (title, content, onConfirm) => {
+    Modal.confirm({
+      title,
+      content,
+      okText: "Yes, Confirm",
+      cancelText: "Cancel",
+      onOk: onConfirm,
+    });
+  };
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
   };
   const handleChangeToFeedback = async (orderId, sellerId) => {
-    await dispatch(changeFeedbackStatus({ orderId, sellerId })).unwrap();
-    dispatch(
-      fetchHistoryOrder({
-        pageIndex,
-        pageSize,
-        StatusFilter: statusFilter,
-      })
+    showConfirmModal(
+      "Confirm Received Order",
+      "Are you sure you have received this order?",
+      async () => {
+        await dispatch(changeFeedbackStatus({ orderId, sellerId })).unwrap();
+        dispatch(
+          fetchHistoryOrder({
+            pageIndex,
+            pageSize,
+            StatusFilter: statusFilter,
+          })
+        );
+      }
     );
   };
   const fetchOrders = () => {
