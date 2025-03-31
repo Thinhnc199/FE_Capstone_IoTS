@@ -17,6 +17,8 @@ import orderSlice from "./slices/orderSlice";
 import labSlice from './slices/labSlice';
 import paymentSlice from './slices/paymentSlice';
 import feedbackSlice from './slices/feedbackSlice';
+import walletSlice from './slices/walletSlice';
+
 const store = configureStore({
   reducer: {
     orders: orderSlice,
@@ -36,7 +38,8 @@ const store = configureStore({
     address: addressSlice,
     lab: labSlice,
     payment: paymentSlice,
-    feedback: feedbackSlice
+    feedback: feedbackSlice,
+    wallet: walletSlice
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

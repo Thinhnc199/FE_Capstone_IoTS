@@ -1,3 +1,4 @@
+
 // import { Typography, Card, Tabs, Spin, Button, Modal } from "antd";
 // import { Link } from "react-router-dom";
 // import PropTypes from "prop-types";
@@ -12,7 +13,7 @@
 // import dayjs from "dayjs";
 // import "dayjs/locale/vi";
 // import FeedbackForm from "./Orders/FeedbackForm";
-
+// import { TruckOutlined } from "@ant-design/icons";
 // const { Title } = Typography;
 // const { TabPane } = Tabs;
 // dayjs.locale("vi");
@@ -159,86 +160,118 @@
 //   }).isRequired,
 // };
 
-// const OrderCard = ({ order, onFeedbackClick, onReceivedClick }) => (
-//   <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
-//     <div className="flex justify-between items-center border-b pb-4 mb-4">
-//       <div>
-//         <div className="flex items-center space-x-2 mb-2">
-//           <span className="text-gray-600">Order code:</span>
-//           <span className="font-bold">{order.applicationSerialNumber}</span>
+// const OrderCard = ({
+//   order,
+//   onFeedbackClick,
+//   onReceivedClick,
+//   onTrackClick,
+// }) => {
+//   const trackingId = order.orderDetailsGrouped[0]?.trackingId; // Lấy trackingId từ orderDetailsGrouped
+
+//   return (
+//     <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
+//       <div className="flex justify-between items-center border-b pb-4 mb-4">
+//         <div>
+//           <div className="flex items-center space-x-2 mb-2">
+//             <span className="text-gray-600">Order code:</span>
+//             <span className="font-bold">{order.applicationSerialNumber}</span>
+//           </div>
+//           <div className="flex items-center space-x-2">
+//             <span className="text-gray-600">Create date:</span>
+//             <span className="font-medium">{formatDate(order.createDate)}</span>
+//           </div>
 //         </div>
-//         <div className="flex items-center space-x-2">
-//           <span className="text-gray-600">Create date:</span>
-//           <span className="font-medium">{formatDate(order.createDate)}</span>
+//         <div className="flex justify-end items-center">
+//           {order.orderDetailsGrouped.some(
+//             (group) =>
+//               group.orderItemStatus === 2 || group.orderItemStatus === 3
+//           ) &&
+//             trackingId && (
+//               <>
+//                 {" "}
+//                 <Button
+//                   className=" border-none shadow-none flex items-center "
+//                   onClick={() => onTrackClick(trackingId)} // Gọi hàm theo dõi khi nhấn
+//                 >
+//                   <TruckOutlined className="text-green-500 hover:text-green-700 text-lg" />
+//                 </Button>
+//                 <span>|</span>
+//               </>
+//             )}
+
+//           {order.orderStatusId === 1 ? (
+//             <p className="text-green-600 pl-3">PAID</p>
+//           ) : (
+//             <p className="text-red-600">CANCELLED</p>
+//           )}
 //         </div>
 //       </div>
-//     </div>
 
-//     {order.orderDetailsGrouped.map((group) => (
-//       <SellerGroup group={group} key={`${order.orderId}-${group.sellerId}`} />
-//     ))}
+//       {order.orderDetailsGrouped.map((group) => (
+//         <SellerGroup group={group} key={`${order.orderId}-${group.sellerId}`} />
+//       ))}
 
-//     <div className="flex justify-between items-center border-t pt-4">
-//       <div className="flex items-center space-x-4">
-//         <span className="font-medium">Shipping fee:</span>
-//         <span>{order.shippingFee.toLocaleString("vi-VN")}₫</span>
+//       <div className="flex justify-between items-center border-t pt-4">
+//         <div className="flex items-center space-x-4">
+//           <span className="font-medium">Shipping fee:</span>
+//           <span>{order.shippingFee.toLocaleString("vi-VN")}₫</span>
+//         </div>
+//         <div className="flex items-center space-x-4">
+//           <span className="font-medium text-lg">Total:</span>
+//           <span className="text-red-600 font-bold text-lg">
+//             {order.totalPrice.toLocaleString("vi-VN")}₫
+//           </span>
+//         </div>
 //       </div>
-//       <div className="flex items-center space-x-4">
-//         <span className="font-medium text-lg">Total:</span>
-//         <span className="text-red-600 font-bold text-lg">
-//           {order.totalPrice.toLocaleString("vi-VN")}₫
-//         </span>
+
+//       <div className="flex justify-end space-x-3 mt-6">
+//         {order.orderDetailsGrouped.some(
+//           (group) => group.orderItemStatus === 5
+//         ) && (
+//           <Button
+//             className="bg-blue-500 text-white rounded-md border border-blue-500"
+//             onClick={() => onFeedbackClick(order)}
+//           >
+//             Feedback
+//           </Button>
+//         )}
+
+//         {order.orderDetailsGrouped.some(
+//           (group) => group.orderItemStatus === 3
+//         ) && (
+//           <Button
+//             className="bg-green-500 text-white rounded-md border border-green-500"
+//             onClick={() =>
+//               onReceivedClick(
+//                 order.orderId,
+//                 order.orderDetailsGrouped[0].sellerId
+//               )
+//             }
+//           >
+//             Received Order
+//           </Button>
+//         )}
+
+//         {order.orderDetailsGrouped.some(
+//           (group) => group.orderItemStatus === 1
+//         ) && (
+//           <Button
+//             className="bg-red-500 text-white rounded-md border border-red-500"
+//             // onClick={() => onCancelClick(order)}
+//           >
+//             Cancel Order
+//           </Button>
+//         )}
 //       </div>
 //     </div>
-
-//     <div className="flex justify-end space-x-3 mt-6">
-//       {order.orderDetailsGrouped.some(
-//         (group) => group.orderItemStatus === 5
-//       ) && (
-//         <Button
-//           className="bg-blue-500 text-white rounded-md border border-blue-500"
-//           onClick={() => onFeedbackClick(order)}
-//         >
-//           Feedback
-//         </Button>
-//       )}
-
-//       {order.orderDetailsGrouped.some(
-//         (group) => group.orderItemStatus === 3
-//       ) && (
-//         <Button
-//           className="bg-green-500 text-white rounded-md border border-green-500"
-//           onClick={() =>
-//             onReceivedClick(
-//               order.orderId,
-//               order.orderDetailsGrouped[0].sellerId
-//             )
-//           }
-//         >
-//           Received Order
-//         </Button>
-//       )}
-
-//       {order.orderDetailsGrouped.some(
-//         (group) => group.orderItemStatus === 1
-//       ) && (
-//         <Button
-//           className="bg-red-500 text-white rounded-md border border-red-500"
-//           // onClick={() => onCancelClick(order)}
-//         >
-//           Cancel Order
-//         </Button>
-//       )}
-//     </div>
-//   </div>
-// );
-
+//   );
+// };
 // OrderCard.propTypes = {
 //   order: PropTypes.shape({
 //     orderId: PropTypes.number.isRequired,
-//     sellerId: PropTypes.number.isRequired,
 //     applicationSerialNumber: PropTypes.string.isRequired,
 //     createDate: PropTypes.string.isRequired,
+//     orderStatusId: PropTypes.string.isRequired,
 //     shippingFee: PropTypes.number.isRequired,
 //     totalPrice: PropTypes.number.isRequired,
 //     orderDetailsGrouped: PropTypes.arrayOf(
@@ -246,6 +279,7 @@
 //         sellerId: PropTypes.number.isRequired,
 //         sellerName: PropTypes.string.isRequired,
 //         orderItemStatus: PropTypes.number.isRequired,
+//         trackingId: PropTypes.string, // Thêm trackingId vào propTypes
 //         items: PropTypes.arrayOf(
 //           PropTypes.shape({
 //             orderItemId: PropTypes.number.isRequired,
@@ -260,14 +294,17 @@
 //   }).isRequired,
 //   onFeedbackClick: PropTypes.func.isRequired,
 //   onReceivedClick: PropTypes.func.isRequired,
+//   onTrackClick: PropTypes.func.isRequired, // Thêm prop cho theo dõi
 // };
 
 // export default function HistoryOrder() {
 //   const dispatch = useDispatch();
 //   const [statusFilter, setStatusFilter] = useState("");
 //   const [selectedOrder, setSelectedOrder] = useState(null);
-//   const { historyOrders, pageIndex, pageSize, loading, dataTrackingGhtk } =
-//     useSelector((state) => state.orders);
+//   const [trackingInfo, setTrackingInfo] = useState(null);
+//   const { historyOrders, pageIndex, pageSize, loading } = useSelector(
+//     (state) => state.orders
+//   );
 //   const showConfirmModal = (title, content, onConfirm) => {
 //     Modal.confirm({
 //       title,
@@ -317,7 +354,17 @@
 //   const handleCloseFeedback = () => {
 //     setSelectedOrder(null);
 //   };
-
+//   const handleTrackClick = async (trackingId) => {
+//     try {
+//       const result = await dispatch(getTrackingGhtk({ trackingId })).unwrap();
+//       setTrackingInfo(result); // Lưu thông tin tracking vào state
+//     } catch (error) {
+//       console.error("Failed to fetch tracking info:", error);
+//     }
+//   };
+//   const handleCloseTrackingModal = () => {
+//     setTrackingInfo(null); // Đóng popup bằng cách reset trackingInfo
+//   };
 //   return (
 //     <div className="min-h-screen py-8 px-4 bg-blue-50">
 //       <div className="max-w-6xl mx-auto">
@@ -366,6 +413,7 @@
 //                         key={order.orderId}
 //                         onFeedbackClick={handleFeedbackClick}
 //                         onReceivedClick={handleChangeToFeedback}
+//                         onTrackClick={handleTrackClick}
 //                       />
 //                     ))
 //                   ) : (
@@ -386,6 +434,49 @@
 //           order={selectedOrder}
 //           fetchHistoryOrder={fetchOrders}
 //         />
+//       )}
+//       {/* Popup hiển thị thông tin tracking */}
+//       {trackingInfo && (
+//         <Modal
+//           title={
+//             <div className="flex items-center space-x-3">
+//               <img
+//                 src="/public/images/Logo-GHTK.png"
+//                 alt="GHTK Logo"
+//                 className="w-[50%] object-contain"
+//                 onError={(e) =>
+//                   (e.target.src =
+//                     "https://img.upanh.tv/2025/03/31/Logo-GHTK-1024x346.png")
+//                 }
+//               />
+//             </div>
+//           }
+//           visible={!!trackingInfo}
+//           onCancel={handleCloseTrackingModal}
+//           zIndex={1111}
+//           footer={[
+//             <Button key="close" onClick={handleCloseTrackingModal}>
+//               Close
+//             </Button>,
+//           ]}
+//         >
+//           <div className="space-y-2 text-gray-700">
+//             {[
+//               { label: "Tracking ID:", value: trackingInfo.labelId },
+//               { label: "Status:", value: trackingInfo.statusText },
+//               { label: "Created Date:", value: trackingInfo.created },
+//               { label: "Estimated Delivery:", value: trackingInfo.deliverDate },
+//               { label: "Customer Name:", value: trackingInfo.customerFullname },
+//               { label: "Phone Number:", value: trackingInfo.customerTel },
+//               { label: "Address:", value: trackingInfo.address },
+//             ].map((item, index) => (
+//               <div key={index} className="flex justify-between">
+//                 <span className="font-semibold">{item.label}</span>
+//                 <span className="text-right">{item.value}</span>
+//               </div>
+//             ))}
+//           </div>
+//         </Modal>
 //       )}
 //     </div>
 //   );
@@ -507,7 +598,7 @@ OrderItem.propTypes = {
   }).isRequired,
 };
 
-const SellerGroup = ({ group }) => (
+const SellerGroup = ({ group, orderId, onFeedbackClick }) => (
   <div className="rounded-md mb-4">
     <div className="flex justify-between items-center border-b pb-3 mb-3">
       <div className="flex items-center space-x-3">
@@ -525,7 +616,17 @@ const SellerGroup = ({ group }) => (
           </Link>
         </div>
       </div>
-      <div>{getStatusTag(group.orderItemStatus)}</div>
+      <div className="flex items-center space-x-3">
+        {getStatusTag(group.orderItemStatus)}
+        {group.orderItemStatus === 5 && (
+          <Button
+            className="bg-blue-500 text-white rounded-md border border-blue-500"
+            onClick={() => onFeedbackClick({ ...group, orderId })}
+          >
+            Feedback
+          </Button>
+        )}
+      </div>
     </div>
 
     {group.items.map((item) => (
@@ -550,6 +651,8 @@ SellerGroup.propTypes = {
       })
     ).isRequired,
   }).isRequired,
+  orderId: PropTypes.number,
+  onFeedbackClick: PropTypes.func.isRequired,
 };
 
 const OrderCard = ({
@@ -558,7 +661,7 @@ const OrderCard = ({
   onReceivedClick,
   onTrackClick,
 }) => {
-  const trackingId = order.orderDetailsGrouped[0]?.trackingId; // Lấy trackingId từ orderDetailsGrouped
+  const trackingId = order.orderDetailsGrouped[0]?.trackingId;
 
   return (
     <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
@@ -580,17 +683,15 @@ const OrderCard = ({
           ) &&
             trackingId && (
               <>
-                {" "}
                 <Button
-                  className=" border-none shadow-none flex items-center "
-                  onClick={() => onTrackClick(trackingId)} // Gọi hàm theo dõi khi nhấn
+                  className="border-none shadow-none flex items-center"
+                  onClick={() => onTrackClick(trackingId)}
                 >
                   <TruckOutlined className="text-green-500 hover:text-green-700 text-lg" />
                 </Button>
                 <span>|</span>
               </>
             )}
-
           {order.orderStatusId === 1 ? (
             <p className="text-green-600 pl-3">PAID</p>
           ) : (
@@ -600,7 +701,12 @@ const OrderCard = ({
       </div>
 
       {order.orderDetailsGrouped.map((group) => (
-        <SellerGroup group={group} key={`${order.orderId}-${group.sellerId}`} />
+        <SellerGroup
+          group={group}
+          orderId={order.orderId}
+          key={`${order.orderId}-${group.sellerId}`}
+          onFeedbackClick={onFeedbackClick}
+        />
       ))}
 
       <div className="flex justify-between items-center border-t pt-4">
@@ -618,17 +724,6 @@ const OrderCard = ({
 
       <div className="flex justify-end space-x-3 mt-6">
         {order.orderDetailsGrouped.some(
-          (group) => group.orderItemStatus === 5
-        ) && (
-          <Button
-            className="bg-blue-500 text-white rounded-md border border-blue-500"
-            onClick={() => onFeedbackClick(order)}
-          >
-            Feedback
-          </Button>
-        )}
-
-        {order.orderDetailsGrouped.some(
           (group) => group.orderItemStatus === 3
         ) && (
           <Button
@@ -643,14 +738,10 @@ const OrderCard = ({
             Received Order
           </Button>
         )}
-
         {order.orderDetailsGrouped.some(
           (group) => group.orderItemStatus === 1
         ) && (
-          <Button
-            className="bg-red-500 text-white rounded-md border border-red-500"
-            // onClick={() => onCancelClick(order)}
-          >
+          <Button className="bg-red-500 text-white rounded-md border border-red-500">
             Cancel Order
           </Button>
         )}
@@ -658,6 +749,7 @@ const OrderCard = ({
     </div>
   );
 };
+
 OrderCard.propTypes = {
   order: PropTypes.shape({
     orderId: PropTypes.number.isRequired,
@@ -671,7 +763,7 @@ OrderCard.propTypes = {
         sellerId: PropTypes.number.isRequired,
         sellerName: PropTypes.string.isRequired,
         orderItemStatus: PropTypes.number.isRequired,
-        trackingId: PropTypes.string, // Thêm trackingId vào propTypes
+        trackingId: PropTypes.string,
         items: PropTypes.arrayOf(
           PropTypes.shape({
             orderItemId: PropTypes.number.isRequired,
@@ -686,17 +778,18 @@ OrderCard.propTypes = {
   }).isRequired,
   onFeedbackClick: PropTypes.func.isRequired,
   onReceivedClick: PropTypes.func.isRequired,
-  onTrackClick: PropTypes.func.isRequired, // Thêm prop cho theo dõi
+  onTrackClick: PropTypes.func.isRequired,
 };
 
 export default function HistoryOrder() {
   const dispatch = useDispatch();
   const [statusFilter, setStatusFilter] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedSellerGroup, setSelectedSellerGroup] = useState(null);
   const [trackingInfo, setTrackingInfo] = useState(null);
   const { historyOrders, pageIndex, pageSize, loading } = useSelector(
     (state) => state.orders
   );
+
   const showConfirmModal = (title, content, onConfirm) => {
     Modal.confirm({
       title,
@@ -706,9 +799,11 @@ export default function HistoryOrder() {
       onOk: onConfirm,
     });
   };
+
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
   };
+
   const handleChangeToFeedback = async (orderId, sellerId) => {
     showConfirmModal(
       "Confirm Received Order",
@@ -716,22 +811,15 @@ export default function HistoryOrder() {
       async () => {
         await dispatch(changeFeedbackStatus({ orderId, sellerId })).unwrap();
         dispatch(
-          fetchHistoryOrder({
-            pageIndex,
-            pageSize,
-            StatusFilter: statusFilter,
-          })
+          fetchHistoryOrder({ pageIndex, pageSize, StatusFilter: statusFilter })
         );
       }
     );
   };
+
   const fetchOrders = () => {
     dispatch(
-      fetchHistoryOrder({
-        pageIndex,
-        pageSize,
-        StatusFilter: statusFilter,
-      })
+      fetchHistoryOrder({ pageIndex, pageSize, StatusFilter: statusFilter })
     );
   };
 
@@ -739,24 +827,27 @@ export default function HistoryOrder() {
     fetchOrders();
   }, [dispatch, pageIndex, pageSize, statusFilter]);
 
-  const handleFeedbackClick = (order) => {
-    setSelectedOrder(order);
+  const handleFeedbackClick = (group) => {
+    setSelectedSellerGroup(group);
   };
 
   const handleCloseFeedback = () => {
-    setSelectedOrder(null);
+    setSelectedSellerGroup(null);
   };
+
   const handleTrackClick = async (trackingId) => {
     try {
       const result = await dispatch(getTrackingGhtk({ trackingId })).unwrap();
-      setTrackingInfo(result); // Lưu thông tin tracking vào state
+      setTrackingInfo(result);
     } catch (error) {
       console.error("Failed to fetch tracking info:", error);
     }
   };
+
   const handleCloseTrackingModal = () => {
-    setTrackingInfo(null); // Đóng popup bằng cách reset trackingInfo
+    setTrackingInfo(null);
   };
+
   return (
     <div className="min-h-screen py-8 px-4 bg-blue-50">
       <div className="max-w-6xl mx-auto">
@@ -819,15 +910,16 @@ export default function HistoryOrder() {
           </Tabs>
         </Card>
       </div>
-      {selectedOrder && (
+
+      {selectedSellerGroup && (
         <FeedbackForm
-          visible={!!selectedOrder}
+          visible={!!selectedSellerGroup}
           onClose={handleCloseFeedback}
-          order={selectedOrder}
+          sellerGroup={selectedSellerGroup}
           fetchHistoryOrder={fetchOrders}
         />
       )}
-      {/* Popup hiển thị thông tin tracking */}
+
       {trackingInfo && (
         <Modal
           title={
@@ -873,3 +965,4 @@ export default function HistoryOrder() {
     </div>
   );
 }
+

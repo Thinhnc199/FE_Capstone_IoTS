@@ -27,7 +27,7 @@ const items2 = [
   {
     key: "sub6",
     icon: <WalletOutlined />,
-    label: <Link to="/store/wallet">Wallet</Link>,
+    label: <Link to="/trainer/wallet">Wallet</Link>,
   },
 ];
 

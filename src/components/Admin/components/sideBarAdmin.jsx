@@ -82,6 +82,11 @@ const items2 = [
         label: <Link to="/admin/user-request">User Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
+      {
+        key: "cashrequest",
+        label: <Link to="/admin/wallet">Cashout Requests</Link>,
+        icon: <UnorderedListOutlined />,
+      },
     ],
   },
 ];

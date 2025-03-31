@@ -33,7 +33,7 @@ import TrainerRegister from "../components/Trainer/TrainerResgister";
 import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardTrainer from "../components/Trainer/DashBoardTrainer";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
-import WalletStore from "../components/StoreIoT/WalletStore";
+// import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
 import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
@@ -70,6 +70,8 @@ import LabDetailTrainer from "../components/Trainer/LabDetailTrainer";
 import NewCreateLab from "../components/Trainer/NewCreLab";
 import ComboPage from "../pages/Home/ComboPage";
 import ManageHistoryOrder from "../components/StoreIoT/ManageHistoryOrder";
+import WalletManagement from "../components/Trainer/components/WalletManagement";
+import AdminWalletManagement from "../components/Admin/AdminWalletManagement";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -214,7 +216,11 @@ const publicRoute = [
     component: DetailUserRequest,
     layout: AdminLayout,
   },
-
+  {
+    path: "/admin/wallet",
+    component: AdminWalletManagement,
+    layout: AdminLayout,
+  },
   // Store
   {
     path: "/store",
@@ -254,7 +260,7 @@ const publicRoute = [
   },
   {
     path: "/store/wallet",
-    component: WalletStore,
+    component: WalletManagement,
     layout: StoreIotLayout,
   },
   {
@@ -375,6 +381,11 @@ const publicRoute = [
     path: "/test-his",
     component: Register,
     layout: MainLayout,
+  },
+  {
+    path: "/trainer/wallet",
+    component: WalletManagement,
+    layout: TrainerIotLayout,
   },
 ];
 
