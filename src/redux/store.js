@@ -18,7 +18,7 @@ import labSlice from './slices/labSlice';
 import paymentSlice from './slices/paymentSlice';
 import feedbackSlice from './slices/feedbackSlice';
 import walletSlice from './slices/walletSlice';
-
+import notificationSlice from './slices/notificationSlice';
 const store = configureStore({
   reducer: {
     orders: orderSlice,
@@ -39,7 +39,8 @@ const store = configureStore({
     lab: labSlice,
     payment: paymentSlice,
     feedback: feedbackSlice,
-    wallet: walletSlice
+    wallet: walletSlice,
+    notification: notificationSlice
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
