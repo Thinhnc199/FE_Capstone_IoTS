@@ -160,6 +160,12 @@ const publicRoute = [
     component: ComboDetail,
     layout: MainLayout,
   },
+  {
+    path: "/transaction-history",
+    component: WalletManagement,
+    layout: MainLayout,
+  },
+
   // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },

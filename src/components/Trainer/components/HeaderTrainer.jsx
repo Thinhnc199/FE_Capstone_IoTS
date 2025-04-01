@@ -141,7 +141,7 @@ export default function HeaderTrainer() {
               items,
             }}
             overlayStyle={{
-              width: "10vw",
+              width: "12vw",
               borderRadius: "10px",
               border: "1px solid #f0f0f0",
             }}

@@ -25,6 +25,9 @@ import {
   MenuOutlined,
   ProductOutlined,
   PlaySquareOutlined,
+  BellOutlined,
+  LoadingOutlined,
+  BarcodeOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -36,32 +39,71 @@ import {
   Checkbox,
   Button,
 } from "antd";
+import {
+  fetchNotifications,
+  markAllAsRead,
+} from "../redux/slices/notificationSlice";
 import QuantityInput from "./common/QuantityInput";
+import moment from "moment";
 const { Search } = Input;
 
 const Navbar = () => {
   const categoryButtonRef = useRef(null);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const isDropdownOpen = useSelector((state) => state.carts.isOpenDropdown);
   const { activeData } = useSelector((state) => state.materialCategory);
   const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
     (state) => state.carts
   );
-
+  const {
+    notifications = [],
+    unreadCount = 0,
+    loading = false,
+  } = useSelector((state) => state.notification || {});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-  const showCategoryModal = () => {
-    setIsCategoryModalVisible(true);
-  };
 
-  const handleCategoryModalCancel = () => {
-    setIsCategoryModalVisible(false);
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchNotifications());
+    }
+  }, [dispatch, token]);
+
+  const showModal = () => setIsModalVisible(true);
+  const showCategoryModal = () => setIsCategoryModalVisible(true);
+  const handleCategoryModalCancel = () => setIsCategoryModalVisible(false);
+
+  const notificationMenu = (
+    <div className="w-80 max-h-96 overflow-y-auto bg-white shadow-lg rounded-md border border-gray-200">
+      {loading ? (
+        <div className="p-3 text-center text-gray-500">
+          <LoadingOutlined spin /> Loading...
+        </div>
+      ) : notifications.length > 0 ? (
+        notifications.map((notif) => (
+          <div
+            key={notif.id}
+            className={`p-3 border-b border-gray-100 ${
+              notif.isRead ? "text-gray-500" : "text-gray-800 font-semibold"
+            } hover:bg-gray-50`}
+          >
+            <p className="text-sm mb-1">{notif.title}</p>
+            <p className="text-xs text-gray-400">
+              {moment(notif.createdDate).format("DD-MM-YYYY HH:mm:ss")}
+            </p>
+          </div>
+        ))
+      ) : (
+        <div className="p-3 text-center text-gray-500">No notifications</div>
+      )}
+    </div>
+  );
+
+  const handleMenuClose = () => {
+    dispatch(markAllAsRead());
   };
 
   const getCategoryButtonPosition = () => {
@@ -76,16 +118,9 @@ const Navbar = () => {
   };
 
   const { top, left } = getCategoryButtonPosition();
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("requestId");
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
-    localStorage.removeItem("imageUrl");
-    localStorage.removeItem("storeId");
 
+  const handleLogout = () => {
+    localStorage.clear();
     setIsModalVisible(false);
     navigate("/login");
   };
@@ -98,37 +133,36 @@ const Navbar = () => {
       dispatch(resetCart());
     }
   }, [token, dispatch, location]);
+
   useEffect(() => {
     dispatch(fetchPaginatedMaterialCategories({ pageIndex, pageSize }));
-  }, [token, dispatch]);
+  }, [dispatch]);
 
-  // handleTotalProduct
   const handleTotalProduct = () => {
     if (!Array.isArray(cart)) return 0;
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
+
   const handleDelete = async (cartId) => {
     try {
       await dispatch(deleteCarts({ cartId })).unwrap();
+      dispatch(fetchGetTotalPrice());
+      dispatch(fetchCarts({ pageIndex, pageSize }));
     } catch (error) {
       console.error("Failed to delete cart item:", error);
     }
-    dispatch(fetchGetTotalPrice());
-    dispatch(fetchCarts({ pageIndex, pageSize }));
   };
-  // handleCheckBox
+
   const handleCheckBox = async (cartId, isChecked) => {
     try {
       if (isChecked) {
-        dispatch(setIsOpenDropdown(true));
         await dispatch(selectCarts({ cartId })).unwrap();
       } else {
-        dispatch(setIsOpenDropdown(true));
         await dispatch(unselectCarts({ cartId })).unwrap();
       }
-
       dispatch(fetchGetTotalPrice());
       dispatch(fetchCarts({ pageIndex, pageSize }));
+      dispatch(setIsOpenDropdown(true));
     } catch (error) {
       console.error("Failed to update cart selection:", error);
     }
@@ -152,6 +186,7 @@ const Navbar = () => {
       icon: <UserAddOutlined />,
     },
   ];
+
   const menuItemsLogin = [
     {
       key: "1",
@@ -175,21 +210,20 @@ const Navbar = () => {
       icon: <PlaySquareOutlined />,
     },
     {
-      key: "7",
-      label: "Logout",
-      icon: <LogoutOutlined />,
-
-      onClick: showModal,
+      key: "5",
+      label: <Link to="/transaction-history">Transaction history</Link>,
+      icon: <BarcodeOutlined  />,
     },
+    { key: "7", label: "Logout", icon: <LogoutOutlined />, onClick: showModal },
   ];
+
   const menuCart =
     cart.length > 0
       ? [
           ...cart.map((item, index) => ({
             key: index,
             label: (
-              <div className="h-50vw   flex gap-4 items-center justify-between p-2 hover:bg-gray-100 border-b border-gray-300">
-                {/* Checkbox và hình ảnh */}
+              <div className="flex gap-4 items-center justify-between p-2 hover:bg-gray-100 border-b border-gray-300 relative">
                 <div className="flex items-center gap-3">
                   <Checkbox
                     checked={item.isSelected}
@@ -201,8 +235,6 @@ const Navbar = () => {
                     className="w-12 h-12 object-cover rounded"
                   />
                 </div>
-
-                {/* Thông tin sản phẩm */}
                 <div className="flex-1 min-w-0">
                   <Link to={`/detail/${item.productId}`}>
                     <span className="font-medium line-clamp-2 break-words">
@@ -213,15 +245,11 @@ const Navbar = () => {
                     <QuantityInput quantity={item.quantity} cartId={item.id} />
                   </div>
                 </div>
-
-                {/* Giá tiền */}
                 <span className="font-medium whitespace-nowrap text-red-500">
                   {item.price.toLocaleString()}₫
                 </span>
-
-                {/* Nút xóa */}
                 <CloseOutlined
-                  className=" font-bold absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
+                  className="text-gray-500 hover:text-red-500 cursor-pointer absolute top-2 right-2"
                   onClick={() => handleDelete(item.id)}
                 />
               </div>
@@ -230,21 +258,19 @@ const Navbar = () => {
           {
             key: "total",
             label: (
-              <div className=" p-2 rounded-sm ">
+              <div className="p-2">
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-lg font-medium">Total price:</p>
                   <p className="text-lg font-semibold text-red-400">
                     {totalSelectedItemsPrice.toLocaleString()}₫
                   </p>
                 </div>
-                {/* <Link to="/checkout"> */}
                 <Button
                   onClick={() => navigate("/checkout")}
                   className="bg-headerBg text-white w-full"
                 >
                   Payment
                 </Button>
-                {/* </Link> */}
               </div>
             ),
           },
@@ -258,10 +284,9 @@ const Navbar = () => {
 
   return (
     <nav
-      className="bg-white border-b border-b-gray-300 relative "
+      className="bg-white border-b border-b-gray-300 relative"
       style={{ zIndex: 1051 }}
     >
-      {/* Header Banner */}
       <div className="h-10 w-full bg-headerBg flex justify-center items-center text-white gap-2">
         <p>
           Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
@@ -271,29 +296,23 @@ const Navbar = () => {
         </a>
       </div>
 
-      {/* Navbar Main */}
       <div className="container mx-auto flex justify-between items-center px-6">
-        {/* Logo */}
         <Link
           to="/"
           className="text-2xl font-bold text-[#007AFF] flex items-center space-x-2"
         >
           <img src={Logo} alt="Logo" className="w-16 h-16" />
-          <p className="">IOTS</p>
+          <p>IOTS</p>
         </Link>
 
-        {/* Menu Links */}
         <ul className="flex space-x-8 text-gray-700 justify-center items-center">
           <Button
             ref={categoryButtonRef}
             className="rounded-md bg-blue-50 text-gray-600 border-none font-semibold"
             onClick={showCategoryModal}
           >
-            <MenuOutlined />
-            Category
+            <MenuOutlined /> Category
           </Button>
-
-          {/* Modal Category */}
           {isCategoryModalVisible && (
             <div className="py-6">
               <div
@@ -324,7 +343,6 @@ const Navbar = () => {
               ></div>
             </div>
           )}
-
           <li>
             <Link to="/" className="hover:text-[#007AFF] cursor-pointer">
               Home
@@ -343,31 +361,29 @@ const Navbar = () => {
           <li>
             <Link
               to="/StoreEmail"
-              className="hover:text-[#007AFF] cursor-pointer "
+              className="hover:text-[#007AFF] cursor-pointer"
             >
               <b className="font-normal">Become Store & Trainer</b>
             </Link>
           </li>
         </ul>
 
-        {/* Right Section */}
         <div className="flex items-center space-x-6">
           <Search
             size="large"
-            className="w-[250px] "
+            className="w-[250px]"
             placeholder="What are you looking for?"
           />
           <Link to="/wishlist">
             <HeartOutlined className="text-gray-700 text-[25px] hover:text-red-500" />
           </Link>
-          {/* cart */}
           <Dropdown
             menu={{ items: menuCart }}
             overlayStyle={{
               width: "23vw",
-              height: "5vw",
               borderRadius: "10px",
               border: "1px solid #f0f0f0",
+              maxHeight: "80vh",
               overflowY: "auto",
             }}
             trigger={["hover"]}
@@ -380,8 +396,15 @@ const Navbar = () => {
               </Badge>
             </Space>
           </Dropdown>
-
-          {/* user */}
+          <Dropdown
+            overlay={notificationMenu}
+            trigger={["click"]}
+            onVisibleChange={(visible) => !visible && handleMenuClose()}
+          >
+            <Badge count={unreadCount} size="small" className="cursor-pointer">
+              <BellOutlined className="text-xl" />
+            </Badge>
+          </Dropdown>
           {!token ? (
             <Dropdown
               menu={{ items: menuItems }}
@@ -399,19 +422,20 @@ const Navbar = () => {
             <Dropdown
               menu={{ items: menuItemsLogin }}
               overlayStyle={{
-                width: "10vw",
+                width: "12vw",
                 borderRadius: "10px",
                 border: "1px solid #f0f0f0",
               }}
               getPopupContainer={() => document.body}
             >
               <Space>
-                <UserOutlined className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer " />
+                <UserOutlined className="text-[21px] text-white bg-headerBg p-2 rounded-full cursor-pointer" />
               </Space>
             </Dropdown>
           )}
         </div>
       </div>
+
       <Modal
         title="Confirm Logout"
         open={isModalVisible}
@@ -423,32 +447,6 @@ const Navbar = () => {
       >
         <p>Are you sure you want to logout?</p>
       </Modal>
-      {/* Category Modal */}
-      {/* <Modal
-        title="Categories"
-        visible={isCategoryModalVisible}
-        onCancel={handleCategoryModalCancel}
-        footer={null}
-        width={600}
-        bodyStyle={{ maxHeight: "60vh", overflowY: "auto" }}
-        style={{ zIndex: 1050 }}
-      >
-        <div className="flex flex-col gap-2">
-          {activeData.map((category) => (
-            <div
-              key={category.id}
-              className="p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-            >
-              <p className="font-semibold">{category.label}</p>
-            </div>
-          ))}
-        </div>
-      </Modal> */}
-      {/* <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 ${
-          isCategoryModalVisible ? "block" : "hidden"
-        }`}
-      ></div> */}
     </nav>
   );
 };
