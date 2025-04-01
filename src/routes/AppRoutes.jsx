@@ -72,6 +72,9 @@ import ComboPage from "../pages/Home/ComboPage";
 import ManageHistoryOrder from "../components/StoreIoT/ManageHistoryOrder";
 import WalletManagement from "../components/Trainer/components/WalletManagement";
 import AdminWalletManagement from "../components/Admin/AdminWalletManagement";
+
+import ChatPage from "../pages/Chat/ChatPage";
+import ChatPageTest from "../pages/Chat/ChatPageTest";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -120,6 +123,16 @@ const publicRoute = [
   {
     path: "/profile",
     component: ProfilePage,
+    layout: MainLayout,
+  },
+  {
+    path: "/chat",
+    component: ChatPage,
+    layout: MainLayout,
+  },
+  {
+    path: "/chat-test",
+    component: ChatPageTest,
     layout: MainLayout,
   },
   {
