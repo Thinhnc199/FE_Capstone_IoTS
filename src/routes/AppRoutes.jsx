@@ -33,7 +33,7 @@ import TrainerRegister from "../components/Trainer/TrainerResgister";
 import TrainerLayout from "../components/Trainer/TrainerLayout";
 import DashBoardTrainer from "../components/Trainer/DashBoardTrainer";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
-// import WalletStore from "../components/StoreIoT/WalletStore";
+import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
 import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
@@ -165,6 +165,12 @@ const publicRoute = [
     component: ComboDetail,
     layout: MainLayout,
   },
+  {
+    path: "/transaction-history",
+    component: WalletManagement,
+    layout: MainLayout,
+  },
+
   // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
@@ -278,7 +284,7 @@ const publicRoute = [
   },
   {
     path: "/store/wallet",
-    component: WalletManagement,
+    component: WalletStore,
     layout: StoreIotLayout,
   },
   {
@@ -345,6 +351,11 @@ const publicRoute = [
     layout: StoreIotLayout,
   },
   {
+    path: "/store/transaction-history",
+    component: WalletManagement,
+    layout: StoreIotLayout,
+  },
+  {
     path: "/labs-management",
     component: CustomerLabsManagement,
     layout: MainLayout,
@@ -402,6 +413,11 @@ const publicRoute = [
   },
   {
     path: "/trainer/wallet",
+    component: WalletStore,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/transaction-history",
     component: WalletManagement,
     layout: TrainerIotLayout,
   },
