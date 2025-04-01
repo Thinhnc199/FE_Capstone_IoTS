@@ -81,7 +81,6 @@ const LabDetail = () => {
     );
   }
 
-  // Định nghĩa items cho Tabs
   const tabItems = [
     {
       key: "1",
