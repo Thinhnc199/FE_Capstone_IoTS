@@ -25,8 +25,6 @@ import {
   MenuOutlined,
   ProductOutlined,
   PlaySquareOutlined,
-  BellOutlined,
-  LoadingOutlined,
   BarcodeOutlined,
 } from "@ant-design/icons";
 import {
@@ -39,12 +37,8 @@ import {
   Checkbox,
   Button,
 } from "antd";
-import {
-  fetchNotifications,
-  markAllAsRead,
-} from "../redux/slices/notificationSlice";
+import useNotification from "../utils/useNotification.jsx";
 import QuantityInput from "./common/QuantityInput";
-import moment from "moment";
 const { Search } = Input;
 
 const Navbar = () => {
@@ -57,54 +51,13 @@ const Navbar = () => {
   const { cart, pageIndex, pageSize, totalSelectedItemsPrice } = useSelector(
     (state) => state.carts
   );
-  const {
-    notifications = [],
-    unreadCount = 0,
-    loading = false,
-  } = useSelector((state) => state.notification || {});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
   const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (token) {
-      dispatch(fetchNotifications());
-    }
-  }, [dispatch, token]);
-
   const showModal = () => setIsModalVisible(true);
   const showCategoryModal = () => setIsCategoryModalVisible(true);
   const handleCategoryModalCancel = () => setIsCategoryModalVisible(false);
-
-  const notificationMenu = (
-    <div className="w-80 max-h-96 overflow-y-auto bg-white shadow-lg rounded-md border border-gray-200">
-      {loading ? (
-        <div className="p-3 text-center text-gray-500">
-          <LoadingOutlined spin /> Loading...
-        </div>
-      ) : notifications.length > 0 ? (
-        notifications.map((notif) => (
-          <div
-            key={notif.id}
-            className={`p-3 border-b border-gray-100 ${
-              notif.isRead ? "text-gray-500" : "text-gray-800 font-semibold"
-            } hover:bg-gray-50`}
-          >
-            <p className="text-sm mb-1">{notif.title}</p>
-            <p className="text-xs text-gray-400">
-              {moment(notif.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-            </p>
-          </div>
-        ))
-      ) : (
-        <div className="p-3 text-center text-gray-500">No notifications</div>
-      )}
-    </div>
-  );
-
-  const handleMenuClose = () => {
-    dispatch(markAllAsRead());
-  };
+  const { NotificationDropdown } = useNotification();
 
   const getCategoryButtonPosition = () => {
     if (categoryButtonRef.current) {
@@ -117,7 +70,7 @@ const Navbar = () => {
     return { top: 0, left: 0 };
   };
 
-  const { top, left } = getCategoryButtonPosition();
+  const { left } = getCategoryButtonPosition();
 
   const handleLogout = () => {
     localStorage.clear();
@@ -212,7 +165,7 @@ const Navbar = () => {
     {
       key: "5",
       label: <Link to="/transaction-history">Transaction history</Link>,
-      icon: <BarcodeOutlined  />,
+      icon: <BarcodeOutlined />,
     },
     { key: "7", label: "Logout", icon: <LogoutOutlined />, onClick: showModal },
   ];
@@ -396,15 +349,7 @@ const Navbar = () => {
               </Badge>
             </Space>
           </Dropdown>
-          <Dropdown
-            overlay={notificationMenu}
-            trigger={["click"]}
-            onVisibleChange={(visible) => !visible && handleMenuClose()}
-          >
-            <Badge count={unreadCount} size="small" className="cursor-pointer">
-              <BellOutlined className="text-xl" />
-            </Badge>
-          </Dropdown>
+          <NotificationDropdown />
           {!token ? (
             <Dropdown
               menu={{ items: menuItems }}

@@ -63,6 +63,7 @@ export const fetchUserById = createAsyncThunk(
     }
   }
 );
+
 export const activeUsers = createAsyncThunk(
   "accounts/activeUsers",
   async ({ id }, { rejectWithValue }) => {

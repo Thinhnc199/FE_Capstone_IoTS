@@ -1,6 +1,9 @@
-
 import { Card, Typography, Table, Button } from "antd";
-import { ShoppingCartOutlined, MessageOutlined, HeartOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  MessageOutlined,
+  HeartOutlined,
+} from "@ant-design/icons";
 import "tailwindcss/tailwind.css";
 
 const { Title, Paragraph } = Typography;
@@ -11,17 +14,22 @@ const supervisorColumns = [
   { title: "Fullname", dataIndex: "fullname", key: "fullname" },
   { title: "Phone", dataIndex: "phone", key: "phone" },
   { title: "E-Mail", dataIndex: "email", key: "email" },
- 
 ];
 
 const supervisorData = [
   {
     key: "1",
     no: "Supervisor",
-    fullname: "Mr. Phạm Thanh Trí",
-    phone: "0937359396",
+    fullname: "Mr. Pham Minh Tri",
+    phone: "093*****96",
     email: "tript9@fe.edu.vn",
-    
+  },
+  {
+    key: "2",
+    no: "Supervisor",
+    fullname: "Mr. Ho Hoan Kiem",
+    phone: "093*****96",
+    email: "KiemHH@fpt.edu.vn",
   },
 ];
 
@@ -125,10 +133,12 @@ const AboutIoTs = () => {
                 3.1 Capstone Project Name
               </Title>
               <Paragraph className="text-gray-700">
-                <strong>English:</strong> IoT Materials Trading Platform with Assembly Instructions
+                <strong>English:</strong> IoT Materials Trading Platform with
+                Assembly Instructions
               </Paragraph>
               <Paragraph className="text-gray-700">
-                <strong>Vietnamese:</strong> Nền tảng buôn bán vật liệu IoT có hướng dẫn lắp ráp
+                <strong>Vietnamese:</strong> Nền tảng buôn bán vật liệu IoT có
+                hướng dẫn lắp ráp
               </Paragraph>
               <Paragraph className="text-gray-700">
                 <strong>Abbreviation:</strong> IoTs
@@ -141,19 +151,36 @@ const AboutIoTs = () => {
                 a. Context
               </Title>
               <Paragraph className="text-gray-700">
-                Materials are multiple components required for a complete smart device. The platform allows users to explore, learn about, and purchase smart devices through online stores managed via the website. Users can choose to buy individual devices and learn how to assemble them on their own or select kits that come with detailed assembly instructions and access instructional videos from expert instructors. Additionally, users can interact with the store through live chat and report issues with devices or kits when encountering problems. This enables staff to provide timely support and effective management.
+                Materials are multiple components required for a complete smart
+                device. The platform allows users to explore, learn about, and
+                purchase smart devices through online stores managed via the
+                website. Users can choose to buy individual devices and learn
+                how to assemble them on their own or select kits that come with
+                detailed assembly instructions and access instructional videos
+                from expert instructors. Additionally, users can interact with
+                the store through live chat and report issues with devices or
+                kits when encountering problems. This enables staff to provide
+                timely support and effective management.
               </Paragraph>
               <Paragraph className="text-gray-700">
-                Products are listed for direct sale by stores after purchasing a designated package on the system. Accounts assigned as stores must go through an approval process before they can operate. Stores also have the ability to create promotional blogs, allowing users to access information and content more flexibly.
+                Products are listed for direct sale by stores after purchasing a
+                designated package on the system. Accounts assigned as stores
+                must go through an approval process before they can operate.
+                Stores also have the ability to create promotional blogs,
+                allowing users to access information and content more flexibly.
               </Paragraph>
               <Paragraph className="text-gray-700">
-                When registering a store, there will be certain warranty policies between the store and the customer, making the system more secure. For warranty claims, users must take or upload a photo of the current product along with the order code for accurate verification.
+                When registering a store, there will be certain warranty
+                policies between the store and the customer, making the system
+                more secure. For warranty claims, users must take or upload a
+                photo of the current product along with the order code for
+                accurate verification.
               </Paragraph>
-              <img
+              {/* <img
                 src="https://via.placeholder.com/600x300?text=IoT+Platform+Demo"
                 alt="IoT Platform Demo"
                 className="w-full rounded-lg mt-4 shadow-md"
-              />
+              /> */}
             </div>
 
             {/* Proposed Solutions */}
@@ -165,24 +192,35 @@ const AboutIoTs = () => {
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
                   <ShoppingCartOutlined className="text-3xl text-blue-500 mr-4" />
                   <div>
-                    <strong>Reliable Buy-and-Sell Platform:</strong> Provides a dependable space for buying and selling IoT devices, with prompt customer support post-purchase.
+                    <strong>Reliable Buy-and-Sell Platform:</strong> Provides a
+                    dependable space for buying and selling IoT devices, with
+                    prompt customer support post-purchase.
                   </div>
                 </Card>
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
                   <MessageOutlined className="text-3xl text-blue-500 mr-4" />
                   <div>
-                    <strong>Direct Communication:</strong> Enables direct interaction between users and stores through live chat, making it easy for users to get support without additional effort.
+                    <strong>Direct Communication:</strong> Enables direct
+                    interaction between users and stores through live chat,
+                    making it easy for users to get support without additional
+                    effort.
                   </div>
                 </Card>
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
                   <HeartOutlined className="text-3xl text-blue-500 mr-4" />
                   <div>
-                    <strong>Wishlist Feature:</strong> Allows users to create a wishlist of favorite products for future review and purchase.
+                    <strong>Wishlist Feature:</strong> Allows users to create a
+                    wishlist of favorite products for future review and
+                    purchase.
                   </div>
                 </Card>
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
                   <div>
-                    <strong>Content Promotion:</strong> Stores can post daily promotional blogs, with an algorithm prioritizing high-quality content based on user engagement (comments and likes). This keeps valuable, well-rated content visible, while limiting excessive posts.
+                    <strong>Content Promotion:</strong> Stores can post daily
+                    promotional blogs, with an algorithm prioritizing
+                    high-quality content based on user engagement (comments and
+                    likes). This keeps valuable, well-rated content visible,
+                    while limiting excessive posts.
                   </div>
                 </Card>
               </div>
