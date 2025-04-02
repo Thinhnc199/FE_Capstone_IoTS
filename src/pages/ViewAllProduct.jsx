@@ -45,13 +45,13 @@ export default function ViewAllProduct() {
   };
 
   return (
-    <div className="container mx-auto  p-4  bg-white shadow-lg my-6">
+    <div className="container mx-auto  p-4   bg-white shadow-lg my-6">
       <Titles
         titleText="IOT ITEMS - VIEW ALL"
         colorText="text-headerBg"
         strongText="font-semibold"
       />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 my-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 my-4">
         {items && items.length > 0 ? (
           items.map((product) => (
             <ProductCard key={product.id} product={product} />

@@ -223,6 +223,30 @@ export const changeFeedbackStatus = createAsyncThunk(
     }
   }
 );
+export const changeCancelledStatus = createAsyncThunk(
+  "createOrders/changeCancelledStatus",
+  async (
+    { orderId, contactNumber, accountName, accountNumber, bankName },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(
+        `/api/Order/order-status/cancelled/${orderId}`,
+        {
+          contactNumber: contactNumber,
+          accountName: accountName,
+          accountNumber: accountNumber,
+          bankName: bankName,
+        }
+      );
+      message.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      message.error(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const getPrintLabel = createAsyncThunk(
   "createOrders/getPrintLabel",
   async ({ trackingId }, { rejectWithValue }) => {
