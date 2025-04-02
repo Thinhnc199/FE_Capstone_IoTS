@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCombos } from "./../../redux/slices/comboSlice";
 import { Input, Select } from "antd";
 import ComboList from "./components/ComboList";
+import debounce from "lodash/debounce"; 
 
 const { Option } = Select;
 
@@ -12,12 +13,22 @@ const ComboPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sortOrder, setSortOrder] = useState("default");
 
+  // Debounced function để gọi API
+  const debouncedFetchCombos = useCallback(
+    debounce((keyword) => {
+      dispatch(fetchCombos({ pageIndex: 1, pageSize: 18, searchKeyword: keyword }));
+    }, 600), 
+    [dispatch] 
+  );
+
+  
   useEffect(() => {
-    dispatch(fetchCombos({ pageIndex: 1, pageSize: 18, searchKeyword }));
-  }, [dispatch, searchKeyword]);
+    debouncedFetchCombos(searchKeyword);
+    return () => debouncedFetchCombos.cancel(); 
+  }, [searchKeyword, debouncedFetchCombos]);
 
   const handleSearchChange = (e) => {
-    setSearchKeyword(e.target.value);
+    setSearchKeyword(e.target.value); 
   };
 
   const handleSortChange = (value) => {
@@ -46,7 +57,7 @@ const ComboPage = () => {
             style={{ width: "200px" }}
             placeholder="Sort by price"
           >
-            <Option value="default">Default </Option>
+            <Option value="default">Default</Option>
             <Option value="priceLowToHigh">Price: Low to High</Option>
             <Option value="priceHighToLow">Price: High to Low</Option>
           </Select>

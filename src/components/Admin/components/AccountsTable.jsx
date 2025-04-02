@@ -13,6 +13,7 @@ import {
   deActiveUsers,
   updateRole,
 } from "../../../redux/slices/accountSlice";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const AccountsTable = ({
@@ -29,7 +30,7 @@ const AccountsTable = ({
   const [selectedRole, setSelectedRole] = useState(null);
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const handleOpenModal = (user, type) => {
     setSelectedUser(user);
     setModalType(type);
@@ -87,11 +88,19 @@ const AccountsTable = ({
       title: "ID",
       dataIndex: "id",
       key: "id",
+      render: (id) => (
+        <a onClick={() => navigate(`/admin/user-detail/${id}`)}>{id}</a>
+      ),
     },
     {
       title: "Full Name",
       dataIndex: "fullname",
       key: "fullname",
+      render: (fullname, record) => (
+        <a onClick={() => navigate(`/admin/user-detail/${record.id}`)}>
+          {fullname}
+        </a>
+      ),
     },
     {
       title: "Username",
