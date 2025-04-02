@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { List, Avatar, Button, Input } from "antd";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import ErrorPage from "../ErrorPage";
+
 import {
   getAllChat,
   getRecentChat,
@@ -10,7 +10,7 @@ import {
 } from "../../redux/slices/chatSlice";
 const ChatPage = () => {
   const dispatch = useDispatch();
-  const { id } = useParams(); // Trích xuất giá trị receiverId từ useParams()
+  const { id } = useParams();
 
   const [inputValue, setInputValue] = useState("");
   const [selectedChat, setSelectedChat] = useState(null);

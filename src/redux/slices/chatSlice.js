@@ -34,7 +34,7 @@ export const getAllChat = createAsyncThunk(
   async ({ receiverId }, { rejectWithValue }) => {
     try {
       const response = await api.get(
-        `/api/Message/get-all-chats-sender-reciver?receiverId=${receiverId}`
+        `/api/Message/GetMessages?receiverId=${receiverId}`
       );
       return response.data;
     } catch (error) {
@@ -73,7 +73,13 @@ const chatSlice = createSlice({
       state.dataRecent = action.payload.data;
     });
     handleAsyncState(builder, getAllChat, (state, action) => {
-      state.dataAllChat = action.payload.data;
+      if (action.payload?.data) {
+        state.dataAllChat = action.payload.data;
+        state.errorMessage = null;
+      } else {
+        state.dataAllChat = [];
+        state.errorMessage = action.payload?.message || "An error occurred"; // Lưu thông báo lỗi
+      }
     });
     handleAsyncState(builder, chatRabbit, (state, action) => {
       state.dataAllChat.push(action.payload.data);
