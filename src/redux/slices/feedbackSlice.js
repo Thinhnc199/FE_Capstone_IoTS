@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "./../../api/apiConfig";
 
+// fetchFeedbackHistory
 export const fetchFeedbackHistory = createAsyncThunk(
   "feedback/fetchFeedbackHistory",
   async (payload, { rejectWithValue }) => {
@@ -13,6 +14,7 @@ export const fetchFeedbackHistory = createAsyncThunk(
   }
 );
 
+//  createFeedback
 export const createFeedback = createAsyncThunk(
   "feedback/createFeedback",
   async (feedbackData, { rejectWithValue }) => {
@@ -25,16 +27,31 @@ export const createFeedback = createAsyncThunk(
   }
 );
 
+//  fetchActivityLog
+export const fetchActivityLog = createAsyncThunk(
+  "feedback/fetchActivityLog",
+  async ({ userId, payload }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/activity-log/get-pagination-activity-log/${userId}`, payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const feedbackSlice = createSlice({
   name: "feedback",
   initialState: {
     feedbackHistory: [],
+    activityLog: [], 
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // fetchFeedbackHistory
       .addCase(fetchFeedbackHistory.pending, (state) => {
         state.loading = true;
       })
@@ -46,6 +63,7 @@ const feedbackSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // createFeedback
       .addCase(createFeedback.pending, (state) => {
         state.loading = true;
       })
@@ -54,6 +72,18 @@ const feedbackSlice = createSlice({
         state.error = null;
       })
       .addCase(createFeedback.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      //  fetchActivityLog
+      .addCase(fetchActivityLog.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchActivityLog.fulfilled, (state, action) => {
+        state.loading = false;
+        state.activityLog = action.payload.data.data;
+      })
+      .addCase(fetchActivityLog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -2,7 +2,6 @@ import Home from "../pages/Home/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import RegisterEmail from "../pages/RegisterEmail";
-import VerifyOtp from "../pages/VerifyOtp";
 import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../components/Admin/AdminLayout";
 import ListAccount from "../components/Admin/ListAccount";
@@ -75,6 +74,7 @@ import AdminWalletManagement from "../components/Admin/AdminWalletManagement";
 
 import ChatPage from "../pages/Chat/ChatPage";
 import ChatPageTest from "../pages/Chat/ChatPageTest";
+import UserDetail from "../components/Admin/UserDetail";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -84,7 +84,6 @@ const publicRoute = [
   { path: "/about", component: AboutIoTs, layout: MainLayout },
   { path: "/combos", component: ComboPage, layout: MainLayout },
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
-  { path: "/verifyOtp", component: VerifyOtp, layout: MainLayout },
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
   { path: "*", component: ErrorPage, layout: null },
   { path: "/Access-Restricted", component: AccessRestricted, layout: null },
@@ -243,6 +242,11 @@ const publicRoute = [
   {
     path: "/admin/wallet",
     component: AdminWalletManagement,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/user-detail/:id",
+    component: UserDetail,
     layout: AdminLayout,
   },
   // Store

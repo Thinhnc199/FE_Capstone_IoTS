@@ -1,23 +1,18 @@
-import { Modal, Button, Dropdown, Space, Badge } from "antd";
-import { useState, useEffect } from "react";
+import { Modal, Button, Dropdown, Space } from "antd";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toggleSidebar } from "../../../redux/slices/sidebarSlice";
-import {
-  fetchNotifications,
-  markAllAsRead,
-} from "../../../redux/slices/notificationSlice";
+import useNotification from "./../../../utils/useNotification.jsx";
 import { Link } from "react-router-dom";
 import {
   DownOutlined,
   EditOutlined,
   LogoutOutlined,
-  BellOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   HistoryOutlined,
 } from "@ant-design/icons";
-import moment from "moment";
 
 export default function HeaderTrainer() {
   const dispatch = useDispatch();
@@ -29,40 +24,7 @@ export default function HeaderTrainer() {
   const showModal = () => {
     setIsModalVisible(true);
   };
-  const { notifications, unreadCount } = useSelector(
-    (state) => state.notification
-  );
-
-  useEffect(() => {
-    dispatch(fetchNotifications());
-  }, [dispatch]);
-
-  // Menu cho Dropdown thông báo
-  const notificationMenu = (
-    <div className="w-80 max-h-96 overflow-y-auto bg-white shadow-lg rounded-md border border-gray-200">
-      {notifications.length > 0 ? (
-        notifications.map((notif) => (
-          <div
-            key={notif.id}
-            className={`p-3 border-b border-gray-100 ${
-              notif.isRead ? "text-gray-500" : "text-gray-800 font-semibold"
-            } hover:bg-gray-50`}
-          >
-            <p className="text-sm mb-1">{notif.title}</p>
-            <p className="text-xs text-gray-400">
-              {moment(notif.createdDate).format("DD-MM-YYYY HH:mm:ss")}
-            </p>
-          </div>
-        ))
-      ) : (
-        <div className="p-3 text-center text-gray-500">No notifications</div>
-      )}
-    </div>
-  );
-
-  const handleMenuClose = () => {
-    dispatch(markAllAsRead()); // Đánh dấu tất cả là đã đọc khi đóng dropdown
-  };
+  const { NotificationDropdown } = useNotification();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -116,15 +78,7 @@ export default function HeaderTrainer() {
 
       <div className="p-4  font-sans font-bold text-2xl flex items-center space-x-2">
         <div className="flex items-center space-x-3">
-          <Dropdown
-            overlay={notificationMenu}
-            trigger={["click"]}
-            onVisibleChange={(visible) => !visible && handleMenuClose()}
-          >
-            <Badge count={unreadCount} size="small" className="cursor-pointer">
-              <BellOutlined className="text-xl" />
-            </Badge>
-          </Dropdown>
+          <NotificationDropdown />
 
           <img
             src={avatarUrl}
