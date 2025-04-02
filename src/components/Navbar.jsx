@@ -14,7 +14,7 @@ import {
 } from "../redux/slices/cartSlice";
 import Logo from "../assets/icons/3.svg";
 import {
-  HeartOutlined,
+  // HeartOutlined,
   ShoppingCartOutlined,
   UserOutlined,
   UserAddOutlined,
@@ -28,6 +28,7 @@ import {
   BellOutlined,
   LoadingOutlined,
   BarcodeOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -212,7 +213,7 @@ const Navbar = () => {
     {
       key: "5",
       label: <Link to="/transaction-history">Transaction history</Link>,
-      icon: <BarcodeOutlined  />,
+      icon: <BarcodeOutlined />,
     },
     { key: "7", label: "Logout", icon: <LogoutOutlined />, onClick: showModal },
   ];
@@ -374,8 +375,8 @@ const Navbar = () => {
             className="w-[250px]"
             placeholder="What are you looking for?"
           />
-          <Link to="/wishlist">
-            <HeartOutlined className="text-gray-700 text-[25px] hover:text-red-500" />
+          <Link to="/chat">
+            <MessageOutlined className="text-gray-700 text-[22px] hover:text-blue-500" />
           </Link>
           <Dropdown
             menu={{ items: menuCart }}

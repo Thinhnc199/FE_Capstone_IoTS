@@ -14,16 +14,18 @@ import comboSlice from "./slices/comboSlice";
 import cartSlice from "./slices/cartSlice";
 import addressSlice from "./slices/addressSlice";
 import orderSlice from "./slices/orderSlice";
-import labSlice from './slices/labSlice';
-import paymentSlice from './slices/paymentSlice';
-import feedbackSlice from './slices/feedbackSlice';
-import walletSlice from './slices/walletSlice';
-import notificationSlice from './slices/notificationSlice';
+import labSlice from "./slices/labSlice";
+import paymentSlice from "./slices/paymentSlice";
+import feedbackSlice from "./slices/feedbackSlice";
+import walletSlice from "./slices/walletSlice";
+import notificationSlice from "./slices/notificationSlice";
+import chatSlice from "./slices/chatSlice";
 const store = configureStore({
   reducer: {
     orders: orderSlice,
     carts: cartSlice,
     products: productReducer,
+    chats: chatSlice,
     accounts: accountReducer,
     sidebar: sidebarReducer,
     auth: authReducer,
@@ -40,7 +42,7 @@ const store = configureStore({
     payment: paymentSlice,
     feedback: feedbackSlice,
     wallet: walletSlice,
-    notification: notificationSlice
+    notification: notificationSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
