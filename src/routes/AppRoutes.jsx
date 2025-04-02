@@ -130,6 +130,11 @@ const publicRoute = [
     layout: MainLayout,
   },
   {
+    path: "/chat/:id",
+    component: ChatPage,
+    layout: MainLayout,
+  },
+  {
     path: "/chat-test",
     component: ChatPageTest,
     layout: MainLayout,
