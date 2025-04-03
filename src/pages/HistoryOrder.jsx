@@ -1,6 +1,7 @@
 import { Typography, Card, Tabs, Spin, Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { message } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -331,6 +332,12 @@ export default function HistoryOrder() {
       accountNumber: "",
       bankName: "",
     },
+    touched: {
+      contactNumber: false,
+      accountName: false,
+      accountNumber: false,
+      bankName: false,
+    },
   });
   const { historyOrders, pageIndex, pageSize, loading } = useSelector(
     (state) => state.orders
@@ -351,6 +358,26 @@ export default function HistoryOrder() {
   };
 
   const handleCancelOrder = async () => {
+    // Đánh dấu tất cả các trường là đã chạm vào
+    setCancelOrderInfo((prev) => ({
+      ...prev,
+      touched: {
+        contactNumber: true,
+        accountName: true,
+        accountNumber: true,
+        bankName: true,
+      },
+    }));
+
+    // Kiểm tra các trường bắt buộc
+    const { contactNumber, accountName, accountNumber, bankName } =
+      cancelOrderInfo.formData;
+
+    if (!contactNumber || !accountName || !accountNumber || !bankName) {
+      message.error("Please fill in all required fields");
+      return;
+    }
+
     try {
       const { orderId, sellerId, formData } = cancelOrderInfo;
       await dispatch(
@@ -360,8 +387,16 @@ export default function HistoryOrder() {
           ...formData,
         })
       ).unwrap();
-
-      setCancelOrderInfo({ ...cancelOrderInfo, visible: false });
+      setCancelOrderInfo({
+        ...cancelOrderInfo,
+        visible: false,
+        touched: {
+          contactNumber: false,
+          accountName: false,
+          accountNumber: false,
+          bankName: false,
+        },
+      });
       fetchOrders();
     } catch (error) {
       console.error("Cancel order error:", error);
@@ -550,10 +585,10 @@ export default function HistoryOrder() {
         </Modal>
       )}
       {/* modal cancelOrder */}
-      <Modal
+      {/* <Modal
         title={
           <div className="flex items-center">
-            {/* <ExclamationCircleOutlined className="text-red-500 text-xl mr-2" /> */}
+    
             <span>Cancel Order and Refund</span>
           </div>
         }
@@ -654,6 +689,193 @@ export default function HistoryOrder() {
                   placeholder="Bank name"
                   required
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal> */}
+      <Modal
+        title={
+          <div className="flex items-center">
+            <span className="text-lg font-medium">Cancel Order and Refund</span>
+          </div>
+        }
+        visible={cancelOrderInfo.visible}
+        onOk={handleCancelOrder}
+        onCancel={() =>
+          setCancelOrderInfo({ ...cancelOrderInfo, visible: false })
+        }
+        okText="Confirm Cancel"
+        cancelText="Close"
+        okButtonProps={{ danger: true }}
+        width={600}
+      >
+        <div className="space-y-4">
+          {/* Warning box */}
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-4">
+            <div className="flex items-start">
+              <ExclamationCircleOutlined className="text-yellow-500 text-lg mr-2 mt-0.5" />
+              <div>
+                <p className="text-yellow-800 font-medium">Important Notice</p>
+                <p className="text-yellow-700">
+                  Please carefully verify your bank account information before
+                  submitting. Refunds will be processed to this account.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Form fields */}
+          <div className="space-y-4">
+            {/* Contact Number */}
+            <div className="flex items-start">
+              <div className="flex-1">
+                <div className="flex items-center mb-1">
+                  <PhoneOutlined className="text-gray-500 mr-2" />
+                  <label className="block text-gray-700">
+                    Contact Number <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  name="contactNumber"
+                  value={cancelOrderInfo.formData.contactNumber}
+                  onChange={handleCancelFormChange}
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
+                    !cancelOrderInfo.formData.contactNumber &&
+                    cancelOrderInfo.touched?.contactNumber
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="Your phone number"
+                  onBlur={() =>
+                    setCancelOrderInfo((prev) => ({
+                      ...prev,
+                      touched: { ...prev.touched, contactNumber: true },
+                    }))
+                  }
+                />
+                {!cancelOrderInfo.formData.contactNumber &&
+                  cancelOrderInfo.touched?.contactNumber && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <ExclamationCircleOutlined className="mr-1" />
+                      Please enter your contact number
+                    </p>
+                  )}
+              </div>
+            </div>
+
+            {/* Account Name */}
+            <div className="flex items-start">
+              <div className="flex-1">
+                <div className="flex items-center mb-1">
+                  <UserOutlined className="text-gray-500 mr-2" />
+                  <label className="block text-gray-700">
+                    Account Name <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  name="accountName"
+                  value={cancelOrderInfo.formData.accountName}
+                  onChange={handleCancelFormChange}
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
+                    !cancelOrderInfo.formData.accountName &&
+                    cancelOrderInfo.touched?.accountName
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="Account holder name"
+                  onBlur={() =>
+                    setCancelOrderInfo((prev) => ({
+                      ...prev,
+                      touched: { ...prev.touched, accountName: true },
+                    }))
+                  }
+                />
+                {!cancelOrderInfo.formData.accountName &&
+                  cancelOrderInfo.touched?.accountName && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <ExclamationCircleOutlined className="mr-1" />
+                      Please enter account name
+                    </p>
+                  )}
+              </div>
+            </div>
+
+            {/* Account Number */}
+            <div className="flex items-start">
+              <div className="flex-1">
+                <div className="flex items-center mb-1">
+                  <CreditCardOutlined className="text-gray-500 mr-2" />
+                  <label className="block text-gray-700">
+                    Account Number <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  name="accountNumber"
+                  value={cancelOrderInfo.formData.accountNumber}
+                  onChange={handleCancelFormChange}
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
+                    !cancelOrderInfo.formData.accountNumber &&
+                    cancelOrderInfo.touched?.accountNumber
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="Bank account number"
+                  onBlur={() =>
+                    setCancelOrderInfo((prev) => ({
+                      ...prev,
+                      touched: { ...prev.touched, accountNumber: true },
+                    }))
+                  }
+                />
+                {!cancelOrderInfo.formData.accountNumber &&
+                  cancelOrderInfo.touched?.accountNumber && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <ExclamationCircleOutlined className="mr-1" />
+                      Please enter account number
+                    </p>
+                  )}
+              </div>
+            </div>
+
+            {/* Bank Name */}
+            <div className="flex items-start">
+              <div className="flex-1">
+                <div className="flex items-center mb-1">
+                  <BankOutlined className="text-gray-500 mr-2" />
+                  <label className="block text-gray-700">
+                    Bank Name <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  name="bankName"
+                  value={cancelOrderInfo.formData.bankName}
+                  onChange={handleCancelFormChange}
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
+                    !cancelOrderInfo.formData.bankName &&
+                    cancelOrderInfo.touched?.bankName
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="Bank name"
+                  onBlur={() =>
+                    setCancelOrderInfo((prev) => ({
+                      ...prev,
+                      touched: { ...prev.touched, bankName: true },
+                    }))
+                  }
+                />
+                {!cancelOrderInfo.formData.bankName &&
+                  cancelOrderInfo.touched?.bankName && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <ExclamationCircleOutlined className="mr-1" />
+                      Please enter bank name
+                    </p>
+                  )}
               </div>
             </div>
           </div>
