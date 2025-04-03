@@ -66,13 +66,11 @@ export const createOrder = createAsyncThunk(
 export const checkSuccessOrder = createAsyncThunk(
   "createOrders/checkSuccessOrder",
   async ({ urlResponse }, { rejectWithValue }) => {
-    console.log("ff", urlResponse);
-
     try {
       const response = await api.post(`/api/Order/check-order-success`, {
         urlResponse,
       });
-      message.success(response.data.message);
+
       return response.data;
     } catch (error) {
       message.warning("warning", error);
