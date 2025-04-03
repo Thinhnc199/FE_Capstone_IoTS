@@ -7,13 +7,20 @@ import {
   fetchHistoryOrder,
   changeFeedbackStatus,
   getTrackingGhtk,
-  // changeCancelledStatus,
+  changeCancelledStatus,
 } from "../redux/slices/orderSlice";
 import { MessageOutlined, ShopOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import FeedbackForm from "./Orders/FeedbackForm";
 import { TruckOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  PhoneOutlined,
+  UserOutlined,
+  CreditCardOutlined,
+  BankOutlined,
+} from "@ant-design/icons";
 const { Title } = Typography;
 const { TabPane } = Tabs;
 dayjs.locale("vi");
@@ -177,6 +184,7 @@ const OrderCard = ({
   onFeedbackClick,
   onReceivedClick,
   onTrackClick,
+  onCancelClick,
 }) => {
   const trackingId = order.orderDetailsGrouped[0]?.trackingId;
 
@@ -255,10 +263,19 @@ const OrderCard = ({
             Received Order
           </Button>
         )}
+
         {order.orderDetailsGrouped.some(
           (group) => group.orderItemStatus === 1
         ) && (
-          <Button className="bg-red-500 text-white rounded-md border border-red-500">
+          <Button
+            className="bg-red-500 text-white rounded-md border border-red-500"
+            onClick={() =>
+              onCancelClick(
+                order.orderId,
+                order.orderDetailsGrouped[0].sellerId
+              )
+            }
+          >
             Cancel Order
           </Button>
         )}
@@ -296,6 +313,7 @@ OrderCard.propTypes = {
   onFeedbackClick: PropTypes.func.isRequired,
   onReceivedClick: PropTypes.func.isRequired,
   onTrackClick: PropTypes.func.isRequired,
+  onCancelClick: PropTypes.func.isRequired,
 };
 
 export default function HistoryOrder() {
@@ -303,10 +321,63 @@ export default function HistoryOrder() {
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedSellerGroup, setSelectedSellerGroup] = useState(null);
   const [trackingInfo, setTrackingInfo] = useState(null);
+  const [cancelOrderInfo, setCancelOrderInfo] = useState({
+    orderId: null,
+    sellerId: null,
+    visible: false,
+    formData: {
+      contactNumber: "",
+      accountName: "",
+      accountNumber: "",
+      bankName: "",
+    },
+  });
   const { historyOrders, pageIndex, pageSize, loading } = useSelector(
     (state) => state.orders
   );
+  // handle...............
+  const handleCancelClick = (orderId, sellerId) => {
+    setCancelOrderInfo({
+      orderId,
+      sellerId,
+      visible: true,
+      formData: {
+        contactNumber: "",
+        accountName: "",
+        accountNumber: "",
+        bankName: "",
+      },
+    });
+  };
 
+  const handleCancelOrder = async () => {
+    try {
+      const { orderId, sellerId, formData } = cancelOrderInfo;
+      await dispatch(
+        changeCancelledStatus({
+          orderId,
+          sellerId,
+          ...formData,
+        })
+      ).unwrap();
+
+      setCancelOrderInfo({ ...cancelOrderInfo, visible: false });
+      fetchOrders();
+    } catch (error) {
+      console.error("Cancel order error:", error);
+    }
+  };
+
+  const handleCancelFormChange = (e) => {
+    const { name, value } = e.target;
+    setCancelOrderInfo({
+      ...cancelOrderInfo,
+      formData: {
+        ...cancelOrderInfo.formData,
+        [name]: value,
+      },
+    });
+  };
   const showConfirmModal = (title, content, onConfirm) => {
     Modal.confirm({
       title,
@@ -364,7 +435,7 @@ export default function HistoryOrder() {
   const handleCloseTrackingModal = () => {
     setTrackingInfo(null);
   };
-
+  // ui..........
   return (
     <div className="min-h-screen py-8 px-4 bg-blue-50">
       <div className="max-w-6xl mx-auto">
@@ -414,6 +485,7 @@ export default function HistoryOrder() {
                         onFeedbackClick={handleFeedbackClick}
                         onReceivedClick={handleChangeToFeedback}
                         onTrackClick={handleTrackClick}
+                        onCancelClick={handleCancelClick}
                       />
                     ))
                   ) : (
@@ -427,7 +499,6 @@ export default function HistoryOrder() {
           </Tabs>
         </Card>
       </div>
-
       {selectedSellerGroup && (
         <FeedbackForm
           visible={!!selectedSellerGroup}
@@ -436,7 +507,6 @@ export default function HistoryOrder() {
           fetchHistoryOrder={fetchOrders}
         />
       )}
-
       {trackingInfo && (
         <Modal
           title={
@@ -479,6 +549,116 @@ export default function HistoryOrder() {
           </div>
         </Modal>
       )}
+      {/* modal cancelOrder */}
+      <Modal
+        title={
+          <div className="flex items-center">
+            {/* <ExclamationCircleOutlined className="text-red-500 text-xl mr-2" /> */}
+            <span>Cancel Order and Refund</span>
+          </div>
+        }
+        visible={cancelOrderInfo.visible}
+        onOk={handleCancelOrder}
+        onCancel={() =>
+          setCancelOrderInfo({ ...cancelOrderInfo, visible: false })
+        }
+        okText="Confirm Cancel"
+        cancelText="Close"
+        okButtonProps={{ danger: true }}
+      >
+        <div className="space-y-4">
+          <div className="bg-red-50 border-l-4 border-yellow-500 p-3 mb-4">
+            <div className="flex items-start">
+              <ExclamationCircleOutlined className="text-yellow-500 text-lg mr-2 mt-0.5" />
+              <div>
+                <p className="text-yellow-700 font-medium">Important Notice</p>
+                <p className="text-yellow-600">
+                  Please carefully verify your bank account information before
+                  submitting. Refunds will be processed to this account.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center border-b pb-2">
+              <div className="flex-1">
+                <div className="flex space-x-1 items-center mb-1">
+                  <PhoneOutlined className="text-gray-500 mr-2" />
+                  <label className="block text-gray-700 ">Contact Number</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="contactNumber"
+                  value={cancelOrderInfo.formData.contactNumber}
+                  onChange={handleCancelFormChange}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                  placeholder="Your phone number"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center border-b pb-2">
+              <div className="flex-1">
+                <div className="flex space-x-1 items-center mb-1">
+                  <UserOutlined className="text-gray-500 mr-2" />{" "}
+                  <label className="block text-gray-700 ">Account Name</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="accountName"
+                  value={cancelOrderInfo.formData.accountName}
+                  onChange={handleCancelFormChange}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                  placeholder="Account holder name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center border-b pb-2">
+              <div className="flex-1">
+                <div className="flex space-x-1 items-center mb-1">
+                  <CreditCardOutlined className="text-gray-500 mr-2" />{" "}
+                  <label className="block text-gray-700 ">Account Number</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="accountNumber"
+                  value={cancelOrderInfo.formData.accountNumber}
+                  onChange={handleCancelFormChange}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                  placeholder="Bank account number"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <div className="flex-1">
+                <div className="flex space-x-1 items-center mb-1">
+                  <BankOutlined className="text-gray-500 mr-2" />{" "}
+                  <label className="block text-gray-700 ">Bank Name</label>
+                </div>
+
+                <input
+                  type="text"
+                  name="bankName"
+                  value={cancelOrderInfo.formData.bankName}
+                  onChange={handleCancelFormChange}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                  placeholder="Bank name"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
