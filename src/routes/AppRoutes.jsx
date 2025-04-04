@@ -75,6 +75,8 @@ import AdminWalletManagement from "../components/Admin/AdminWalletManagement";
 import ChatPage from "../pages/Chat/ChatPage";
 import ChatPageTest from "../pages/Chat/ChatPageTest";
 import UserDetail from "../components/Admin/UserDetail";
+import WarrantyTable from "../pages/Orders/WarrantyTable";
+import WarrantyDetail from "../pages/Orders/WarrantyDetail";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -169,7 +171,16 @@ const publicRoute = [
     component: WalletManagement,
     layout: MainLayout,
   },
-
+  {
+    path: "/warranties",
+    component: WarrantyTable,
+    layout: MainLayout,
+  },
+  {
+    path: "/warranty-detail/:id",
+    component: WarrantyDetail,
+    layout: MainLayout,
+  },
   // Admin
   { path: "/admin", component: DashBoard, layout: AdminLayout },
   { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
@@ -357,6 +368,16 @@ const publicRoute = [
   {
     path: "/store/transaction-history",
     component: WalletManagement,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/warranties-request",
+    component: WarrantyTable,
+    layout: StoreIotLayout,
+  },
+  {
+    path: "/store/warranty-detail/:id",
+    component: WarrantyDetail,
     layout: StoreIotLayout,
   },
   {
