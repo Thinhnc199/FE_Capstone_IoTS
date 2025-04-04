@@ -6,6 +6,7 @@ import {
   setStartFilterDate,
   setsearchKeyword,
 } from "../../redux/slices/productSlice";
+import BreadcrumbNav from "../common/BreadcrumbNav";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -65,7 +66,16 @@ export default function ListProductStore() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="">
+    <div className="container mx-auto ">
+      <div className=" max-w-6xl mb-4 ">
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "store", path: "/store" },
+            { label: "list product" },
+          ]}
+        />
+      </div>
       <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Products List</h1>
         <div className="flex justify-between items-center mb-4">

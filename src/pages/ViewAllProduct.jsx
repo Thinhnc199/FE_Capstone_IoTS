@@ -6,6 +6,7 @@ import {
   setPageIndex,
   setPageSize,
 } from "../redux/slices/productSlice";
+import BreadcrumbNav from "../components/common/BreadcrumbNav";
 import ProductCard from "./Home/components/ProductCard";
 import { Pagination } from "antd";
 export default function ViewAllProduct() {
@@ -45,31 +46,36 @@ export default function ViewAllProduct() {
   };
 
   return (
-    <div className="container mx-auto  p-4   bg-white shadow-lg my-6">
-      <Titles
-        titleText="IOT ITEMS - VIEW ALL"
-        colorText="text-headerBg"
-        strongText="font-semibold"
+    <div className="container mx-auto p-8">
+      <BreadcrumbNav
+        items={[{ label: "Home", path: "/" }, { label: "Shop" }]}
       />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 my-4">
-        {items && items.length > 0 ? (
-          items.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))
-        ) : (
-          <p>No products available</p>
-        )}
-      </div>
-      {/* Pagination */}
-      <div className="mt-6 flex justify-end">
-        <Pagination
-          current={pageIndex}
-          pageSize={pageSize}
-          total={totalCount}
-          onChange={handlePageChange}
-          showSizeChanger={true}
-          pageSizeOptions={["10", "20", "30", "50"]}
+      <div className="container mx-auto  p-4   bg-white shadow-lg my-6">
+        <Titles
+          titleText="IOT ITEMS - VIEW ALL"
+          colorText="text-headerBg"
+          strongText="font-semibold"
         />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 my-4">
+          {items && items.length > 0 ? (
+            items.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          ) : (
+            <p>No products available</p>
+          )}
+        </div>
+        {/* Pagination */}
+        <div className="mt-6 flex justify-end">
+          <Pagination
+            current={pageIndex}
+            pageSize={pageSize}
+            total={totalCount}
+            onChange={handlePageChange}
+            showSizeChanger={true}
+            pageSizeOptions={["10", "20", "30", "50"]}
+          />
+        </div>
       </div>
     </div>
   );

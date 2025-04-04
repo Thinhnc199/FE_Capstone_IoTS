@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Input, Select, Image, Tag, Button, notification } from "antd";
@@ -286,9 +284,9 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
+    <div className="p-4 bg-white rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold mb-4">
           Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)})
         </h2>
         {role === "trainer" && (
@@ -351,7 +349,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       <Table
         columns={columns}
         dataSource={labs?.data || []}
-        loading={labLoading}
+        // loading={labLoading}
         pagination={{
           current: pagination.pageIndex,
           pageSize: pagination.pageSize,

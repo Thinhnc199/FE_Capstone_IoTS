@@ -8,7 +8,7 @@ import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
 import { fetchFeedbackHistory } from "../redux/slices/feedbackSlice";
 import { ProductType } from "../redux/constants";
 import ErrorProduct from "./ErrorProduct";
-
+import BreadcrumbNav from "../components/common/BreadcrumbNav";
 export default function DetailProducts() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -139,8 +139,17 @@ export default function DetailProducts() {
   const isNew = product.deviceType === 1;
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 bg-white border rounded-md shadow-md p-4 m-4 ">
+    <div className="container mx-auto p-8  ">
+      <div className=" max-w-6xl mb-4 ">
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "Shop", path: "/view-all" },
+            { label: "Product Details" },
+          ]}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 bg-white border rounded-md shadow-md p-4   ">
         {/* Image & Basic Info */}
         <div className="col-span-full">
           <h1 className="text-2xl font-bold w-full">{product.name}</h1>
@@ -310,7 +319,7 @@ export default function DetailProducts() {
       </div>
       {/* shop info */}
 
-      <div className="flex items-center bg-white border rounded-md shadow-md p-4 m-4">
+      <div className="flex items-center bg-white border rounded-md shadow-md p-4 my-4">
         {product?.storeInfo ? (
           <>
             {/* Avatar của shop */}
@@ -380,7 +389,7 @@ export default function DetailProducts() {
         )}
       </div>
       {/* Tabs & Viewed Products Section */}
-      <div className="grid grid-cols-10 gap-4 p-4 rounded-md">
+      <div className="grid grid-cols-10 gap-4 p-4 -mx-4 rounded-md ">
         <div className="col-span-7 p-4 bg-white border shadow-md rounded-md">
           <Tabs
             defaultActiveKey="1"

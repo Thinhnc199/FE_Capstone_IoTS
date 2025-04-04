@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TruckOutlined } from "@ant-design/icons";
 import { getTrackingGhtk } from "../../redux/slices/orderSlice";
+import BreadcrumbNav from "../common/BreadcrumbNav";
 import {
   fetchHistoryOrderStoreTrainer,
   changePackingStatus,
@@ -398,113 +399,133 @@ export default function ManageHistoryOrder() {
     setTrackingInfo(null); // Đóng popup bằng cách reset trackingInfo
   };
   return (
-    <div className="min-h-screen  bg-blue-50">
-      <div className="max-w-auto ">
-        <Card
-          className="shadow-sm rounded-lg border-0 overflow-hidden"
-          bodyStyle={{ padding: 0 }}
-        >
-          <div className="px-6 py-4 border-b border-gray-200">
-            <Title level={4} className="mb-0 text-gray-800">
-              Order History
-            </Title>
-          </div>
-
-          <Tabs
-            defaultActiveKey="0"
-            onChange={handleTabChange}
-            tabPosition="top"
-            className="px-6 pt-2"
-            tabBarStyle={{ marginBottom: 0 }}
-          >
-            {Object.entries(statusConfig).map(([key, config]) => (
-              <TabPane
-                key={key}
-                tab={
-                  <div className="flex items-center px-3 py-2">
-                    <span className="mr-2">{config.icon}</span>
-                    <span>{config.tabName}</span>
-                    {historyOrdersStoreTrainer.totalCount > 0 &&
-                      key === (statusFilter || "0") && (
-                        <span className="ml-2 bg-gray-200 text-gray-800 rounded-full px-2 py-0.5 text-xs">
-                          {historyOrdersStoreTrainer.totalCount}
-                        </span>
-                      )}
-                  </div>
-                }
-              >
-                <div className="py-4">
-                  {loading ? (
-                    <div className="text-center py-8">
-                      <Spin size="large" />
-                    </div>
-                  ) : historyOrdersStoreTrainer.dataHistoryOrder?.length > 0 ? (
-                    historyOrdersStoreTrainer.dataHistoryOrder.map((order) => (
-                      <OrderCard
-                        order={order}
-                        key={order.orderId}
-                        onProceedToPacking={handleProceedToPacking}
-                        onCreateShippingLabel={handleCreateShippingLabel}
-                        onUpdateToDelivering={handleUpdateToDelivering}
-                        onSuccessOrder={handleSuccessOrder}
-                        onTrackClick={handleTrackClick}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      There are no orders in this category.
-                    </div>
-                  )}
-                </div>
-              </TabPane>
-            ))}
-          </Tabs>
-        </Card>
-      </div>
-
-      {/* Popup hiển thị thông tin tracking */}
-      {trackingInfo && (
-        <Modal
-          title={
-            <div className="flex items-center space-x-3">
-              <img
-                src="/public/images/Logo-GHTK.png"
-                alt="GHTK Logo"
-                className="w-[50%] object-contain"
-                onError={(e) =>
-                  (e.target.src =
-                    "https://img.upanh.tv/2025/03/31/Logo-GHTK-1024x346.png")
-                }
-              />
-            </div>
-          }
-          visible={!!trackingInfo}
-          onCancel={handleCloseTrackingModal}
-          zIndex={1111}
-          footer={[
-            <Button key="close" onClick={handleCloseTrackingModal}>
-              Close
-            </Button>,
+    <div className="container mx-auto ">
+      <div className=" max-w-6xl mb-4 ">
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "store", path: "/store" },
+            { label: "manage order" },
           ]}
-        >
-          <div className="space-y-2 text-gray-700">
-            {[
-              { label: "Tracking ID:", value: trackingInfo.labelId },
-              { label: "Status:", value: trackingInfo.statusText },
-              { label: "Created Date:", value: trackingInfo.created },
-              { label: "Estimated Delivery:", value: trackingInfo.deliverDate },
-              { label: "Customer Name:", value: trackingInfo.customerFullname },
-              { label: "Phone Number:", value: trackingInfo.customerTel },
-              { label: "Address:", value: trackingInfo.address },
-            ].map((item, index) => (
-              <div key={index} className="flex justify-between">
-                <span className="font-semibold">{item.label}</span>
-                <span className="text-right">{item.value}</span>
+        />
+      </div>
+      <div className=" bg-blue-50">
+        <div className="max-w-auto ">
+          <Card
+            className="shadow-sm rounded-lg border-0 overflow-hidden"
+            bodyStyle={{ padding: 0 }}
+          >
+            <div className="px-6 py-4 border-b border-gray-200">
+              <Title level={4} className="mb-0 text-gray-800">
+                Order History
+              </Title>
+            </div>
+
+            <Tabs
+              defaultActiveKey="0"
+              onChange={handleTabChange}
+              tabPosition="top"
+              className="px-6 pt-2"
+              tabBarStyle={{ marginBottom: 0 }}
+            >
+              {Object.entries(statusConfig).map(([key, config]) => (
+                <TabPane
+                  key={key}
+                  tab={
+                    <div className="flex items-center px-3 py-2">
+                      <span className="mr-2">{config.icon}</span>
+                      <span>{config.tabName}</span>
+                      {historyOrdersStoreTrainer.totalCount > 0 &&
+                        key === (statusFilter || "0") && (
+                          <span className="ml-2 bg-gray-200 text-gray-800 rounded-full px-2 py-0.5 text-xs">
+                            {historyOrdersStoreTrainer.totalCount}
+                          </span>
+                        )}
+                    </div>
+                  }
+                >
+                  <div className="py-4">
+                    {loading ? (
+                      <div className="text-center py-8">
+                        <Spin size="large" />
+                      </div>
+                    ) : historyOrdersStoreTrainer.dataHistoryOrder?.length >
+                      0 ? (
+                      historyOrdersStoreTrainer.dataHistoryOrder.map(
+                        (order) => (
+                          <OrderCard
+                            order={order}
+                            key={order.orderId}
+                            onProceedToPacking={handleProceedToPacking}
+                            onCreateShippingLabel={handleCreateShippingLabel}
+                            onUpdateToDelivering={handleUpdateToDelivering}
+                            onSuccessOrder={handleSuccessOrder}
+                            onTrackClick={handleTrackClick}
+                          />
+                        )
+                      )
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        There are no orders in this category.
+                      </div>
+                    )}
+                  </div>
+                </TabPane>
+              ))}
+            </Tabs>
+          </Card>
+        </div>
+
+        {/* Popup hiển thị thông tin tracking */}
+        {trackingInfo && (
+          <Modal
+            title={
+              <div className="flex items-center space-x-3">
+                <img
+                  src="/public/images/Logo-GHTK.png"
+                  alt="GHTK Logo"
+                  className="w-[50%] object-contain"
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://img.upanh.tv/2025/03/31/Logo-GHTK-1024x346.png")
+                  }
+                />
               </div>
-            ))}
-          </div>
-        </Modal>
-      )}
+            }
+            visible={!!trackingInfo}
+            onCancel={handleCloseTrackingModal}
+            zIndex={1111}
+            footer={[
+              <Button key="close" onClick={handleCloseTrackingModal}>
+                Close
+              </Button>,
+            ]}
+          >
+            <div className="space-y-2 text-gray-700">
+              {[
+                { label: "Tracking ID:", value: trackingInfo.labelId },
+                { label: "Status:", value: trackingInfo.statusText },
+                { label: "Created Date:", value: trackingInfo.created },
+                {
+                  label: "Estimated Delivery:",
+                  value: trackingInfo.deliverDate,
+                },
+                {
+                  label: "Customer Name:",
+                  value: trackingInfo.customerFullname,
+                },
+                { label: "Phone Number:", value: trackingInfo.customerTel },
+                { label: "Address:", value: trackingInfo.address },
+              ].map((item, index) => (
+                <div key={index} className="flex justify-between">
+                  <span className="font-semibold">{item.label}</span>
+                  <span className="text-right">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </Modal>
+        )}
+      </div>
     </div>
   );
 }

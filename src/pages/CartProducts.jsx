@@ -156,7 +156,7 @@ import {
   fetchGetTotalPrice,
   fetchComboIncludedLabs,
 } from "../redux/slices/cartSlice";
-
+import DynamicBreadcrumb from "../components/common/DynamicBreadcrumb";
 // Định nghĩa các giá trị productType
 const ProductType = {
   IOT_DEVICE: 1,
@@ -328,90 +328,97 @@ export default function CartProducts() {
   ];
 
   return (
-    <div className="max-h-screen bg-white rounded-sm shadow-sm mx-auto p-4 my-4 container">
-      <div className="flex justify-between items-start gap-6">
-        {/* Bảng sản phẩm - Nằm bên trái */}
-        <div className="flex-1 border p-4">
-          {totalCount > 0 ? (
-            <Table
-              columns={columns}
-              dataSource={dataSource}
-              pagination={false}
-              rowKey={(record) => record.id}
-            />
-          ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          )}
-        </div>
+    <div className="container mx-auto p-8 ">
+      <div className=" max-w-6xl mb-4 ">
+        <DynamicBreadcrumb />
+      </div>
+      <div className="max-h-screen bg-white rounded-sm shadow-sm mx-auto p-4 my-4 container">
+        <div className="flex justify-between items-start gap-6">
+          {/* Bảng sản phẩm - Nằm bên trái */}
+          <div className="flex-1 border p-4">
+            {totalCount > 0 ? (
+              <Table
+                columns={columns}
+                dataSource={dataSource}
+                pagination={false}
+                rowKey={(record) => record.id}
+              />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
+          </div>
 
-        {/* Tổng tiền + Nút thanh toán - Nằm bên phải */}
-        <div className="w-1/4 space-y-4">
-          <div className="border p-4 rounded-sm shadow-sm bg-gray-50">
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-lg font-medium">Total price:</p>
-              <p className="text-lg font-semibold text-headerBg">
-                {totalSelectedItemsPrice.toLocaleString()}₫
+          {/* Tổng tiền + Nút thanh toán - Nằm bên phải */}
+          <div className="w-1/4 space-y-4">
+            <div className="border p-4 rounded-sm shadow-sm bg-gray-50">
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-lg font-medium">Total price:</p>
+                <p className="text-lg font-semibold text-headerBg">
+                  {totalSelectedItemsPrice.toLocaleString()}₫
+                </p>
+              </div>
+              <Link to="/checkout">
+                <Button className="bg-headerBg text-white w-full">
+                  Payment
+                </Button>
+              </Link>
+            </div>
+            <div className="border p-4 rounded-sm shadow-sm bg-gray-50">
+              <p className="font-semibold text-lg text-yellow-500">Note !</p>
+              <p>
+                Please note that orders placed after 3:00 PM will be shipped the
+                following day. Our store is closed on Sundays. For special
+                delivery requests, please contact our sales department via Zalo.
               </p>
             </div>
-            <Link to="/checkout">
-              <Button className="bg-headerBg text-white w-full">Payment</Button>
-            </Link>
-          </div>
-          <div className="border p-4 rounded-sm shadow-sm bg-gray-50">
-            <p className="font-semibold text-lg text-yellow-500">Note !</p>
-            <p>
-              Please note that orders placed after 3:00 PM will be shipped the
-              following day. Our store is closed on Sundays. For special
-              delivery requests, please contact our sales department via Zalo.
-            </p>
           </div>
         </div>
-      </div>
 
-      {/* Modal hiển thị danh sách lab */}
-      <Modal
-        title="Included Labs"
-        visible={isModalVisible}
-        onCancel={handleModalClose}
-        footer={null}
-      >
-        <List
-          dataSource={includedLabs}
-          renderItem={(lab) => (
-            <List.Item
-              key={lab.id} // Assuming cartId is unique; use lab.id if needed
-              actions={[
-                <Button
-                  key={lab.id}
-                  type="link"
-                  danger
-                  onClick={() => handleUnselectLab(lab.id)}
-                >
-                  <DeleteFilled className="hover:text-red-600 cursor-pointer" />
-                </Button>,
-              ]}
-            >
-              <List.Item.Meta
-                avatar={
-                  <img
-                    src={lab.imageUrl}
-                    alt={lab.labName}
-                    className="w-12 h-12 rounded-md"
-                  />
-                }
-                title={lab.labName}
-                description={
-                  <div>
-                    <p>{lab.labSummary}</p>
-                    <p>Price: {lab.price}₫</p>
-                    {/* <p>Created by: {lab.createdByTrainer}</p> */}
-                  </div>
-                }
-              />
-            </List.Item>
-          )}
-        />
-      </Modal>
+        {/* Modal hiển thị danh sách lab */}
+        <Modal
+          title="Included Labs"
+          visible={isModalVisible}
+          onCancel={handleModalClose}
+          footer={null}
+        >
+          <List
+            dataSource={includedLabs}
+            renderItem={(lab) => (
+              <List.Item
+                key={lab.id} // Assuming cartId is unique; use lab.id if needed
+                actions={[
+                  <Button
+                    key={lab.id}
+                    type="link"
+                    danger
+                    onClick={() => handleUnselectLab(lab.id)}
+                  >
+                    <DeleteFilled className="hover:text-red-600 cursor-pointer" />
+                  </Button>,
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={
+                    <img
+                      src={lab.imageUrl}
+                      alt={lab.labName}
+                      className="w-12 h-12 rounded-md"
+                    />
+                  }
+                  title={lab.labName}
+                  description={
+                    <div>
+                      <p>{lab.labSummary}</p>
+                      <p>Price: {lab.price}₫</p>
+                      {/* <p>Created by: {lab.createdByTrainer}</p> */}
+                    </div>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        </Modal>
+      </div>
     </div>
   );
 }

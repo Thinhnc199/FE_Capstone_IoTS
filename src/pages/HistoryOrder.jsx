@@ -1,4 +1,5 @@
 import { Typography, Card, Tabs, Spin, Button, Modal } from "antd";
+import BreadcrumbNav from "../components/common/BreadcrumbNav";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { message } from "antd";
@@ -249,8 +250,10 @@ const OrderCard = ({
             )}
           {order.orderStatusId === 1 ? (
             <p className="text-green-600 pl-3">PAID</p>
-          ) : (
+          ) : order.orderStatusId === 2 ? (
             <p className="text-red-600">CANCELLED</p>
+          ) : (
+            <p className="text-yellow-600">CASH PAYMENT</p>
           )}
         </div>
       </div>
@@ -518,8 +521,14 @@ export default function HistoryOrder() {
   };
   // ui..........
   return (
-    <div className="min-h-screen py-8 px-4 bg-blue-50">
-      <div className="max-w-6xl mx-auto">
+    <div className="mx-auto  p-8 bg-background min-h-screen container">
+      <div className="max-w-6xl mb-4">
+        <BreadcrumbNav
+          items={[{ label: "Home", path: "/" }, { label: "Order History" }]}
+        />
+      </div>
+
+      <div className="mx-auto">
         <Card
           className="shadow-sm rounded-lg border-0 overflow-hidden"
           bodyStyle={{ padding: 0 }}
