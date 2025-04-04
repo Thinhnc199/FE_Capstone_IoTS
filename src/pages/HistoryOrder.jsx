@@ -22,6 +22,7 @@ import {
   CreditCardOutlined,
   BankOutlined,
 } from "@ant-design/icons";
+import WarrantyRequestModal from "./../pages/Orders/WarrantyRequestModal";
 const { Title } = Typography;
 const { TabPane } = Tabs;
 dayjs.locale("vi");
@@ -92,7 +93,7 @@ const formatDate = (dateString) => {
   return dayjs(dateString).format("DD/MM/YYYY HH:mm");
 };
 
-const OrderItem = ({ item }) => (
+const OrderItem = ({ item, onWarrantyRequestClick }) => (
   <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
     <div className="flex items-center">
       <img
@@ -107,9 +108,19 @@ const OrderItem = ({ item }) => (
         <p className="text-gray-600">Quantity: {item.quantity}</p>
       </div>
     </div>
-    <p className="text-red-500 font-medium">
-      {item.price.toLocaleString("vi-VN")}₫
-    </p>
+    <div className="flex items-center space-x-4">
+      <p className="text-red-500 font-medium">
+        {item.price.toLocaleString("vi-VN")}₫
+      </p>
+      {item.orderItemStatus === 6 && (
+        <Button
+          className="bg-yellow-500 text-white rounded-md border border-yellow-500"
+          onClick={() => onWarrantyRequestClick(item.orderItemId)}
+        >
+          Warranty Request
+        </Button>
+      )}
+    </div>
   </div>
 );
 
@@ -120,10 +131,12 @@ OrderItem.propTypes = {
     nameProduct: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
+    orderItemStatus: PropTypes.number.isRequired,
   }).isRequired,
+  onWarrantyRequestClick: PropTypes.func.isRequired,
 };
 
-const SellerGroup = ({ group, orderId, onFeedbackClick }) => (
+const SellerGroup = ({ group, orderId, onFeedbackClick, onWarrantyRequestClick }) => (
   <div className="rounded-md mb-4">
     <div className="flex justify-between items-center border-b pb-3 mb-3">
       <div className="flex items-center space-x-3">
@@ -155,7 +168,11 @@ const SellerGroup = ({ group, orderId, onFeedbackClick }) => (
     </div>
 
     {group.items.map((item) => (
-      <OrderItem item={item} key={item.orderItemId} />
+      <OrderItem
+        item={item}
+        key={item.orderItemId}
+        onWarrantyRequestClick={onWarrantyRequestClick}
+      />
     ))}
   </div>
 );
@@ -178,6 +195,7 @@ SellerGroup.propTypes = {
   }).isRequired,
   orderId: PropTypes.number,
   onFeedbackClick: PropTypes.func.isRequired,
+  onWarrantyRequestClick: PropTypes.func.isRequired,
 };
 
 const OrderCard = ({
@@ -186,6 +204,7 @@ const OrderCard = ({
   onReceivedClick,
   onTrackClick,
   onCancelClick,
+  onWarrantyRequestClick,
 }) => {
   const trackingId = order.orderDetailsGrouped[0]?.trackingId;
 
@@ -232,6 +251,7 @@ const OrderCard = ({
           orderId={order.orderId}
           key={`${order.orderId}-${group.sellerId}`}
           onFeedbackClick={onFeedbackClick}
+          onWarrantyRequestClick={onWarrantyRequestClick}
         />
       ))}
 
@@ -315,6 +335,7 @@ OrderCard.propTypes = {
   onReceivedClick: PropTypes.func.isRequired,
   onTrackClick: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired,
+  onWarrantyRequestClick: PropTypes.func.isRequired,
 };
 
 export default function HistoryOrder() {
@@ -339,9 +360,24 @@ export default function HistoryOrder() {
       bankName: false,
     },
   });
+  const [warrantyModal, setWarrantyModal] = useState({
+    visible: false,
+    orderItemId: null,
+  });
   const { historyOrders, pageIndex, pageSize, loading } = useSelector(
     (state) => state.orders
   );
+
+// Hàm xử lý khi nhấn nút "Warranty Request"
+const handleWarrantyRequestClick = (orderItemId) => {
+  setWarrantyModal({ visible: true, orderItemId });
+};
+
+// Hàm đóng modal bảo hành
+const handleCloseWarrantyModal = () => {
+  setWarrantyModal({ visible: false, orderItemId: null });
+};
+
   // handle...............
   const handleCancelClick = (orderId, sellerId) => {
     setCancelOrderInfo({
@@ -521,6 +557,7 @@ export default function HistoryOrder() {
                         onReceivedClick={handleChangeToFeedback}
                         onTrackClick={handleTrackClick}
                         onCancelClick={handleCancelClick}
+                        onWarrantyRequestClick={handleWarrantyRequestClick}
                       />
                     ))
                   ) : (
@@ -771,6 +808,14 @@ export default function HistoryOrder() {
           </div>
         </div>
       </Modal>
+
+      <WarrantyRequestModal
+        visible={warrantyModal.visible}
+        orderItemId={warrantyModal.orderItemId}
+        onClose={handleCloseWarrantyModal}
+        fetchOrders={fetchOrders} // Truyền hàm để cập nhật danh sách đơn hàng
+      />
+
     </div>
   );
 }
