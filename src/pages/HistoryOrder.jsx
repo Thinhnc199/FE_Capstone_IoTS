@@ -97,37 +97,50 @@ const formatDate = (dateString) => {
   return dayjs(dateString).format("DD/MM/YYYY HH:mm");
 };
 
-const OrderItem = ({ item, onWarrantyRequestClick }) => (
-  <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
-    <div className="flex items-center">
-      <img
-        src={item.imageUrl}
-        alt={item.nameProduct}
-        width={80}
-        height={80}
-        className="rounded-sm object-cover"
-      />
-      <div className="ml-4">
-        <p className="font-medium">{item.nameProduct}</p>
-        <p className="text-gray-600">Quantity: {item.quantity}</p>
+const OrderItem = ({ item, onWarrantyRequestClick }) => {
+  const currentDate = new Date(); 
+  const warrantyEndDate = new Date(item.warrantyEndDate); 
+  const isWarrantyValid = warrantyEndDate > currentDate; 
+  const isWarrantyApplicable = item.productType !== 3;
+
+  return (
+    <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
+      <div className="flex items-center">
+        <img
+          src={item.imageUrl}
+          alt={item.nameProduct}
+          width={80}
+          height={80}
+          className="rounded-sm object-cover"
+        />
+        <div className="ml-4">
+          <p className="font-medium">{item.nameProduct}</p>
+          <p className="text-gray-600">Quantity: {item.quantity}</p>
+        </div>
+      </div>
+      <div className="flex items-end space-x-4 flex-col-reverse">
+        <p className="text-red-500 font-medium">
+          {item.price.toLocaleString("vi-VN")}₫
+        </p>
+        {item.orderItemStatus === 6 && isWarrantyApplicable &&(
+          <>
+            {isWarrantyValid ? (
+              <Button
+                shape="circle"
+                className="border-none text-yellow-500 flex items-center justify-center shadow-none hover:bg-yellow-100 bg-blue-50"
+                onClick={() => onWarrantyRequestClick(item.orderItemId)}
+              >
+                <SafetyCertificateOutlined />
+              </Button>
+            ) : (
+              <span className="text-gray-500 text-xs">Warranty expired!</span>
+            )}
+          </>
+        )}
       </div>
     </div>
-    <div className="flex items-end space-x-4 flex-col-reverse">
-      <p className="text-red-500 font-medium">
-        {item.price.toLocaleString("vi-VN")}₫
-      </p>
-      {item.orderItemStatus === 6 && (
-        <Button
-          shape="circle"
-          className="border-none  text-yellow-500 flex items-center justify-center shadow-none hover:bg-yellow-100 bg-blue-50 "
-          onClick={() => onWarrantyRequestClick(item.orderItemId)}
-        >
-          <SafetyCertificateOutlined />
-        </Button>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 OrderItem.propTypes = {
   item: PropTypes.shape({
@@ -137,9 +150,54 @@ OrderItem.propTypes = {
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
     orderItemStatus: PropTypes.number.isRequired,
+    warrantyEndDate: PropTypes.string.isRequired, 
+    productType: PropTypes.number.isRequired,
   }).isRequired,
   onWarrantyRequestClick: PropTypes.func.isRequired,
 };
+// const OrderItem = ({ item, onWarrantyRequestClick }) => (
+//   <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
+//     <div className="flex items-center">
+//       <img
+//         src={item.imageUrl}
+//         alt={item.nameProduct}
+//         width={80}
+//         height={80}
+//         className="rounded-sm object-cover"
+//       />
+//       <div className="ml-4">
+//         <p className="font-medium">{item.nameProduct}</p>
+//         <p className="text-gray-600">Quantity: {item.quantity}</p>
+//       </div>
+//     </div>
+//     <div className="flex items-end space-x-4 flex-col-reverse">
+//       <p className="text-red-500 font-medium">
+//         {item.price.toLocaleString("vi-VN")}₫
+//       </p>
+//       {item.orderItemStatus === 6 && (
+//         <Button
+//           shape="circle"
+//           className="border-none  text-yellow-500 flex items-center justify-center shadow-none hover:bg-yellow-100 bg-blue-50 "
+//           onClick={() => onWarrantyRequestClick(item.orderItemId)}
+//         >
+//           <SafetyCertificateOutlined />
+//         </Button>
+//       )}
+//     </div>
+//   </div>
+// );
+
+// OrderItem.propTypes = {
+//   item: PropTypes.shape({
+//     orderItemId: PropTypes.number.isRequired,
+//     imageUrl: PropTypes.string.isRequired,
+//     nameProduct: PropTypes.string.isRequired,
+//     quantity: PropTypes.number.isRequired,
+//     price: PropTypes.number.isRequired,
+//     orderItemStatus: PropTypes.number.isRequired,
+//   }).isRequired,
+//   onWarrantyRequestClick: PropTypes.func.isRequired,
+// };
 
 const SellerGroup = ({
   group,
@@ -823,7 +881,7 @@ export default function HistoryOrder() {
         visible={warrantyModal.visible}
         orderItemId={warrantyModal.orderItemId}
         onClose={handleCloseWarrantyModal}
-        fetchOrders={fetchOrders} // Truyền hàm để cập nhật danh sách đơn hàng
+        fetchOrders={fetchOrders} 
       />
     </div>
   );
