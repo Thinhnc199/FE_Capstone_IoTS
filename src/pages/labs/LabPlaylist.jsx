@@ -34,7 +34,7 @@ const LabPlaylist = ({ labId }) => {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-200px)] p-4">
+    <div className="flex flex-col lg:flex-row p-4">
       <div className="lg:w-3/4 w-full pr-0 lg:pr-4 mb-4 lg:mb-0">
         {selectedVideo ? (
           <>
@@ -45,7 +45,7 @@ const LabPlaylist = ({ labId }) => {
               className="w-full rounded-lg shadow mt-5"
               style={{ maxHeight: "500px" }}
             />
-            
+
             <div className="mt-4">
               <h2 className="text-xl font-semibold">Description:</h2>
               <p className="text-gray-600">{selectedVideo.description}</p>

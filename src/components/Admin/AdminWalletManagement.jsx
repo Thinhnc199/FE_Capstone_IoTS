@@ -221,7 +221,7 @@ const AdminWalletManagement = () => {
 
   return (
     <div className="p-6 bg-mainColer min-h-screen">
-      <div className="bg-white rounded-md p-4  min-h-[60vh] overflow-hidden shadow-lg">
+      <div className="bg-white rounded-md p-4 overflow-hidden shadow-lg">
         <h1 className="text-2xl font-bold text-black mb-6">
           Cashout Requests Management
         </h1>

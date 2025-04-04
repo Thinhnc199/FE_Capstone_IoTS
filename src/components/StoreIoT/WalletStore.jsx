@@ -145,7 +145,7 @@ const WalletStore = () => {
 
       <div className="mx-auto  bg-white">
         {/* Cashout Requests Table */}
-        <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
+        <div className="bg-white rounded-md p-4 overflow-hidden shadow-lg">
           <h1 className="text-2xl font-bold text-black mb-6">
             Cashout Management
           </h1>
