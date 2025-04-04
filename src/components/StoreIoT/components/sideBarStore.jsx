@@ -8,6 +8,7 @@ import {
   ReadOutlined,
   AppstoreAddOutlined,
   HistoryOutlined,
+  IssuesCloseOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -71,7 +72,12 @@ const items2 = [
     label: <Link to="/store/manage-order">Orders</Link>,
   },
   {
-    key: "sub77",
+    key: "sub7",
+    icon: <IssuesCloseOutlined />,
+    label: <Link to="/store/warranties-request">warranties request</Link>,
+  },
+  {
+    key: "sub8",
     icon: <WalletOutlined />,
     label: <Link to="/store/wallet">Wallet</Link>,
   },
