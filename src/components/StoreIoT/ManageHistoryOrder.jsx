@@ -8,6 +8,7 @@ import {
   fetchHistoryOrderStoreTrainer,
   changePackingStatus,
   changeDeliveringStatus,
+  changeSuccessOrderStatus,
   getPrintLabel,
 } from "../../redux/slices/orderSlice";
 import dayjs from "dayjs";
@@ -145,6 +146,7 @@ const OrderCard = ({
   onCreateShippingLabel,
   onUpdateToDelivering,
   onTrackClick,
+  onSuccessOrder,
 }) => {
   const trackingId = order.orderDetailsGrouped[0]?.trackingId;
   return (
@@ -240,6 +242,15 @@ const OrderCard = ({
             </Button>
           </>
         )}
+
+        {order.orderDetailsGrouped[0].orderItemStatus === 5 && (
+          <Button
+            className="bg-green-500 text-white rounded-md border border-green-500"
+            onClick={() => onSuccessOrder(order.orderId)}
+          >
+            Confirm Success Order
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -276,6 +287,7 @@ OrderCard.propTypes = {
   onUpdateToDelivering: PropTypes.func.isRequired,
   onUpdateToPendingFeedback: PropTypes.func.isRequired,
   onTrackClick: PropTypes.func.isRequired,
+  onSuccessOrder: PropTypes.func.isRequired,
 };
 export default function ManageHistoryOrder() {
   const dispatch = useDispatch();
@@ -358,6 +370,22 @@ export default function ManageHistoryOrder() {
       }
     );
   };
+  const handleSuccessOrder = async (orderId) => {
+    showConfirmModal(
+      "Order Confirmation Successful",
+      "Are you sure this order is complete?",
+      async () => {
+        await dispatch(changeSuccessOrderStatus({ orderId }));
+        dispatch(
+          fetchHistoryOrderStoreTrainer({
+            pageIndex,
+            pageSize,
+            StatusFilter: statusFilter,
+          })
+        );
+      }
+    );
+  };
   const handleTrackClick = async (trackingId) => {
     try {
       const result = await dispatch(getTrackingGhtk({ trackingId })).unwrap();
@@ -418,6 +446,7 @@ export default function ManageHistoryOrder() {
                         onProceedToPacking={handleProceedToPacking}
                         onCreateShippingLabel={handleCreateShippingLabel}
                         onUpdateToDelivering={handleUpdateToDelivering}
+                        onSuccessOrder={handleSuccessOrder}
                         onTrackClick={handleTrackClick}
                       />
                     ))

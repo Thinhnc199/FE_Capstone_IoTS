@@ -215,6 +215,21 @@ export const changeFeedbackStatus = createAsyncThunk(
     }
   }
 );
+export const changeSuccessOrderStatus = createAsyncThunk(
+  "createOrders/changeSuccessOrderStatus",
+  async ({ orderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/Order/order-status/success-order/${orderId}`
+      );
+      message.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      message.error(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const changeCancelledStatus = createAsyncThunk(
   "createOrders/changeCancelledStatus",
   async (
