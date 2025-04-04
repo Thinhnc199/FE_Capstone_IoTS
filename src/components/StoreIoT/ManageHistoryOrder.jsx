@@ -2,15 +2,17 @@ import { Typography, Card, Tabs, Spin, Button, message, Modal } from "antd";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { TruckOutlined } from "@ant-design/icons";
+import { TruckOutlined, EyeOutlined, RocketOutlined } from "@ant-design/icons";
 import { getTrackingGhtk } from "../../redux/slices/orderSlice";
 import BreadcrumbNav from "../common/BreadcrumbNav";
+
 import {
   fetchHistoryOrderStoreTrainer,
   changePackingStatus,
   changeDeliveringStatus,
   changeSuccessOrderStatus,
   getPrintLabel,
+  getPreviewPrintLabel,
 } from "../../redux/slices/orderSlice";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -144,7 +146,8 @@ SellerGroup.propTypes = {
 const OrderCard = ({
   order,
   onProceedToPacking,
-  onCreateShippingLabel,
+  // onCreateShippingLabel,
+  onPreviewShippingLabel,
   onUpdateToDelivering,
   onTrackClick,
   onSuccessOrder,
@@ -184,8 +187,10 @@ const OrderCard = ({
 
             {order.orderStatusId === 1 ? (
               <p className="text-green-600 pl-3">PAID</p>
-            ) : (
+            ) : order.orderStatusId === 2 ? (
               <p className="text-red-600">CANCELLED</p>
+            ) : (
+              <p className="text-yellow-600">CASH PAYMENT</p>
             )}
           </div>
           <div>
@@ -227,19 +232,30 @@ const OrderCard = ({
 
         {order.orderDetailsGrouped[0].orderItemStatus === 2 && (
           <>
-            <Button
+            {/* <Button
               className="bg-green-500 text-white rounded-md border border-green-500"
               onClick={() =>
                 onCreateShippingLabel(order.orderDetailsGrouped[0].trackingId)
               }
             >
               Create Shipping Label
+            </Button> */}
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
+              onClick={() =>
+                onPreviewShippingLabel(order.orderDetailsGrouped[0].trackingId)
+              }
+            >
+              Preview
             </Button>
             <Button
-              className="bg-purple-500 text-white rounded-md border border-purple-500"
+              type="primary"
+              icon={<RocketOutlined />}
               onClick={() => onUpdateToDelivering(order.orderId)}
+              className="bg-purple-500 text-white"
             >
-              Update to Delivering
+              Deliver
             </Button>
           </>
         )}
@@ -289,6 +305,7 @@ OrderCard.propTypes = {
   onUpdateToPendingFeedback: PropTypes.func.isRequired,
   onTrackClick: PropTypes.func.isRequired,
   onSuccessOrder: PropTypes.func.isRequired,
+  onPreviewShippingLabel: PropTypes.func.isRequired,
 };
 export default function ManageHistoryOrder() {
   const dispatch = useDispatch();
@@ -370,6 +387,37 @@ export default function ManageHistoryOrder() {
         );
       }
     );
+  };
+
+  const handlePreviewShippingLabel = async (trackingId) => {
+    try {
+      const result = await dispatch(
+        getPreviewPrintLabel({ trackingId })
+      ).unwrap();
+      const pdfUrl = URL.createObjectURL(result.blob);
+
+      Modal.info({
+        title: "Shipping Label Preview",
+        content: (
+          <div style={{ height: "500px" }}>
+            <iframe
+              src={pdfUrl}
+              style={{ width: "100%", height: "100%", border: "none" }}
+              title="PDF Preview"
+              type="application/pdf"
+              loading="lazy"
+              onLoad={() => console.log("PDF loaded")}
+            />
+          </div>
+        ),
+        width: 800,
+        okText: "Close",
+        onOk: () => URL.revokeObjectURL(pdfUrl),
+        afterClose: () => URL.revokeObjectURL(pdfUrl), // Đảm bảo giải phóng bộ nhớ
+      });
+    } catch (error) {
+      message.error("Failed to preview label: " + error);
+    }
   };
   const handleSuccessOrder = async (orderId) => {
     showConfirmModal(
@@ -461,6 +509,7 @@ export default function ManageHistoryOrder() {
                             onUpdateToDelivering={handleUpdateToDelivering}
                             onSuccessOrder={handleSuccessOrder}
                             onTrackClick={handleTrackClick}
+                            onPreviewShippingLabel={handlePreviewShippingLabel}
                           />
                         )
                       )

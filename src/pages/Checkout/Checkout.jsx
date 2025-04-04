@@ -8,17 +8,22 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import AddressForm from "./components/AddressForm";
-import { getfeeShip } from "../../redux/slices/orderSlice";
+import {
+  getfeeShip,
+  createCashPayment,
+  createOrder,
+} from "../../redux/slices/orderSlice";
+
 import {
   fetchCartsPreview,
   fetchGetTotalPrice,
   resetCart,
 } from "../../redux/slices/cartSlice";
-import { createOrder } from "../../redux/slices/orderSlice";
 import FloatingInput from "../../components/common/FloatingInput";
 import { Badge, Divider, Button, Space, Form, message, Radio } from "antd";
 
 export default function Checkout() {
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash");
   const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
   const [selectedWardId, setSelectedWardId] = useState(null);
@@ -35,12 +40,8 @@ export default function Checkout() {
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {
-    totalSelectedItemsPrice,
-    cartPreview,
-    // cart,
-    totalCountPreviewCart,
-  } = useSelector((state) => state.carts);
+  const { totalSelectedItemsPrice, cartPreview, totalCountPreviewCart } =
+    useSelector((state) => state.carts);
   // console.log("cartPreview", cartPreview);
   // console.log("cart", cart);
   const { fee } = useSelector((state) => state.orders);
@@ -121,34 +122,54 @@ export default function Checkout() {
       return;
     }
     try {
-      const result = await dispatch(
-        createOrder({
-          address,
-          contactNumber,
-          notes,
-          provinceId: selectedProvinceId,
-          districtId: selectedDistrictId,
-          wardId: selectedWardId,
-          addressId: selectedAddressId,
-          deliver_option: selectedDeliverOption,
-        })
-      ).unwrap();
+      if (selectedPaymentMethod === "cash") {
+        // Handle Cash on Delivery
+        await dispatch(
+          createCashPayment({
+            address,
+            contactNumber,
+            notes,
+            provinceId: selectedProvinceId,
+            districtId: selectedDistrictId,
+            wardId: selectedWardId,
+            addressId: selectedAddressId,
+            deliver_option: selectedDeliverOption,
+          })
+        ).unwrap();
+        // message.success("Order created successfully!");
+        navigate("/checkout-order-success"); // Redirect to success page
+      } else if (selectedPaymentMethod === "bank") {
+        // Handle Bank Transfer
+        const result = await dispatch(
+          createOrder({
+            address,
+            contactNumber,
+            notes,
+            provinceId: selectedProvinceId,
+            districtId: selectedDistrictId,
+            wardId: selectedWardId,
+            addressId: selectedAddressId,
+            deliver_option: selectedDeliverOption,
+          })
+        ).unwrap();
 
-      if (!result?.data.paymentUrl) {
-        message.error("Payment URL is missing!");
-        return;
+        if (!result?.data.paymentUrl) {
+          message.error("Payment URL is missing!");
+          return;
+        }
+
+        message.success("Redirecting to payment page...");
+        window.location.href = result.data.paymentUrl; // Redirect to payment page
       }
-
-      message.success("Order created successfully!", result.message);
-      window.location.href = result.data.paymentUrl;
     } catch (error) {
-      console.log("Error creating order:", error);
+      console.error("Error processing payment:", error);
+      message.error("Failed to process payment. Please try again.");
     }
   };
   // console.log("fee", fee);
 
   return (
-    <div className="mx-auto h-screen gap-2 bg-mainColer">
+    <div className="mx-auto min-h-screen gap-2 bg-mainColer">
       <nav className="bg-white border-b border-b-gray-300">
         <div className="container mx-auto flex justify-between items-center px-6">
           <Link
@@ -176,6 +197,19 @@ export default function Checkout() {
           <p className="font-semibold text-lg text-start">
             Delivery Information
           </p>
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-4">
+            <div className="flex items-start">
+              <ExclamationCircleOutlined className="text-yellow-500 text-lg mr-2 mt-0.5" />
+              <div>
+                <p className="text-yellow-800 font-medium">Important Notice</p>
+                <p className="text-yellow-700">
+                  Please verify your shipping address information carefully
+                  before submitting. Orders will be shipped to this address.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div>
             <p className="font-medium mb-2">Phone:</p>
             <FloatingInput
@@ -230,6 +264,15 @@ export default function Checkout() {
             </Form.Item>
           </div>
           <div>
+            <p className="font-medium mb-2">Note:</p>
+            <FloatingInput
+              isTextarea={true}
+              label="Note"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
+          <div>
             <p className="font-medium mb-2">Shipping:</p>
             {selectedAddressId ? (
               <Radio.Group
@@ -247,15 +290,18 @@ export default function Checkout() {
               </div>
             )}
           </div>
+
           <div>
-            <p className="font-medium mb-2">Note:</p>
-            <FloatingInput
-              isTextarea={true}
-              label="Note"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
+            <p className="font-medium mb-2">Payment Method</p>
+            <Radio.Group
+              onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+              value={selectedPaymentMethod}
+            >
+              <Radio value="cash">Cash on Delivery</Radio>
+              <Radio value="bank">Bank Transfer</Radio>
+            </Radio.Group>
           </div>
+          {/* 
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-4">
             <div className="flex items-start">
               <ExclamationCircleOutlined className="text-yellow-500 text-lg mr-2 mt-0.5" />
@@ -267,11 +313,11 @@ export default function Checkout() {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Order Summary */}
-        <div className="flex-1 lg:flex-[4] sm:flex-[4] border p-4 rounded-md shadow-sm bg-white max-w-screen-lg mx-auto overflow-y-auto h-[calc(100vh-4rem)]">
+        <div className="flex-1 lg:flex-[4] sm:flex-[4] border p-4 rounded-md shadow-sm bg-white max-w-screen-lg mx-auto overflow-y-auto h-[calc(100vh-4rem)] min-h-screen">
           <p className="font-semibold text-lg">
             Order Summary ({totalCountPreviewCart} items)
           </p>

@@ -258,9 +258,12 @@ export const getPrintLabel = createAsyncThunk(
   "createOrders/getPrintLabel",
   async ({ trackingId }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/ghtk/print-label/${trackingId}`, {
-        responseType: "blob",
-      });
+      const response = await api.get(
+        `/api/ghtk/print-label/${trackingId}-download`,
+        {
+          responseType: "blob",
+        }
+      );
 
       const contentDisposition = response.headers["content-disposition"];
       const filename = contentDisposition
@@ -274,6 +277,20 @@ export const getPrintLabel = createAsyncThunk(
     }
   }
 );
+export const getPreviewPrintLabel = createAsyncThunk(
+  "createOrders/getPreviewPrintLabel",
+  async ({ trackingId }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/ghtk/print-label/${trackingId}`, {
+        responseType: "blob", // Thêm dòng này
+      });
+      return { blob: response.data }; // Trả về object chứa blob
+    } catch (error) {
+      return rejectWithValue(error.toString());
+    }
+  }
+);
+
 export const getTrackingGhtk = createAsyncThunk(
   "createOrders/getTrackingGhtk",
   async ({ trackingId }, { rejectWithValue }) => {
@@ -285,11 +302,46 @@ export const getTrackingGhtk = createAsyncThunk(
     }
   }
 );
-
+export const createCashPayment = createAsyncThunk(
+  "createOrders/createCashPayment",
+  async (
+    {
+      address,
+      contactNumber,
+      notes,
+      provinceId,
+      districtId,
+      wardId,
+      addressId,
+      deliver_option,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(`/api/Order/create-cash-payment-order`, {
+        address: address,
+        contactNumber: contactNumber,
+        notes: notes,
+        provinceId: provinceId,
+        districtId: districtId,
+        wardId: wardId,
+        addressId: addressId,
+        deliver_option: deliver_option,
+      });
+      // message.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      message.error(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 // history order
 
 const initialState = {
+  dataPrintLabel: null,
   dataCheckOrder: null,
+  dataCashPayment: null,
   dataTrackingGhtk: "",
   order: [],
   loading: false,
@@ -338,8 +390,14 @@ const orderSlice = createSlice({
     handleAsyncState(builder, checkSuccessOrder, (state, action) => {
       state.dataCheckOrder = action.payload;
     });
+    handleAsyncState(builder, createCashPayment, (state, action) => {
+      state.dataCashPayment = action.payload;
+    });
     handleAsyncState(builder, getTrackingGhtk, (state, action) => {
       state.dataTrackingGhtk = action.payload.data;
+    });
+    handleAsyncState(builder, getPreviewPrintLabel, (state, action) => {
+      state.dataPrintLabel = action.payload.data;
     });
     handleAsyncState(builder, getfeeShip, (state, action) => {
       if (action.payload.length > 0) {

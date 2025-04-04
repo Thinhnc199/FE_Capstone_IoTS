@@ -71,7 +71,7 @@ import ComboPage from "../pages/Home/ComboPage";
 import ManageHistoryOrder from "../components/StoreIoT/ManageHistoryOrder";
 import WalletManagement from "../components/Trainer/components/WalletManagement";
 import AdminWalletManagement from "../components/Admin/AdminWalletManagement";
-
+import CheckProcessOrderCash from "../pages/CheckProcessOrderCash";
 import ChatPage from "../pages/Chat/ChatPage";
 import ChatPageTest from "../pages/Chat/ChatPageTest";
 import UserDetail from "../components/Admin/UserDetail";
@@ -151,6 +151,11 @@ const publicRoute = [
   {
     path: "/checkout-process-order",
     component: CheckProcessOrder,
+    layout: null,
+  },
+  {
+    path: "/checkout-order-success",
+    component: CheckProcessOrderCash,
     layout: null,
   },
   {
