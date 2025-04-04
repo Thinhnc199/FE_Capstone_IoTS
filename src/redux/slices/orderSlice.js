@@ -52,14 +52,8 @@ export const createOrder = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      if (error.response) {
-        return rejectWithValue(
-          error.response.data.errors ||
-            error.response.data.message ||
-            "Something went wrong"
-        );
-      }
-      return rejectWithValue(error.message || "Unknown error");
+      message.error(error);
+      return rejectWithValue(error);
     }
   }
 );
