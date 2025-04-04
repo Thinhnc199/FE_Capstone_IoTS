@@ -140,7 +140,11 @@ const AddressForm = ({ onAddressChange, defaultValues }) => {
       )}
       <Row gutter={[16, 24]}>
         <Col xs={24} sm={12} md={6}>
-          <Text strong style={{ display: "block", marginBottom: 8 }}>
+          <Text
+            className="truncate"
+            strong
+            style={{ display: "block", marginBottom: 8 }}
+          >
             Province/City
           </Text>
           <Select
@@ -165,7 +169,11 @@ const AddressForm = ({ onAddressChange, defaultValues }) => {
         </Col>
 
         <Col xs={24} sm={12} md={6}>
-          <Text strong style={{ display: "block", marginBottom: 8 }}>
+          <Text
+            className="truncate"
+            strong
+            style={{ display: "block", marginBottom: 8 }}
+          >
             District
           </Text>
           <Select
@@ -192,7 +200,11 @@ const AddressForm = ({ onAddressChange, defaultValues }) => {
         </Col>
 
         <Col xs={24} sm={12} md={6}>
-          <Text strong style={{ display: "block", marginBottom: 8 }}>
+          <Text
+            className="truncate"
+            strong
+            style={{ display: "block", marginBottom: 8 }}
+          >
             Ward/Commune
           </Text>
           <Select
@@ -219,7 +231,11 @@ const AddressForm = ({ onAddressChange, defaultValues }) => {
         </Col>
 
         <Col xs={24} sm={12} md={6}>
-          <Text strong style={{ display: "block", marginBottom: 8 }}>
+          <Text
+            className="truncate"
+            strong
+            style={{ display: "block", marginBottom: 8 }}
+          >
             Village
           </Text>
           <Select
