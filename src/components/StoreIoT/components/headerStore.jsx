@@ -15,7 +15,6 @@ import {
   HistoryOutlined,
 } from "@ant-design/icons";
 
-
 export default function HeaderStore() {
   const dispatch = useDispatch();
   const avatarUrl =
@@ -24,8 +23,7 @@ export default function HeaderStore() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const { NotificationDropdown } = useNotification();
-
-
+  const StoreName = localStorage.getItem("username") || "Store Owner";
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -84,7 +82,7 @@ export default function HeaderStore() {
 
       <div className="p-4 font-sans font-bold text-2xl flex items-center space-x-2">
         <div className="flex items-center space-x-3">
-        <NotificationDropdown />
+          <NotificationDropdown />
 
           <img
             src={avatarUrl}
@@ -92,7 +90,7 @@ export default function HeaderStore() {
             className="w-9 h-9 rounded-full"
           />
           <div className="flex justify-between items-center font-sans flex-col">
-            <p className="text-xs">vietle</p>
+            <p className="text-xs">{StoreName}</p>
             <p className="text-sm text-orange-400">Store</p>
           </div>
 

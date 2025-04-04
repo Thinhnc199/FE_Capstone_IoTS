@@ -21,6 +21,8 @@ export default function HeaderTrainer() {
   const { isSidebarOpen } = useSelector((state) => state.sidebar);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
+  const TrainerName = localStorage.getItem("username") || "Hi, Owner";
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -86,7 +88,7 @@ export default function HeaderTrainer() {
             className="w-9 h-9 rounded-full"
           />
           <div className=" flex justify-between items-center font-sans flex-col ">
-            <p className="text-xs">vietlot</p>
+            <p className="text-xs">{TrainerName}</p>
             <p className="text-sm text-green-400">Trainer</p>
           </div>
 

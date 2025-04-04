@@ -74,7 +74,7 @@ const items2 = [
   {
     key: "sub7",
     icon: <IssuesCloseOutlined />,
-    label: <Link to="/store/warranties-request">warranties request</Link>,
+    label: <Link to="/store/warranties-request">Warranties</Link>,
   },
   {
     key: "sub8",
