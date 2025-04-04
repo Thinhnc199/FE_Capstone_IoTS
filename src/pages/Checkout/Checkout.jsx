@@ -20,7 +20,16 @@ import {
   resetCart,
 } from "../../redux/slices/cartSlice";
 import FloatingInput from "../../components/common/FloatingInput";
-import { Badge, Divider, Button, Space, Form, message, Radio } from "antd";
+import {
+  Badge,
+  Divider,
+  Button,
+  Space,
+  Form,
+  message,
+  Radio,
+  Spin,
+} from "antd";
 
 export default function Checkout() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash");
@@ -60,6 +69,7 @@ export default function Checkout() {
 
   useEffect(() => {
     if (setSelectedAddressId) {
+      setLoadingFee(true);
       dispatch(
         getfeeShip({
           address,
@@ -370,9 +380,7 @@ export default function Checkout() {
             <span className="justify-between text-gray-500 flex items-center">
               <p className="font-semibold text-sm"> Shipping fee: </p>
               {loadingFee ? (
-                <p className="font-semibold text-sm text-blue-500">
-                  Loading...
-                </p>
+                <Spin size="small" className="text-blue-500" />
               ) : (
                 <p className="font-semibold text-sm">
                   {(fee || 0).toLocaleString()}₫
