@@ -10,7 +10,11 @@ import {
   getTrackingGhtk,
   changeCancelledStatus,
 } from "../redux/slices/orderSlice";
-import { MessageOutlined, ShopOutlined } from "@ant-design/icons";
+import {
+  MessageOutlined,
+  ShopOutlined,
+  SafetyCertificateOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import FeedbackForm from "./Orders/FeedbackForm";
@@ -108,16 +112,17 @@ const OrderItem = ({ item, onWarrantyRequestClick }) => (
         <p className="text-gray-600">Quantity: {item.quantity}</p>
       </div>
     </div>
-    <div className="flex items-center space-x-4">
+    <div className="flex items-end space-x-4 flex-col-reverse">
       <p className="text-red-500 font-medium">
         {item.price.toLocaleString("vi-VN")}₫
       </p>
       {item.orderItemStatus === 6 && (
         <Button
-          className="bg-yellow-500 text-white rounded-md border border-yellow-500"
+          shape="circle"
+          className="border-none  text-yellow-500 flex items-center justify-center shadow-none hover:bg-yellow-100 bg-blue-50 "
           onClick={() => onWarrantyRequestClick(item.orderItemId)}
         >
-          Warranty Request
+          <SafetyCertificateOutlined />
         </Button>
       )}
     </div>
@@ -136,7 +141,12 @@ OrderItem.propTypes = {
   onWarrantyRequestClick: PropTypes.func.isRequired,
 };
 
-const SellerGroup = ({ group, orderId, onFeedbackClick, onWarrantyRequestClick }) => (
+const SellerGroup = ({
+  group,
+  orderId,
+  onFeedbackClick,
+  onWarrantyRequestClick,
+}) => (
   <div className="rounded-md mb-4">
     <div className="flex justify-between items-center border-b pb-3 mb-3">
       <div className="flex items-center space-x-3">
@@ -368,15 +378,15 @@ export default function HistoryOrder() {
     (state) => state.orders
   );
 
-// Hàm xử lý khi nhấn nút "Warranty Request"
-const handleWarrantyRequestClick = (orderItemId) => {
-  setWarrantyModal({ visible: true, orderItemId });
-};
+  // Hàm xử lý khi nhấn nút "Warranty Request"
+  const handleWarrantyRequestClick = (orderItemId) => {
+    setWarrantyModal({ visible: true, orderItemId });
+  };
 
-// Hàm đóng modal bảo hành
-const handleCloseWarrantyModal = () => {
-  setWarrantyModal({ visible: false, orderItemId: null });
-};
+  // Hàm đóng modal bảo hành
+  const handleCloseWarrantyModal = () => {
+    setWarrantyModal({ visible: false, orderItemId: null });
+  };
 
   // handle...............
   const handleCancelClick = (orderId, sellerId) => {
@@ -815,7 +825,6 @@ const handleCloseWarrantyModal = () => {
         onClose={handleCloseWarrantyModal}
         fetchOrders={fetchOrders} // Truyền hàm để cập nhật danh sách đơn hàng
       />
-
     </div>
   );
 }
