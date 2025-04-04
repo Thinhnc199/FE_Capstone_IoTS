@@ -2,7 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Logo from "../../assets/icons/3.svg";
 import { useSelector, useDispatch } from "react-redux";
-import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  UserOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import AddressForm from "./components/AddressForm";
 import { getfeeShip } from "../../redux/slices/orderSlice";
 import {
@@ -24,6 +28,11 @@ export default function Checkout() {
   const [address, setAddress] = useState("");
   const [loadingFee, setLoadingFee] = useState(false);
   const [notes, setNotes] = useState("");
+  const [formErrors, setFormErrors] = useState({
+    contactNumber: false,
+    address: false,
+    addressFields: false,
+  });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
@@ -32,7 +41,7 @@ export default function Checkout() {
     // cart,
     totalCountPreviewCart,
   } = useSelector((state) => state.carts);
-  console.log("cartPreview", cartPreview);
+  // console.log("cartPreview", cartPreview);
   // console.log("cart", cart);
   const { fee } = useSelector((state) => state.orders);
   const token = localStorage.getItem("token");
@@ -72,10 +81,45 @@ export default function Checkout() {
     setSelectedWardId(ids.wardId);
     setSelectedAddressId(ids.addressId);
 
-    console.log("đ", ids);
+    // console.log("đ", ids);
   };
 
   const handleCreateOrder = async () => {
+    // Reset errors
+    setFormErrors({
+      contactNumber: false,
+      address: false,
+      addressFields: false,
+    });
+
+    // Validate fields
+    let isValid = true;
+    const newErrors = { ...formErrors };
+
+    if (!contactNumber || !isValidPhone(contactNumber)) {
+      newErrors.contactNumber = true;
+      isValid = false;
+      message.error("Please enter a valid phone number (10-11 digits)");
+    }
+
+    if (!address.trim()) {
+      newErrors.address = true;
+      isValid = false;
+      message.error("Please enter your detailed address");
+    }
+
+    if (!selectedProvinceId || !selectedDistrictId || !selectedWardId) {
+      newErrors.addressFields = true;
+      isValid = false;
+      message.error(
+        "Please select all address fields (Province, District, and Ward)"
+      );
+    }
+
+    if (!isValid) {
+      setFormErrors(newErrors);
+      return;
+    }
     try {
       const result = await dispatch(
         createOrder({
@@ -98,12 +142,10 @@ export default function Checkout() {
       message.success("Order created successfully!", result.message);
       window.location.href = result.data.paymentUrl;
     } catch (error) {
-      message.error(
-        "Failed to create order: " + (error.message || "Unknown error")
-      );
+      console.log("Error creating order:", error);
     }
   };
-  console.log("fee", fee);
+  // console.log("fee", fee);
 
   return (
     <div className="mx-auto h-screen gap-2 bg-mainColer">
@@ -145,6 +187,7 @@ export default function Checkout() {
               errorMessage="Phone number must be 10-11 digits."
               value={contactNumber}
               onChange={(e) => setContactNumber(e.target.value)}
+              error={formErrors.contactNumber}
             />
           </div>
 
@@ -156,10 +199,17 @@ export default function Checkout() {
               value={address}
               required
               onChange={(e) => setAddress(e.target.value)}
+              error={formErrors.address}
             />
           </div>
 
-          <div>
+          <div
+            className={
+              formErrors.addressFields
+                ? "border border-red-500 rounded p-2"
+                : ""
+            }
+          >
             <Form.Item
               name="address"
               rules={[
@@ -205,6 +255,18 @@ export default function Checkout() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
+          </div>
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-4">
+            <div className="flex items-start">
+              <ExclamationCircleOutlined className="text-yellow-500 text-lg mr-2 mt-0.5" />
+              <div>
+                <p className="text-yellow-800 font-medium">Important Notice</p>
+                <p className="text-yellow-700">
+                  Please verify your shipping address information carefully
+                  before submitting. Orders will be shipped to this address.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
