@@ -8,19 +8,21 @@ import {
   confirmWarrantySuccess,
 } from "../../redux/slices/warrantySlice";
 import { ProductType } from "./../../redux/constants";
-import DynamicBreadcrumb from "../../components/common/DynamicBreadcrumb";
+import BreadcrumbNav from "../common/BreadcrumbNav";
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
-const WarrantyTable = () => {
+const WarrantyTableStore = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { warranties, pagination, loading, error } = useSelector(
     (state) => state.warranty || {}
   );
 
-  const userRole = parseInt(localStorage.getItem("role"), 10);
+  // Lấy role từ localStorage
+  const userRole = parseInt(localStorage.getItem("role"), 10); // Sửa lại để parse đúng từ string
 
+  // Hàm gọi API phân trang theo status
   const fetchWarranties = (status, updatedPagination = pagination) => {
     dispatch(
       getWarrantyPagination({
@@ -38,21 +40,16 @@ const WarrantyTable = () => {
 
   const handleProductClick = (id) => {
     dispatch(getWarrantyById(id)).then(() => {
-      if (userRole === 5) {
-        navigate(`/warranty-detail/${id}`);
-      } else if (userRole === 6) {
-        navigate(`/store/warranty-detail/${id}`);
-      } else {
-        message.error("Unauthorized access or invalid role");
-      }
+      navigate(`/warranty-detail/${id}`);
     });
   };
 
+  // Hàm xử lý xác nhận bảo hành thành công
   const handleConfirmSuccess = async (id) => {
     try {
       await dispatch(confirmWarrantySuccess(id)).unwrap();
       message.success("Warranty confirmed successfully!");
-      fetchWarranties(1);
+      fetchWarranties(1); // Cập nhật lại danh sách Approved
     } catch (error) {
       message.error(
         "Failed to confirm warranty: " + (error.message || "Unknown error")
@@ -119,9 +116,15 @@ const WarrantyTable = () => {
   };
 
   return (
-    <div className="container mx-auto p-8  ">
+    <div className="container mx-auto ">
       <div className=" max-w-6xl mb-4 ">
-        <DynamicBreadcrumb />
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "store", path: "/store" },
+            { label: "warranties request" },
+          ]}
+        />
       </div>
       <div className=" mx-auto  bg-white">
         <div className="p-4 border-b mb-4 border-gray-200">
@@ -221,4 +224,4 @@ const WarrantyTable = () => {
   );
 };
 
-export default WarrantyTable;
+export default WarrantyTableStore;

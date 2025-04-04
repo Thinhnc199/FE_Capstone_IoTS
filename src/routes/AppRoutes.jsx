@@ -76,7 +76,9 @@ import ChatPage from "../pages/Chat/ChatPage";
 import ChatPageTest from "../pages/Chat/ChatPageTest";
 import UserDetail from "../components/Admin/UserDetail";
 import WarrantyTable from "../pages/Orders/WarrantyTable";
+import WarrantyTableStore from "../components/StoreIoT/WarrantyTableStore";
 import WarrantyDetail from "../pages/Orders/WarrantyDetail";
+import WalletTrainer from "../components/Trainer/WalletTrainer";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -372,7 +374,7 @@ const publicRoute = [
   },
   {
     path: "/store/warranties-request",
-    component: WarrantyTable,
+    component: WarrantyTableStore,
     layout: StoreIotLayout,
   },
   {
@@ -438,7 +440,7 @@ const publicRoute = [
   },
   {
     path: "/trainer/wallet",
-    component: WalletStore,
+    component: WalletTrainer,
     layout: TrainerIotLayout,
   },
   {

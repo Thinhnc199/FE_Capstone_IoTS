@@ -12,7 +12,7 @@ const items2 = [
   {
     key: "sub1",
     icon: <BarChartOutlined />,
-    label: <Link to="/store/dashboard">DashBoard</Link>,
+    label: <Link to="/trainer/dashboard">DashBoard</Link>,
   },
 
   {

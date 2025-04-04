@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { List, Avatar, Button, Input } from "antd";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import DynamicBreadcrumb from "../../components/common/DynamicBreadcrumb";
 import {
   getAllChat,
   getRecentChat,
@@ -43,7 +43,10 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="p-11">
+    <div className="container mx-auto p-8 ">
+      <div className=" max-w-6xl mb-4 ">
+        <DynamicBreadcrumb />
+      </div>
       <div className="flex shadow-md p-0 m-0">
         <div className="w-64 bg-white p-2 rounded-l-md border-r">
           <h2 className="text-gray-800 font-bold text-xl mb-2 font-Mainfont">

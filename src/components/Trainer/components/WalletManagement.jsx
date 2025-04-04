@@ -3,16 +3,16 @@
 // WalletManagement.jsx
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Tag } from "antd";
+import { Table, Tag, Typography } from "antd";
 import { getTransactions } from "./../../../redux/slices/walletSlice";
 import { getWalletBalance } from "./../../../redux/slices/paymentSlice";
 import moment from "moment";
-
+import BreadcrumbNav from "../../common/BreadcrumbNav";
 const WalletManagement = () => {
   const dispatch = useDispatch();
   const { transactions, loading } = useSelector((state) => state.wallet);
   const userId = localStorage.getItem("userId");
-
+  const { Title } = Typography;
   useEffect(() => {
     dispatch(getTransactions({ pageIndex: 0, pageSize: 20 }));
     if (userId) {
@@ -69,33 +69,42 @@ const WalletManagement = () => {
   ];
 
   return (
-    <div className="max-h-screen bg-white rounded-sm shadow-sm mx-auto p-4 my-4 container">
-      {/* <div className="bg-white rounded-md p-4  min-h-[60vh] overflow-hidden shadow-lg"> */}
-      {/* Transaction History Title */}
-      <div className="bg-white rounded-md p-4 mb-6 shadow-lg">
-        <h1 className="text-2xl font-bold text-black">Transaction History</h1>
+    <div className="container mx-auto p-8  ">
+      <div className=" max-w-6xl mb-4 ">
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "Transaction history" },
+          ]}
+        />
       </div>
+      <div className=" bg-white rounded-sm shadow-sm mx-auto p-4 my-4 container">
+        <div className=" border-b mb-4 bg-white  border-gray-200">
+          <Title level={4} className="mb-0 text-gray-800">
+            Transaction History
+          </Title>
+        </div>
 
-      {/* Transactions Table */}
-      <Table
-        columns={columns}
-        dataSource={transactions.data}
-        loading={loading}
-        rowKey="id"
-        pagination={{
-          current: transactions.pageIndex + 1,
-          pageSize: transactions.pageSize,
-          total: transactions.totalCount,
-          onChange: (page) => {
-            dispatch(getTransactions({ pageIndex: page - 1, pageSize: 20 }));
-          },
-        }}
-        className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white [&_.ant-pagination]:p-2"
-        bordered
-        style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
-      />
+        {/* Transactions Table */}
+        <Table
+          columns={columns}
+          dataSource={transactions.data}
+          loading={loading}
+          rowKey="id"
+          pagination={{
+            current: transactions.pageIndex + 1,
+            pageSize: transactions.pageSize,
+            total: transactions.totalCount,
+            onChange: (page) => {
+              dispatch(getTransactions({ pageIndex: page - 1, pageSize: 20 }));
+            },
+          }}
+          className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white [&_.ant-pagination]:p-2"
+          bordered
+          style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
+        />
+      </div>
     </div>
-    // </div>
   );
 };
 

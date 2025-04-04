@@ -2,15 +2,16 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Tabs, Button, Modal, Form, Input, Tag, message } from "antd";
+
 import {
-  getCashoutRequests,
   createCashoutRequest,
+  getCashoutRequests,
 } from "./../../redux/slices/walletSlice";
-import { getWalletBalance } from "./../../redux/slices/paymentSlice";
+import { getWalletBalance } from "../../redux/slices/paymentSlice";
 import BreadcrumbNav from "../common/BreadcrumbNav";
 const { TabPane } = Tabs;
 
-const WalletStore = () => {
+const WalletTrainer = () => {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -137,7 +138,7 @@ const WalletStore = () => {
         <BreadcrumbNav
           items={[
             { label: "Home", path: "/" },
-            { label: "store", path: "/store" },
+            { label: "trainer", path: "/trainer" },
             { label: "wallet" },
           ]}
         />
@@ -145,7 +146,7 @@ const WalletStore = () => {
 
       <div className="mx-auto  bg-white">
         {/* Cashout Requests Table */}
-        <div className="bg-white rounded-md p-4 overflow-hidden shadow-lg">
+        <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
           <h1 className="text-2xl font-bold text-black mb-6">
             Cashout Management
           </h1>
@@ -287,4 +288,4 @@ const WalletStore = () => {
   );
 };
 
-export default WalletStore;
+export default WalletTrainer;
