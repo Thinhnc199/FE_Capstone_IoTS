@@ -184,8 +184,10 @@ const OrderCard = ({
 
             {order.orderStatusId === 1 ? (
               <p className="text-green-600 pl-3">PAID</p>
-            ) : (
+            ) : order.orderStatusId === 2 ? (
               <p className="text-red-600">CANCELLED</p>
+            ) : (
+              <p className="text-yellow-600">CASH PAYMENT</p>
             )}
           </div>
           <div>
