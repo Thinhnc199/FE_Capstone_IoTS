@@ -65,6 +65,12 @@ const statusConfig = {
     icon: "↩️",
     tabName: "Cancel",
   },
+  8: {
+    text: "Bad feedback",
+    color: "bg-yellow-100 text-red-800 border-red-200",
+    icon: "👎",
+    tabName: "Bad feedback",
+  },
 };
 
 const getStatusTag = (statusId) => {
