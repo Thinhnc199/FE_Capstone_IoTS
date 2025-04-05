@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Logo from "../../../assets/icons/logo2";
 
 import {
+  HistoryOutlined,
   PullRequestOutlined,
   UserOutlined,
   HomeOutlined,
@@ -72,6 +73,12 @@ const items2 = [
       },
     ],
   },
+  // {
+  //   key: "sub5",
+  //   icon: <HistoryOutlined />,
+
+  //   label: <Link to="/admin/manage-history-order"> History Order</Link>,
+  // },
   {
     key: "sub4",
     icon: <PullRequestOutlined />,
