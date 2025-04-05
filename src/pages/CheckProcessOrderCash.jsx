@@ -103,7 +103,7 @@ export default function CheckProcessOrderCash() {
               <div className="flex justify-between">
                 <strong className="text-gray-600">Notes:</strong>
                 <span className="italic text-gray-600">
-                  {dataCashPayment.data.notes || "Không có ghi chú"}
+                  {dataCashPayment.data.notes || "No notes"}
                 </span>
               </div>
             </div>
