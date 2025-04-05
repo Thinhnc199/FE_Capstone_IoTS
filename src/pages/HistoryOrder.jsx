@@ -76,6 +76,12 @@ const statusConfig = {
     icon: "↩️",
     tabName: "Cancel",
   },
+  8: {
+    text: "Bad feedback",
+    color: "bg-yellow-100 text-red-800 border-red-200",
+    icon: "👎",
+    tabName: "Bad feedback",
+  },
 };
 
 const getStatusTag = (statusId) => {
@@ -99,9 +105,9 @@ const formatDate = (dateString) => {
 };
 
 const OrderItem = ({ item, onWarrantyRequestClick }) => {
-  const currentDate = new Date(); 
-  const warrantyEndDate = new Date(item.warrantyEndDate); 
-  const isWarrantyValid = warrantyEndDate > currentDate; 
+  const currentDate = new Date();
+  const warrantyEndDate = new Date(item.warrantyEndDate);
+  const isWarrantyValid = warrantyEndDate > currentDate;
   const isWarrantyApplicable = item.productType !== 3;
 
   return (
@@ -123,7 +129,7 @@ const OrderItem = ({ item, onWarrantyRequestClick }) => {
         <p className="text-red-500 font-medium">
           {item.price.toLocaleString("vi-VN")}₫
         </p>
-        {item.orderItemStatus === 6 && isWarrantyApplicable &&(
+        {item.orderItemStatus === 6 && isWarrantyApplicable && (
           <>
             {isWarrantyValid ? (
               <Button
@@ -151,7 +157,7 @@ OrderItem.propTypes = {
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
     orderItemStatus: PropTypes.number.isRequired,
-    warrantyEndDate: PropTypes.string.isRequired, 
+    warrantyEndDate: PropTypes.string.isRequired,
     productType: PropTypes.number.isRequired,
   }).isRequired,
   onWarrantyRequestClick: PropTypes.func.isRequired,
@@ -890,7 +896,7 @@ export default function HistoryOrder() {
         visible={warrantyModal.visible}
         orderItemId={warrantyModal.orderItemId}
         onClose={handleCloseWarrantyModal}
-        fetchOrders={fetchOrders} 
+        fetchOrders={fetchOrders}
       />
     </div>
   );
