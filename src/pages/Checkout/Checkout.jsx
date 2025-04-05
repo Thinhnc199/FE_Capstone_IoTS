@@ -20,10 +20,19 @@ import {
   resetCart,
 } from "../../redux/slices/cartSlice";
 import FloatingInput from "../../components/common/FloatingInput";
-import { Badge, Divider, Button, Space, Form, message, Radio } from "antd";
+import {
+  Badge,
+  Divider,
+  Button,
+  Space,
+  Form,
+  message,
+  Radio,
+  Spin,
+} from "antd";
 
 export default function Checkout() {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("bank");
   const [selectedProvinceId, setSelectedProvinceId] = useState(null);
   const [selectedDistrictId, setSelectedDistrictId] = useState(null);
   const [selectedWardId, setSelectedWardId] = useState(null);
@@ -32,6 +41,8 @@ export default function Checkout() {
   const [contactNumber, setContactNumber] = useState("");
   const [address, setAddress] = useState("");
   const [loadingFee, setLoadingFee] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [notes, setNotes] = useState("");
   const [formErrors, setFormErrors] = useState({
     contactNumber: false,
@@ -60,6 +71,7 @@ export default function Checkout() {
 
   useEffect(() => {
     if (setSelectedAddressId) {
+      setLoadingFee(true);
       dispatch(
         getfeeShip({
           address,
@@ -86,7 +98,6 @@ export default function Checkout() {
   };
 
   const handleCreateOrder = async () => {
-    // Reset errors
     setFormErrors({
       contactNumber: false,
       address: false,
@@ -124,6 +135,7 @@ export default function Checkout() {
     try {
       if (selectedPaymentMethod === "cash") {
         // Handle Cash on Delivery
+        setLoading(true);
         await dispatch(
           createCashPayment({
             address,
@@ -135,11 +147,15 @@ export default function Checkout() {
             addressId: selectedAddressId,
             deliver_option: selectedDeliverOption,
           })
-        ).unwrap();
+        )
+          .unwrap()
+          .finally(() => setLoading(false));
+
         // message.success("Order created successfully!");
         navigate("/checkout-order-success"); // Redirect to success page
       } else if (selectedPaymentMethod === "bank") {
         // Handle Bank Transfer
+        setLoading(true);
         const result = await dispatch(
           createOrder({
             address,
@@ -151,7 +167,9 @@ export default function Checkout() {
             addressId: selectedAddressId,
             deliver_option: selectedDeliverOption,
           })
-        ).unwrap();
+        )
+          .unwrap()
+          .finally(() => setLoading(false));
 
         if (!result?.data.paymentUrl) {
           message.error("Payment URL is missing!");
@@ -167,7 +185,13 @@ export default function Checkout() {
     }
   };
   // console.log("fee", fee);
-
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <Spin size="large" className="text-blue-500" />
+  //     </div>
+  //   );
+  // }
   return (
     <div className="mx-auto min-h-screen gap-2 bg-mainColer">
       <nav className="bg-white border-b border-b-gray-300">
@@ -370,9 +394,7 @@ export default function Checkout() {
             <span className="justify-between text-gray-500 flex items-center">
               <p className="font-semibold text-sm"> Shipping fee: </p>
               {loadingFee ? (
-                <p className="font-semibold text-sm text-blue-500">
-                  Loading...
-                </p>
+                <Spin size="small" className="text-blue-500" />
               ) : (
                 <p className="font-semibold text-sm">
                   {(fee || 0).toLocaleString()}₫
@@ -410,6 +432,12 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+      {loading ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+          <Spin size="large" className="text-blue-400" />
+        </div>
+      ) : null}
+      {/* Loading Spinner */}
     </div>
   );
 }

@@ -226,7 +226,7 @@ export default function CheckProcessOrder() {
               <div className="flex justify-between">
                 <strong className="text-gray-600">Notes:</strong>
                 <span className="italic text-gray-600">
-                  {dataCheckOrder.data.notes || "Không có ghi chú"}
+                  {dataCheckOrder.data.notes || "No notes"}
                 </span>
               </div>
             </div>
