@@ -79,6 +79,8 @@ import WarrantyTable from "../pages/Orders/WarrantyTable";
 import WarrantyTableStore from "../components/StoreIoT/WarrantyTableStore";
 import WarrantyDetail from "../pages/Orders/WarrantyDetail";
 import WalletTrainer from "../components/Trainer/WalletTrainer";
+import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
+import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -234,6 +236,11 @@ const publicRoute = [
   {
     path: "/admin/category-management",
     component: CategoryManagement,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/manage-history-order",
+    component: ManageHistoryOrderAdmin,
     layout: AdminLayout,
   },
 
@@ -426,6 +433,11 @@ const publicRoute = [
   {
     path: "/trainer/create-lab",
     component: NewCreateLab,
+    layout: TrainerIotLayout,
+  },
+  {
+    path: "/trainer/manage-history-order",
+    component: ManageHistoryOrderTrainer,
     layout: TrainerIotLayout,
   },
   {

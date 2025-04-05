@@ -5,6 +5,7 @@ import {
   ProductOutlined,
   WalletOutlined,
   BarChartOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -22,6 +23,11 @@ const items2 = [
     children: [
       { key: "lp", label: <Link to="/trainer/labs-management">List Lab</Link> },
     ],
+  },
+  {
+    key: "sub3",
+    icon: <HistoryOutlined />,
+    label: <Link to="/trainer/manage-history-order">History Order</Link>,
   },
 
   {

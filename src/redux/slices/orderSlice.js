@@ -166,6 +166,39 @@ export const fetchHistoryOrderStoreTrainer = createAsyncThunk(
     }
   }
 );
+export const fetchHistoryOrderAdmin = createAsyncThunk(
+  "createOrders/fetchHistoryOrderAdmin",
+  async (
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+      StatusFilter,
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(
+        `/api/Order/admin-manager/get-pagination`,
+        {
+          pageIndex,
+          pageSize,
+          searchKeyword,
+          startFilterDate,
+          endFilterDate,
+        },
+        {
+          params: { orderItemStatusFilter: StatusFilter }, // Truyền vào query parameter
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
 export const changePackingStatus = createAsyncThunk(
   "createOrders/changePackingStatus",
   async ({ orderId }, { rejectWithValue }) => {
@@ -357,6 +390,10 @@ const initialState = {
     totalCount: 0,
     dataHistoryOrder: [],
   },
+  historyOrdersAdmin: {
+    totalCount: 0,
+    dataHistoryOrder: [],
+  },
 };
 const orderSlice = createSlice({
   name: "createOrders",
@@ -420,6 +457,10 @@ const orderSlice = createSlice({
           action.payload.data.data;
       }
     );
+    handleAsyncState(builder, fetchHistoryOrderAdmin, (state, action) => {
+      state.historyOrdersAdmin.totalCount = action.payload.data.totalCount;
+      state.historyOrdersAdmin.dataHistoryOrder = action.payload.data.data;
+    });
   },
 });
 export const {
