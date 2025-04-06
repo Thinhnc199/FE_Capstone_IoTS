@@ -96,7 +96,7 @@ export const getStoreDetails = createAsyncThunk(
 
       if (response?.data?.id) {
         const storeId = response.data.id;
-        localStorage.setItem("storeId", storeId); // ✅ Lưu vào localStorage
+        localStorage.setItem("storeId", storeId); 
         console.log("✅ Store ID saved to localStorage:", storeId);
       } else {
         console.error("❌ Store ID not found in response!");

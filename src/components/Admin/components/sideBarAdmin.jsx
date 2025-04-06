@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import Logo from "../../../assets/icons/logo2";
 
 import {
-  HistoryOutlined,
   PullRequestOutlined,
   UserOutlined,
   HomeOutlined,
@@ -92,6 +91,11 @@ const items2 = [
       {
         key: "cashrequest",
         label: <Link to="/admin/wallet">Cashout Requests</Link>,
+        icon: <UnorderedListOutlined />,
+      },
+      {
+        key: "report",
+        label: <Link to="/admin/report-request">Report Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
     ],

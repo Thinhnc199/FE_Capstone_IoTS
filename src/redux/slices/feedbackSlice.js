@@ -14,7 +14,7 @@ export const fetchFeedbackHistory = createAsyncThunk(
   }
 );
 
-//  createFeedback
+// createFeedback
 export const createFeedback = createAsyncThunk(
   "feedback/createFeedback",
   async (feedbackData, { rejectWithValue }) => {
@@ -27,7 +27,7 @@ export const createFeedback = createAsyncThunk(
   }
 );
 
-//  fetchActivityLog
+// fetchActivityLog
 export const fetchActivityLog = createAsyncThunk(
   "feedback/fetchActivityLog",
   async ({ userId, payload }, { rejectWithValue }) => {
@@ -40,11 +40,51 @@ export const fetchActivityLog = createAsyncThunk(
   }
 );
 
+// fetchReports - Thêm API lấy danh sách reports
+export const fetchReports = createAsyncThunk(
+  "feedback/fetchReports",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/api/report/get-pagination", payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+// approveReport - Thêm API approve report
+export const approveReport = createAsyncThunk(
+  "feedback/approveReport",
+  async (reportId, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/report/approve/${reportId}`);
+      return { reportId, data: response.data };
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+// rejectReport - Thêm API reject report
+export const rejectReport = createAsyncThunk(
+  "feedback/rejectReport",
+  async (reportId, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/report/reject/${reportId}`);
+      return { reportId, data: response.data };
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const feedbackSlice = createSlice({
   name: "feedback",
   initialState: {
     feedbackHistory: [],
-    activityLog: [], 
+    activityLog: [],
+    reports: [], // Thêm state cho reports
     loading: false,
     error: null,
   },
@@ -75,7 +115,7 @@ const feedbackSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      //  fetchActivityLog
+      // fetchActivityLog
       .addCase(fetchActivityLog.pending, (state) => {
         state.loading = true;
       })
@@ -84,6 +124,56 @@ const feedbackSlice = createSlice({
         state.activityLog = action.payload.data.data;
       })
       .addCase(fetchActivityLog.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetchReports
+      .addCase(fetchReports.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchReports.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reports = action.payload.data.data;
+      })
+      .addCase(fetchReports.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // approveReport
+      .addCase(approveReport.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(approveReport.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Cập nhật status của report trong state
+        const reportIndex = state.reports.findIndex(
+          (report) => report.id === action.payload.reportId
+        );
+        if (reportIndex !== -1) {
+          state.reports[reportIndex].status = 1; // 1 là success
+        }
+      })
+      .addCase(approveReport.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // rejectReport
+      .addCase(rejectReport.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(rejectReport.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // Cập nhật status của report trong state
+        const reportIndex = state.reports.findIndex(
+          (report) => report.id === action.payload.reportId
+        );
+        if (reportIndex !== -1) {
+          state.reports[reportIndex].status = 2; // 2 là rejected
+        }
+      })
+      .addCase(rejectReport.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

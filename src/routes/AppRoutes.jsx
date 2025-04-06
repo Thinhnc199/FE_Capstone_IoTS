@@ -81,6 +81,7 @@ import WarrantyDetail from "../pages/Orders/WarrantyDetail";
 import WalletTrainer from "../components/Trainer/WalletTrainer";
 import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
 import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
+import ReportRequest from "../components/Admin/ReportRequest";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -272,6 +273,11 @@ const publicRoute = [
   {
     path: "/admin/user-detail/:id",
     component: UserDetail,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/report-request",
+    component: ReportRequest,
     layout: AdminLayout,
   },
   // Store
