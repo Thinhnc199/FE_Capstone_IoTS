@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Spin, Avatar, Card } from "antd";
 import { fetchUserRequest } from "../../redux/slices/userAuthSlice";
 import { UserOutlined } from "@ant-design/icons";
-import DefaultAvatar from "./../../assets/Logo1.png";
+import DefaultAvatar from "./../../assets/logo1.png";
 import { useNavigate } from "react-router-dom";
 
 const WelcomeStore = () => {
