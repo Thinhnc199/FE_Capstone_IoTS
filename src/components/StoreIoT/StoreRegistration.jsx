@@ -1075,13 +1075,13 @@
 
 //             <div className="grid md:grid-cols-2 gap-4">
 //               <Form.Item
-//                 label="License Number"
+//                 label="TAX"
 //                 name="liscenseNumber"
 //                 rules={[
-//                   { required: true, message: "Please input license number!" },
+//                   { required: true, message: "Please input TAX!" },
 //                 ]}
 //               >
-//                 <Input placeholder="Enter license number" />
+//                 <Input placeholder="Enter TAX" />
 //               </Form.Item>
 
 //               <Form.Item
@@ -1206,7 +1206,7 @@
 //                 📜 Business License
 //               </h3>
 //               <p className="mb-1">
-//                 <strong>License Number:</strong>{" "}
+//                 <strong>TAX:</strong>{" "}
 //                 {businessLicense.data?.liscenseNumber}
 //               </p>
 //               <p className="mb-1">
@@ -2172,13 +2172,13 @@ const StoreRegistration = () => {
 
             <div className="grid md:grid-cols-2 gap-4">
               <Form.Item
-                label="License Number"
+                label="Tax Number"
                 name="liscenseNumber"
                 rules={[
-                  { required: true, message: "Please input license number!" },
+                  { required: true, message: "Please input Tax Number!" },
                 ]}
               >
-                <Input placeholder="Enter license number" />
+                <Input placeholder="Enter tax number here" />
               </Form.Item>
 
               <Form.Item
@@ -2296,7 +2296,7 @@ const StoreRegistration = () => {
                 📜 Business License
               </h3>
               <p className="mb-1">
-                <strong>License Number:</strong>{" "}
+                <strong>Tax Number :</strong>{" "}
                 {businessLicense.data?.liscenseNumber}
               </p>
               <p className="mb-1">

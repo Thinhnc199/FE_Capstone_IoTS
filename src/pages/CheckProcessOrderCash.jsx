@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 // import { checkSuccessOrder } from "../redux/slices/orderSlice";
 import { Spin, Alert, Card, Button } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  HistoryOutlined,
+  HomeOutlined,
+} from "@ant-design/icons";
+
 import Confetti from "react-confetti"; // Import thư viện pháo hoa
 
 export default function CheckProcessOrderCash() {
@@ -108,13 +113,22 @@ export default function CheckProcessOrderCash() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-between gap-3">
+              <Button
+                type="default"
+                icon={<HistoryOutlined />}
+                className="text-green-600 border-green-500 hover:bg-green-50"
+                href="/history-order"
+              >
+                Order History
+              </Button>
               <Button
                 type="primary"
+                icon={<HomeOutlined />}
                 className="bg-green-500 hover:bg-green-600 text-white"
                 href="/"
               >
-                Back to Home
+                Back Home
               </Button>
             </div>
           </Card>

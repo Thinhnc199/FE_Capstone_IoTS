@@ -325,7 +325,7 @@ const DetailUserRequest = () => {
                   className="border border-gray-200"
                 >
                   <p>
-                    <strong>License Number:</strong>{" "}
+                    <strong>Tax Number:</strong>{" "}
                     {businessLicense.data?.liscenseNumber}
                   </p>
                   <p>

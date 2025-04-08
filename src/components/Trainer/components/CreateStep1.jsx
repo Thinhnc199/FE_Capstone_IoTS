@@ -1023,7 +1023,7 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
         name="price"
         label={
           <span>
-            Price ($){" "}
+            Price (VND){" "}
             <Tooltip title="Enter the price for this lab">
               <InfoCircleOutlined />
             </Tooltip>
@@ -1166,4 +1166,4 @@ Step1Form.propTypes = {
 Step1Form.defaultProps = {
   initialData: {},
 };
-export default Step1Form; 
+export default Step1Form;

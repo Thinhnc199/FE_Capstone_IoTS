@@ -169,7 +169,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       case 3:
         return <Tag color="red">Rejected</Tag>;
       default:
-        return <Tag color="grey">Unknown</Tag>;
+        return <Tag color="grey">Draft</Tag>;
     }
   };
 
@@ -287,7 +287,8 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
     <div className="p-4 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold mb-4">
-          Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)})
+          {/* Labs Management ({role.charAt(0).toUpperCase() + role.slice(1)}) */}
+          Labs Management
         </h2>
         {role === "trainer" && (
           <Button

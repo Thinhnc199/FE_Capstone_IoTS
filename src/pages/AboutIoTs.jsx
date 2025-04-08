@@ -2,7 +2,8 @@ import { Card, Typography, Table, Button } from "antd";
 import {
   ShoppingCartOutlined,
   MessageOutlined,
-  HeartOutlined,
+  BarChartOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import "tailwindcss/tailwind.css";
 
@@ -46,7 +47,7 @@ const studentData = [
   {
     key: "1",
     index: "1",
-    fullname: "Lê Văn Hà",
+    fullname: "Le Van Ha",
     studentCode: "SE140685",
     phone: "0364463482",
     email: "Halvse140685@fpt.edu.vn",
@@ -55,7 +56,7 @@ const studentData = [
   {
     key: "2",
     index: "2",
-    fullname: "Lê Tấn Việt",
+    fullname: "Le Tan Viet",
     studentCode: "SE173272",
     phone: "0867603194",
     email: "vietltse173165@fpt.edu.vn",
@@ -64,7 +65,7 @@ const studentData = [
   {
     key: "3",
     index: "3",
-    fullname: "Nguyễn Cường Thịnh",
+    fullname: "Nguyen Cuong Thinh",
     studentCode: "SE160927",
     phone: "0938291478",
     email: "Thinhncse160927@fpt.edu.vn",
@@ -73,7 +74,7 @@ const studentData = [
   {
     key: "4",
     index: "4",
-    fullname: "Nguyễn Hoàng Thiện",
+    fullname: "Nguyen Hoang Thien",
     studentCode: "SE160869",
     phone: "0833300912",
     email: "ThienNHSE160869@fpt.edu.vn",
@@ -190,7 +191,7 @@ const AboutIoTs = () => {
               </Title>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
-                  <ShoppingCartOutlined className="text-3xl text-blue-500 mr-4" />
+                  <ShoppingCartOutlined className="text-3xl text-orange-500 mr-4" />
                   <div>
                     <strong>Reliable Buy-and-Sell Platform:</strong> Provides a
                     dependable space for buying and selling IoT devices, with
@@ -207,14 +208,16 @@ const AboutIoTs = () => {
                   </div>
                 </Card>
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
-                  <HeartOutlined className="text-3xl text-blue-500 mr-4" />
+                  <BarChartOutlined className="text-3xl text-green-500 mr-4" />
                   <div>
-                    <strong>Wishlist Feature:</strong> Allows users to create a
-                    wishlist of favorite products for future review and
-                    purchase.
+                    <strong>Store Performance Dashboard:</strong> Enables store
+                    owners to track and manage product performance through a
+                    simple, effective dashboard.
                   </div>
                 </Card>
+
                 <Card className="flex items-start p-4 bg-white shadow-md rounded-lg">
+                  <BookOutlined className="text-3xl text-purple-500 mr-4" />
                   <div>
                     <strong>Content Promotion:</strong> Stores can post daily
                     promotional blogs, with an algorithm prioritizing

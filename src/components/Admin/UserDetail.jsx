@@ -295,7 +295,7 @@ const UserDetail = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <p className="text-gray-700">
-                      <strong className="text-gray-900">License Number:</strong>{" "}
+                      <strong className="text-gray-900">TAX Number:</strong>{" "}
                       {(userRole === Roles.STORE
                         ? businessLicenseStore?.liscenseNumber
                         : businessLicenseTrainer?.liscenseNumber) || "N/A"}

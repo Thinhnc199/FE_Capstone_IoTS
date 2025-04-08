@@ -128,13 +128,13 @@ const CreateLab = () => {
         </Steps>
         <div className="steps-content">{steps[currentStep].content}</div>
         {/* Optional: Add navigation buttons */}
-        <div className="flex justify-between mt-6">
+        {/* <div className="flex justify-between mt-6">
           {currentStep > 0 && (
             <Button onClick={() => setCurrentStep(currentStep - 1)}>
               Previous
             </Button>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

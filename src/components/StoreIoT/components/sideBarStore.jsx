@@ -48,11 +48,7 @@ const items2 = [
         key: "lm",
         label: <Link to="/store/labs-management">Lab List</Link>,
       },
-      {
-        key: "sub5",
 
-        label: <Link to="/store/labs-management">labs Request</Link>,
-      },
       // {
       //   key: "cm",
       //   label: <Link to="/store/combo-labs">Combo Labs</Link>,

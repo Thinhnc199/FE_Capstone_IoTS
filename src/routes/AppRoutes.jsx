@@ -456,11 +456,11 @@ const publicRoute = [
     component: LabDetailTrainer,
     layout: TrainerIotLayout,
   },
-  {
-    path: "/test-his",
-    component: Register,
-    layout: MainLayout,
-  },
+  // {
+  //   path: "/test-his",
+  //   component: Register,
+  //   layout: MainLayout,
+  // },
   {
     path: "/trainer/wallet",
     component: WalletTrainer,
