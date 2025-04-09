@@ -1,10 +1,9 @@
-
 import { useSelector } from "react-redux";
-import { HeartOutlined, EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import { TypeDevice } from "../../../redux/constants";
 import { Card, Button, Skeleton, Badge, Rate } from "antd";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types"; 
+import PropTypes from "prop-types";
 
 const ComboList = ({ sortOrder, loading }) => {
   const { combos } = useSelector((state) => state.combo);
@@ -65,12 +64,6 @@ const ComboList = ({ sortOrder, loading }) => {
                     />
                   )}
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button
-                      shape="circle"
-                      className="bg-white p-2 shadow-md hover:bg-bgColer"
-                      icon={<HeartOutlined className="text-textColer" />}
-                      aria-label="Add to wishlist"
-                    />
                     <Button
                       shape="circle"
                       className="bg-white p-2 shadow-md hover:bg-bgColer"

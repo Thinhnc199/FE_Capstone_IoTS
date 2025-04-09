@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchInfoStoreid } from "../redux/slices/accountSlice";
 import { fetchProductStoreid } from "../redux/slices/storeSlice";
-import { MessageOutlined, HeartOutlined, EyeOutlined } from "@ant-design/icons";
+import { MessageOutlined, EyeOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 const { Text } = Typography;
 const formatPrice = (price) => {
@@ -146,11 +146,6 @@ export default function StoreInfoPage() {
                       </Badge.Ribbon>
 
                       <div className="absolute top-2 left-2 flex space-x-2">
-                        <Button
-                          shape="circle"
-                          className="bg-white p-2 rounded-full shadow-md"
-                          icon={<HeartOutlined />}
-                        />
                         <Button
                           shape="circle"
                           className="bg-white p-2 rounded-full shadow-md"

@@ -258,7 +258,7 @@ const Navbar = () => {
     { path: "/chat", icon: <MessageOutlined />, label: "Chat" },
     {
       path: "/cart",
-      icon: <ShoppingCartOutlined />,
+      icon: <ShoppingCartOutlined className="text-white text-xl" />,
       label: "Cart",
       badge: true,
     },
@@ -398,7 +398,7 @@ const Navbar = () => {
                 </Link>
               </li>
             </ul>
-
+            {/* buttom nav */}
             <div className="flex items-center space-x-6">
               <Search
                 size="large"
@@ -471,14 +471,22 @@ const Navbar = () => {
           open={isDrawerVisible}
           width={250}
         >
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col py-8 space-y-4">
             <Link
-              to="/"
+              to="/login"
               className="hover:text-[#007AFF] cursor-pointer"
               onClick={() => setIsDrawerVisible(false)}
             >
-              Home
+              Login
             </Link>
+            <Link
+              to="/emailcustomer"
+              className="hover:text-[#007AFF] cursor-pointer"
+              onClick={() => setIsDrawerVisible(false)}
+            >
+              Register
+            </Link>
+
             <Link
               to="/contact"
               className="hover:text-[#007AFF] cursor-pointer"
@@ -535,11 +543,15 @@ const Navbar = () => {
                       <div className="flex flex-col items-center cursor-pointer">
                         <div className="text-xl">
                           {item.badge ? (
-                            <Badge count={notificationCount} offset={[-5, 5]}>
+                            <Badge
+                              count={notificationCount}
+                              size="small"
+                              offset={[-5, 5]}
+                            >
                               {item.icon}
                             </Badge>
                           ) : (
-                            item.icon
+                            <div>{item.icon}</div>
                           )}
                         </div>
                         <span className="text-xs mt-1">{item.label}</span>

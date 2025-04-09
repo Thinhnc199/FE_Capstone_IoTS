@@ -82,10 +82,13 @@ import WalletTrainer from "../components/Trainer/WalletTrainer";
 import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
 import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
 import ReportRequest from "../components/Admin/ReportRequest";
+
+import HistoryOrders from "../pages/Historyorder/HistoryOrder";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
   { path: "/home", component: Home, layout: MainLayout },
+  { path: "/testt", component: HistoryOrders, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/about", component: AboutIoTs, layout: MainLayout },
@@ -456,11 +459,11 @@ const publicRoute = [
     component: LabDetailTrainer,
     layout: TrainerIotLayout,
   },
-  {
-    path: "/test-his",
-    component: Register,
-    layout: MainLayout,
-  },
+  // {
+  //   path: "/test-his",
+  //   component: Register,
+  //   layout: MainLayout,
+  // },
   {
     path: "/trainer/wallet",
     component: WalletTrainer,

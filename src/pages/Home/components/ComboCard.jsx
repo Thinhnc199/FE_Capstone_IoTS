@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, Badge, Rate, Button } from "antd";
-import { HeartOutlined, EyeOutlined } from "@ant-design/icons";
-import { TypeDevice } from "./../../../redux/constants"; 
+import { EyeOutlined } from "@ant-design/icons";
+import { TypeDevice } from "./../../../redux/constants";
 import PropTypes from "prop-types";
 
 const ComboCard = ({ combo }) => (
@@ -29,11 +29,6 @@ const ComboCard = ({ combo }) => (
             <Button
               shape="circle"
               className="bg-white p-2 shadow-md"
-              icon={<HeartOutlined />}
-            />
-            <Button
-              shape="circle"
-              className="bg-white p-2 shadow-md"
               icon={<EyeOutlined />}
             />
           </div>
@@ -46,7 +41,12 @@ const ComboCard = ({ combo }) => (
         {combo.price.toLocaleString()}₫
       </p>
       <div className="flex items-center mt-2">
-        <Rate disabled allowHalf defaultValue={combo.rating} className="text-sm" />
+        <Rate
+          disabled
+          allowHalf
+          defaultValue={combo.rating}
+          className="text-sm"
+        />
       </div>
     </Card>
   </Link>
