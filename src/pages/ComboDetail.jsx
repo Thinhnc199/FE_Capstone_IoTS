@@ -621,7 +621,7 @@ const ComboDetail = () => {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Error adding to cart: ${error}`);
+      message.warning(`Error adding to cart: ${error}`);
     } finally {
       setIsAdding(false);
     }
@@ -649,7 +649,7 @@ const ComboDetail = () => {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Error adding to cart: ${error.message}`);
+      message.warning(`Error adding to cart: ${error.message}`);
     }
   };
 
@@ -685,7 +685,7 @@ const ComboDetail = () => {
           throw new Error(result.payload || "Failed to add lab to cart");
         }
       } catch (error) {
-        message.error(`Error: ${error.message}`);
+        message.warning(` ${error.message}`);
       } finally {
         setAddingLabId(null);
       }

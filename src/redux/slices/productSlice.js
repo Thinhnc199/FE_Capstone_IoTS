@@ -63,6 +63,20 @@ export const createProducts = createAsyncThunk(
     }
   }
 );
+export const updateProducts = createAsyncThunk(
+  "products/updateProducts",
+  async ({ id, ...productData }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `/api/iot-device/update-iot-device/${id}`,
+        productData
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 export const activeProducts = createAsyncThunk(
   "products/activeProducts",
   async ({ id }, { rejectWithValue }) => {
@@ -90,26 +104,7 @@ export const deactiveProducts = createAsyncThunk(
     }
   }
 );
-// export const updateProducts = createAsyncThunk(
-//   "products/updateProducts",
-//   async ({ id }, { rejectWithValue }) => {
-//     try {
-//       const response = await api.put(
-//         `/api/iot-device/update-iot-device/${id}`,
-//         {
-//           pageIndex,
-//           pageSize,
-//           searchKeyword,
-//           startFilterDate,
-//           endFilterDate,
-//         }
-//       );
-//       return response.data.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.message || error.message);
-//     }
-//   }
-// );
+
 export const getUrlImg = createAsyncThunk(
   "products/getUrlImg",
   async (file, { rejectWithValue }) => {
@@ -188,14 +183,18 @@ const productSlice = createSlice({
     });
 
     handleAsyncState(builder, activeProducts, (state, action) => {
-      // const updatedUser = action.payload;
-      // const index = state.users.findIndex((user) => user.id === updatedUser.id);
-      // if (index !== -1) {
-      //   state.users[index] = updatedUser;
-      // }
       state.items = state.items.map((item) =>
         item.id === action.payload.id ? action.payload : item
       );
+    });
+    handleAsyncState(builder, updateProducts, (state, action) => {
+      const updatedProduct = action.payload;
+      const index = state.items.findIndex(
+        (item) => item.id === updatedProduct.id
+      );
+      if (index !== -1) {
+        state.items[index] = updatedProduct;
+      }
     });
     handleAsyncState(builder, deactiveProducts, (state, action) => {
       const updatedProduct = action.payload;

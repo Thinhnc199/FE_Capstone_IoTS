@@ -320,7 +320,7 @@ export const getPrintLabel = createAsyncThunk(
       message.success("success to received Order ");
       return { blob: response.data, filename };
     } catch (error) {
-      message.warning("Failed to update status:", error);
+      // message.warning("Failed to update status:", error);
       return rejectWithValue(error.toString());
     }
   }
@@ -379,7 +379,7 @@ export const createCashPayment = createAsyncThunk(
       // message.success(response.data.message);
       return response.data;
     } catch (error) {
-      message.error(error);
+      // message.error(error);
       return rejectWithValue(error);
     }
   }
