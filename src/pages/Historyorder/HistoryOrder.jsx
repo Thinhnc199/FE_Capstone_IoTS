@@ -19,6 +19,7 @@ import {
   changeFeedbackStatus,
   getTrackingGhtk,
   changeCancelledStatus,
+  changeCancelledCashPayment,
 } from "../../redux/slices/orderSlice";
 
 const { Title } = Typography;
@@ -141,6 +142,18 @@ export default function HistoryOrders() {
     }
   };
 
+  const handleCancelCashPayment = async (orderId) => {
+    Modal.confirm({
+      title: "Cancle Order",
+      content: "Are you sure you cancle this order?",
+      okText: "Yes, Confirm",
+      cancelText: "Cancel",
+      onOk: async () => {
+        await dispatch(changeCancelledCashPayment({ orderId })).unwrap();
+        fetchOrders();
+      },
+    });
+  };
   const handleCancelFormChange = (name, value) => {
     setCancelOrderInfo({
       ...cancelOrderInfo,
@@ -179,13 +192,13 @@ export default function HistoryOrders() {
 
   return (
     <div className="mx-auto p-8 bg-background min-h-screen container">
-      <div className="max-w-6xl mb-4">
+      <div className="max-w-6xl mb-4 ">
         <BreadcrumbNav
           items={[{ label: "Home", path: "/" }, { label: "Order History" }]}
         />
       </div>
 
-      <div className="mx-auto">
+      <div className="mx-auto ">
         <Card
           className="shadow-sm rounded-lg border-0 overflow-hidden"
           bodyStyle={{ padding: 0 }}
@@ -200,6 +213,7 @@ export default function HistoryOrders() {
             statusFilter={statusFilter}
             onChange={handleTabChange}
             totalCount={historyOrders.totalCount}
+            className="mb-6"
           >
             {loading ? (
               <div className="text-center py-8">
@@ -212,6 +226,7 @@ export default function HistoryOrders() {
                   key={order.orderId}
                   onFeedbackClick={handleFeedbackClick}
                   onReceivedClick={handleChangeToFeedback}
+                  onCancelCashPayment={handleCancelCashPayment}
                   onTrackClick={handleTrackClick}
                   onCancelClick={handleCancelClick}
                   onWarrantyRequestClick={handleWarrantyRequestClick}

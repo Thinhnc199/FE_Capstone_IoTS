@@ -9,7 +9,7 @@ export const OrderItem = ({ item, onWarrantyRequestClick }) => {
   const isWarrantyApplicable = item.productType !== 3;
 
   return (
-    <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
+    <div className="flex justify-between items-center  p-3 bg-blue-50 rounded-md">
       <div className="flex items-center">
         <img
           src={item.imageUrl}
@@ -32,7 +32,7 @@ export const OrderItem = ({ item, onWarrantyRequestClick }) => {
             {isWarrantyValid ? (
               <Button
                 shape="round"
-                className="border-none text-yellow-500 flex items-center justify-center shadow-none hover:bg-yellow-100 bg-blue-50"
+                className="border-none text-yellow-500 flex items-center justify-center  shadow-none hover:bg-yellow-100 bg-blue-50"
                 onClick={() => onWarrantyRequestClick(item.orderItemId)}
               >
                 Warranty
