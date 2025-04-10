@@ -18,6 +18,7 @@ import {
   DeleteOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
+  RightCircleOutlined,
 } from "@ant-design/icons";
 import {
   getLabInformation,
@@ -462,7 +463,7 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
               size="large"
               className="bg-green-500 text-white hover:bg-green-600"
             >
-              Next
+              <RightCircleOutlined />
             </Button>
             <Button
               onClick={() => setIsEditMode(true)}
@@ -587,4 +588,3 @@ Step1Form.defaultProps = {
 };
 
 export default Step1Form;
-

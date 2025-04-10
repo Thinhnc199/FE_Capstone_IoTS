@@ -82,8 +82,15 @@ import WalletTrainer from "../components/Trainer/WalletTrainer";
 import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
 import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
 import ReportRequest from "../components/Admin/ReportRequest";
+
 import UpdateProductPage from "../components/StoreIoT/UpdateProductPage";
+
+import CombosManagement from "../components/Admin/CombosManagement";
+
 import HistoryOrders from "../pages/Historyorder/HistoryOrder";
+import ComboDetailPage from "../components/Admin/ComboDetailPage";
+import LabsManagement from "../components/Admin/LabsManagement";
+import LabDetailAdmin from "../components/Admin/LabDetailAdmin";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -281,6 +288,31 @@ const publicRoute = [
   {
     path: "/admin/report-request",
     component: ReportRequest,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/combos-management",
+    component: CombosManagement,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/combos-management/:comboId",
+    component: ComboDetailPage,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/labs-management",
+    component: LabsManagement,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/labs-detail/:labId",
+    component: LabsManagement,
+    layout: AdminLayout,
+  },
+  {
+    path: "/admin/detail-lab/:labId",
+    component: LabDetailAdmin,
     layout: AdminLayout,
   },
   // Store

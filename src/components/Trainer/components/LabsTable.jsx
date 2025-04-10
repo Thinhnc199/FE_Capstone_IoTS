@@ -19,7 +19,7 @@ const { Option } = Select;
 const LabsTable = ({ role, comboId, userId, storeId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { labs, loading: labLoading } = useSelector((state) => state.lab);
+  const { labs } = useSelector((state) => state.lab);
   const { combos, loading: comboLoading } = useSelector((state) => state.combo);
 
   const [pagination, setPagination] = useState({
@@ -255,6 +255,7 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
         { text: "Active", value: 1 },
         { text: "Pending", value: 2 },
         { text: "Rejected", value: 3 },
+        { text: "Draft", value: 4 },
       ],
       onFilter: (value, record) => record.status === value,
     },
@@ -263,15 +264,19 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
           {
             title: "Action",
             key: "action",
-            render: (_, record) => (
-              <Button
-                type="link"
-                icon={<EditOutlined />}
-                onClick={() => navigate(`/trainer/update-lab/${record.id}`)}
-              >
-                Edit
-              </Button>
-            ),
+            render: (_, record) => {
+              const isNotEditable = record.status === 1 || record.status === 2;
+              return (
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => navigate(`/trainer/update-lab/${record.id}`)}
+                  disabled={isNotEditable}
+                >
+                  Edit
+                </Button>
+              );
+            },
           },
         ]
       : []),
