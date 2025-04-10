@@ -6,7 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../components/Admin/AdminLayout";
 import ListAccount from "../components/Admin/ListAccount";
 import ListProducts from "../components/Admin/ProductsManageAdmin/ListProducts";
-import DashBoard from "../components/Admin/DashBoard/DashBoard";
+import DashBoard from "../components/Admin/DashBoard";
 import Profile from "../components/Admin/Profile";
 import ContactPage from "../pages/ContactPage";
 import ErrorPage from "../pages/ErrorPage";
@@ -82,7 +82,7 @@ import WalletTrainer from "../components/Trainer/WalletTrainer";
 import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
 import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
 import ReportRequest from "../components/Admin/ReportRequest";
-
+import UpdateProductPage from "../components/StoreIoT/UpdateProductPage";
 import HistoryOrders from "../pages/Historyorder/HistoryOrder";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
@@ -335,7 +335,11 @@ const publicRoute = [
     component: CreateProductPage,
     layout: StoreIotLayout,
   },
-
+  {
+    path: "/store/list-product/edit/:id",
+    component: UpdateProductPage,
+    layout: StoreIotLayout,
+  },
   {
     path: "/store/status",
     component: CheckStatus,

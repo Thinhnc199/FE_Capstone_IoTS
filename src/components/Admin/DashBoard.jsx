@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getStatisticAdmin } from "../../../redux/slices/dashboardSlice";
+import { getStatisticAdmin } from "../../redux/slices/dashboardSlice";
+import DynamicBreadcrumb from "../common/DynamicBreadcrumb";
 import {
   Row,
   Col,
@@ -11,6 +12,8 @@ import {
   message,
   Statistic,
 } from "antd";
+
+import CountUp from "react-countup";
 import {
   BarChart,
   Bar,
@@ -26,19 +29,15 @@ import {
 } from "recharts";
 import dayjs from "dayjs";
 import {
-  UserOutlined,
-  ShopOutlined,
-  SolutionOutlined,
-  CustomerServiceOutlined,
-  LaptopOutlined,
-  GiftOutlined,
-  ExperimentOutlined,
+  UsergroupAddOutlined,
+  ShoppingCartOutlined,
+  MessageOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
 
 const { Option } = Select;
 const { Title } = Typography;
-
+const formatter = (value) => <CountUp end={value} separator="," />;
 export default function DashBoard() {
   const dispatch = useDispatch();
   const { dataStatistic, loading } = useSelector((state) => state.statistics);
@@ -57,7 +56,7 @@ export default function DashBoard() {
     const requestData = month ? { year, month } : { year };
 
     dispatch(getStatisticAdmin(requestData)).catch((error) => {
-      message.error("Failed to fetch statistics: " + error.message);
+      message.warning("Failed to fetch statistics: " + error.message);
     });
   }, [dispatch, year, month]);
 
@@ -101,13 +100,16 @@ export default function DashBoard() {
   };
 
   return (
-    <div className="container mx-auto pb-8 px-4">
+    <div className="container mx-auto pb-8 ">
+      <div className=" max-w-6xl mb-4 ">
+        <DynamicBreadcrumb />
+      </div>
       <div className="max-w-6xl mb-6">
         <Title level={3} className="text-gray-800">
           Dashboard
         </Title>
+        {/* <p className="font-medium text-3xl ">👋Hi, vietle!</p> */}
       </div>
-
       {/* Filters */}
       <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
         <div className="flex flex-wrap items-center gap-4">
@@ -136,7 +138,6 @@ export default function DashBoard() {
           </Select>
         </div>
       </div>
-
       {loading ? (
         <div className="flex justify-center items-center py-12">
           <Spin size="large" />
@@ -149,42 +150,30 @@ export default function DashBoard() {
               {
                 title: "Total Users",
                 value: dataStatistic?.totalActiveUsers,
-                icon: <UserOutlined />,
+                icon: (
+                  <UsergroupAddOutlined className="text-3xl text-blue-500" />
+                ),
+                suffix: "",
               },
               {
-                title: "Store Users",
-                value: dataStatistic?.totalStoreUsers,
-                icon: <ShopOutlined />,
+                title: "Total Orders",
+                value: dataStatistic?.totalOrders,
+                icon: (
+                  <ShoppingCartOutlined className="text-3xl text-green-500" />
+                ),
+                suffix: "",
               },
               {
-                title: "Trainer Users",
-                value: dataStatistic?.totalTrainerUsers,
-                icon: <SolutionOutlined />,
+                title: "Total Feedbacks",
+                value: dataStatistic?.totalFeedbacks,
+                icon: <MessageOutlined className="text-3xl text-purple-500" />,
+                suffix: "",
               },
               {
-                title: "Customer Users",
-                value: dataStatistic?.totalCustomerUsers,
-                icon: <CustomerServiceOutlined />,
-              },
-              {
-                title: "Active Devices",
-                value: dataStatistic?.totalActiveDevices,
-                icon: <LaptopOutlined />,
-              },
-              {
-                title: "Active Combos",
-                value: dataStatistic?.totalActiveCombos,
-                icon: <GiftOutlined />,
-              },
-              {
-                title: "Active Labs",
-                value: dataStatistic?.totalActiveLabs,
-                icon: <ExperimentOutlined />,
-              },
-              {
-                title: "Total Revenue",
-                value: `$${dataStatistic?.totalRevenue?.toLocaleString() || 0}`,
-                icon: <DollarOutlined />,
+                title: "Total Revenues",
+                value: dataStatistic?.totalRevenue * 1000 || 0,
+                icon: <DollarOutlined className="text-3xl text-yellow-500" />,
+                suffix: "đ",
               },
             ].map((item, index) => (
               <Col xs={24} sm={12} md={6} key={index}>
@@ -192,12 +181,19 @@ export default function DashBoard() {
                   className="h-full transition-all duration-300 hover:shadow-md"
                   bodyStyle={{ padding: "16px" }}
                 >
-                  <Statistic
-                    title={<span className="text-gray-600">{item.title}</span>}
-                    value={item.value || 0}
-                    prefix={<span className="text-blue-500">{item.icon}</span>}
-                    valueStyle={{ fontSize: "20px", fontWeight: 500 }}
-                  />
+                  <div className="flex  items-center justify-between  flex-row text-center">
+                    <div className="flex flex-col justify-center items-start gap-2">
+                      <span className="text-gray-600">{item.title}</span>
+                      <Statistic
+                        value={item.value || 0}
+                        valueStyle={{ fontSize: "20px", fontWeight: 500 }}
+                        precision={2}
+                        formatter={formatter}
+                        suffix={item.suffix}
+                      />
+                    </div>
+                    <span className="text-blue-500">{item.icon}</span>
+                  </div>
                 </Card>
               </Col>
             ))}

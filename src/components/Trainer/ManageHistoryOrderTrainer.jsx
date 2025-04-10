@@ -422,7 +422,7 @@ export default function ManageHistoryOrderTrainer() {
         afterClose: () => URL.revokeObjectURL(pdfUrl), // Đảm bảo giải phóng bộ nhớ
       });
     } catch (error) {
-      message.error("Failed to preview label: " + error);
+      message.warning("GHTK delivery is currently disrupted.");
     }
   };
   const handleSuccessOrder = async (orderId) => {

@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   EllipsisOutlined,
@@ -26,11 +27,16 @@ const ProductStoreTables = ({
 
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price);
   };
-  const handleOpenModal = (user, type) => {
-    setSelectedProduct(user);
+  const handleOpenModal = (product, type) => {
+    if (type === "updateProduct") {
+      navigate(`/store/list-product/edit/${product.id}`);
+      return;
+    }
+    setSelectedProduct(product);
     setModalType(type);
     setIsModalOpen(true);
   };
