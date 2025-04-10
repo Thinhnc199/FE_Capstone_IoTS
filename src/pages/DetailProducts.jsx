@@ -70,12 +70,18 @@ export default function DetailProducts() {
       currentDate.getFullYear() - createdDate.getFullYear();
     const monthsDifference = currentDate.getMonth() - createdDate.getMonth();
 
-    // Total months difference
     return yearsDifference * 12 + monthsDifference;
   }
 
-  // Inside the component
   const joinedMonths = calculateMonthsSince(product?.storeInfo?.createdDate);
+
+  const displayJoinedTime =
+    joinedMonths <= 0
+      ? " this month"
+      : ` ${joinedMonths} month${joinedMonths > 1 ? "s" : ""} ago`;
+
+  // Inside the component
+
   const HandleAddToCart = async () => {
     if (product.quantity <= 0) {
       message.warning("The product is out of stock.");
@@ -337,10 +343,12 @@ export default function DetailProducts() {
               <h1 className="text-lg font-medium">{product.storeInfo.name}</h1>
 
               <div className="flex gap-2 mt-2 flex-none">
-                <button className=" px-4 py-2 border border-blue-500 bg-blue-100 text-blue-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
-                  <MessageOutlined className="mr-2" />
-                  Chat Now
-                </button>
+                <Link to={`/chat/${product.storeInfo.ownerId}`}>
+                  <button className=" px-4 py-2 border border-blue-500 bg-blue-100 text-blue-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
+                    <MessageOutlined className="mr-2" />
+                    Chat Now
+                  </button>
+                </Link>
                 <Link to={`/shop-infomation/${product.storeInfo.id}`}>
                   <button className="px-4 py-2 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
                     <ShopOutlined className="mr-2" />
@@ -373,9 +381,7 @@ export default function DetailProducts() {
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2 items-center">
                   <span className="text-gray-500">Joined:</span>
-                  <span className="text-blue-600">
-                    {joinedMonths} month ago
-                  </span>
+                  <span className="text-blue-600">{displayJoinedTime}</span>
                 </div>
                 <div className="flex gap-2 items-center">
                   <span className="text-gray-500">None:</span>

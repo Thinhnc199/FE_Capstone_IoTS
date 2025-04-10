@@ -6,7 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../components/Admin/AdminLayout";
 import ListAccount from "../components/Admin/ListAccount";
 import ListProducts from "../components/Admin/ProductsManageAdmin/ListProducts";
-import DashBoard from "../components/Admin/DashBoard";
+import DashBoard from "../components/Admin/DashBoard/DashBoard";
 import Profile from "../components/Admin/Profile";
 import ContactPage from "../pages/ContactPage";
 import ErrorPage from "../pages/ErrorPage";
