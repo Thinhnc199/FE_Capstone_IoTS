@@ -119,6 +119,7 @@ export const submitLab = createAsyncThunk(
       const response = await api.post(`/api/lab/trainer-management/submit-lab/${labId}`);
       return response.data;
     } catch (error) {
+      console.error("Error submitting lab:", error);
       return rejectWithValue(error);
     }
   }
@@ -131,6 +132,7 @@ export const updateLabInformation = createAsyncThunk(
       const response = await api.put(`/api/lab/trainer-management/update-lab-information/${labId}`, data);
       return response.data;
     } catch (error) {
+      console.error("Error updating lab information:", error);
       return rejectWithValue(error);
     }
   }
