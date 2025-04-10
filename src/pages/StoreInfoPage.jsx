@@ -79,10 +79,13 @@ export default function StoreInfoPage() {
             <h1 className="text-2xl font-semibold">{storeInfo.name}</h1>
             <p>Online 7 hours ago</p>
           </div>
-          <button className="ml-auto bg-blue-500 text-white px-4 py-2 rounded-lg hover:text-blue-600 hover:bg-white hover:border hover:border-blue-500">
-            <MessageOutlined className="mr-2" />
-            Chat Now
-          </button>
+
+          <Link to={`/chat/${storeInfo.ownerId}`}>
+            <button className="ml-auto bg-blue-500 text-white px-4 py-2 rounded-lg hover:text-blue-600 hover:bg-white hover:border hover:border-blue-500">
+              <MessageOutlined className="mr-2" />
+              Chat Now
+            </button>
+          </Link>
         </div>
       </div>
 

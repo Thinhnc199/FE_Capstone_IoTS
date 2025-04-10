@@ -31,7 +31,7 @@ export const fetchProducts = createAsyncThunk(
         startFilterDate,
         endFilterDate,
       });
-      return response.data.data.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -174,8 +174,8 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     handleAsyncState(builder, fetchProducts, (state, action) => {
-      state.items = action.payload;
-      state.totalCount = action.payload.length;
+      state.items = action.payload.data;
+      state.totalCount = action.payload.totalCount;
     });
     handleAsyncState(builder, fetchProductDetails, (state, action) => {
       state.ProductsDetail.data = action.payload;

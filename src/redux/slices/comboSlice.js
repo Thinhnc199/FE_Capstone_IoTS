@@ -1,5 +1,3 @@
-// File: src/redux/slices/comboSlice.js
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
 
@@ -20,14 +18,13 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
     });
 };
 
+// Fetch combos
 export const fetchCombos = createAsyncThunk(
   "combo/fetchCombos",
   async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue, dispatch }) => {
     try {
       console.log("📡 Fetching Combos with params:", { pageIndex, pageSize, searchKeyword });
-
-      const response = await api.post(`/api/combo/get-pagination`, { pageIndex, pageSize, searchKeyword: searchKeyword || "", });
-
+      const response = await api.post(`/api/combo/get-pagination`, { pageIndex, pageSize, searchKeyword: searchKeyword || "" });
       console.log("✅ API Response:", response.data);
 
       if (!response.data || !response.data.data || !Array.isArray(response.data.data.data)) {
@@ -35,15 +32,15 @@ export const fetchCombos = createAsyncThunk(
       }
 
       return {
-        data: response.data.data.data,  
+        data: response.data.data.data,
         pageIndex: response.data.data.pageIndex,
         pageSize: response.data.data.pageSize,
-        totalCount: response.data.data.totalCount
+        totalCount: response.data.data.totalCount,
       };
     } catch (error) {
-      console.error("❌ Error creating combo:", error);
-      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to create combo."));
-      return rejectWithValue(error.response?.data?.message || error.message || "Failed to create combo.");
+      console.error("❌ Error fetching combos:", error);
+      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to fetch combos."));
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch combos.");
     }
   }
 );
@@ -67,27 +64,22 @@ export const createCombo = createAsyncThunk(
   async (comboData, { rejectWithValue, dispatch }) => {
     try {
       const storeId = localStorage.getItem("storeId");
-
       if (!storeId) {
         throw new Error("❌ Store ID is missing! Make sure the store is loaded before creating a combo.");
       }
-
       if (!comboData || Object.keys(comboData).length === 0) {
         throw new Error("❌ Payload is missing! Please provide valid combo data.");
       }
 
       const payload = { ...comboData, storeId };
-
-      console.log("📡 Sending Payload:", JSON.stringify(payload, null, 2)); 
-
-      const response = await api.post("/api/combo/create-combo", payload); 
+      console.log("📡 Sending Payload:", JSON.stringify(payload, null, 2));
+      const response = await api.post("/api/combo/create-combo", payload);
       console.log("✅ Combo Created:", response.data);
       return response.data;
     } catch (error) {
       console.error("❌ Error creating combo:", error);
-      // Dispatch the error to Redux
-      dispatch(setComboError(error));
-      return rejectWithValue(error);
+      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to create combo."));
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to create combo.");
     }
   }
 );
@@ -100,43 +92,8 @@ export const updateCombo = createAsyncThunk(
       const response = await api.post(`/api/combo/update-combo/${comboId}`, comboData);
       return response.data;
     } catch (error) {
-      // return rejectWithValue(error.response?.data?.message || error.message);
-      dispatch(setComboError(error));
-      return rejectWithValue(error);
-    }
-  }
-);
-
-// Fetch IoT device details by ID
-export const fetchIotDeviceDetails = createAsyncThunk("combo/fetchIotDeviceDetails", async (id) => {
-  const response = await api.get(`/api/iot-device/get-iot-device-details-by-id/${id}`);
-  return response.data;
-});
-
-// Fetch paginated IoT devices
-export const fetchIotDevices = createAsyncThunk(
-  "combo/fetchIotDevices",
-  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
-    try {
-      console.log("📡 API Request:", { pageIndex, pageSize, searchKeyword });
-
-      const response = await api.post(`/api/iot-device/get-pagination`, { pageIndex, pageSize, searchKeyword });
-
-      console.log("✅ API Response:", response.data);
-
-      if (!response.data || !response.data.data || !Array.isArray(response.data.data.data)) {
-        throw new Error("API response is missing expected data structure");
-      }
-
-      return {
-        data: response.data.data.data,  // Lấy danh sách iotDevices
-        totalCount: response.data.data.totalCount,
-        pageIndex: response.data.data.pageIndex,
-        pageSize: response.data.data.pageSize
-      };
-    } catch (error) {
-      console.error("❌ API Error:", error.response?.data || error.message);
-      return rejectWithValue(error.response?.data?.message || error.message);
+      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to update combo."));
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to update combo.");
     }
   }
 );
@@ -167,8 +124,43 @@ export const deactiveCombos = createAsyncThunk(
       return { id: comboId, isActive: 0 }; // Trả về dữ liệu để cập nhật state
     } catch (error) {
       console.error("❌ Error deactivating combo:", error);
-      dispatch(setComboError(error.response?.data?.message || error || "Failed to deactivate combo."));
-      return rejectWithValue(error.response?.data?.message || error || "Failed to deactivate combo.");
+      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to deactivate combo."));
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to deactivate combo.");
+    }
+  }
+);
+
+// Fetch IoT device details by ID
+export const fetchIotDeviceDetails = createAsyncThunk(
+  "combo/fetchIotDeviceDetails",
+  async (id) => {
+    const response = await api.get(`/api/iot-device/get-iot-device-details-by-id/${id}`);
+    return response.data;
+  }
+);
+
+// Fetch paginated IoT devices
+export const fetchIotDevices = createAsyncThunk(
+  "combo/fetchIotDevices",
+  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
+    try {
+      console.log("📡 API Request:", { pageIndex, pageSize, searchKeyword });
+      const response = await api.post(`/api/iot-device/get-pagination`, { pageIndex, pageSize, searchKeyword });
+      console.log("✅ API Response:", response.data);
+
+      if (!response.data || !response.data.data || !Array.isArray(response.data.data.data)) {
+        throw new Error("API response is missing expected data structure");
+      }
+
+      return {
+        data: response.data.data.data,
+        totalCount: response.data.data.totalCount,
+        pageIndex: response.data.data.pageIndex,
+        pageSize: response.data.data.pageSize,
+      };
+    } catch (error) {
+      console.error("❌ API Error:", error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -209,7 +201,7 @@ const comboSlice = createSlice({
       state.filters.all.endFilterDate = action.payload;
     },
     setComboError: (state, action) => {
-      state.error = action.payload; 
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -217,7 +209,6 @@ const comboSlice = createSlice({
       state.combos = action.payload?.data || [];
       state.totalCount = action.payload?.totalCount || 0;
     });
-    
 
     handleAsyncState(builder, fetchComboDetails, (state, action) => {
       state.selectedCombo = action.payload;
@@ -233,16 +224,7 @@ const comboSlice = createSlice({
         combo.id === action.payload.id ? action.payload : combo
       );
     });
-    handleAsyncState(builder, fetchIotDevices, (state, action) => {
-      console.log("📌 Updating Redux Store with IoT Devices:", action.payload);
-    
-      if (!action.payload || !Array.isArray(action.payload.data)) {
-        console.warn("⚠️ API không trả về danh sách thiết bị, đặt giá trị rỗng");
-        state.iotDevices = [];
-      } else {
-        state.iotDevices = action.payload.data;
-      }
-    });
+
     handleAsyncState(builder, activeCombos, (state, action) => {
       state.combos = state.combos.map((combo) =>
         combo.id === action.payload.id ? { ...combo, isActive: 1 } : combo
@@ -254,10 +236,19 @@ const comboSlice = createSlice({
         combo.id === action.payload.id ? { ...combo, isActive: 0 } : combo
       );
     });
-    
+
+    handleAsyncState(builder, fetchIotDevices, (state, action) => {
+      console.log("📌 Updating Redux Store with IoT Devices:", action.payload);
+      if (!action.payload || !Array.isArray(action.payload.data)) {
+        console.warn("⚠️ API không trả về danh sách thiết bị, đặt giá trị rỗng");
+        state.iotDevices = [];
+      } else {
+        state.iotDevices = action.payload.data;
+      }
+    });
   },
 });
 
 // Export actions & reducer
-export const { setPageIndex, setPageSize, setSearchKeyword, setStartFilterDate, setEndFilterDate, setSelectedCombo, setComboError  } = comboSlice.actions;
+export const { setPageIndex, setPageSize, setSearchKeyword, setStartFilterDate, setEndFilterDate, setComboError } = comboSlice.actions;
 export default comboSlice.reducer;
