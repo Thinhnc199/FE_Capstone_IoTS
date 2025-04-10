@@ -512,10 +512,15 @@ import {
   Rate,
 } from "antd";
 import { ProductType } from "../redux/constants";
+import { Link } from "react-router-dom";
 import { memo } from "react";
 import { getLabMemberPagination } from "../redux/slices/labSlice";
 import ComboCard from "./../pages/Home/components/ComboCard";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  ShopOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
 
 const ComboDetail = () => {
   const { comboId } = useParams();
@@ -573,7 +578,28 @@ const ComboDetail = () => {
     },
     [selectedCombo]
   );
+  // Utility function
+  function calculateMonthsSince(dateString) {
+    const createdDate = new Date(dateString);
+    const currentDate = new Date();
 
+    const yearsDifference =
+      currentDate.getFullYear() - createdDate.getFullYear();
+    const monthsDifference = currentDate.getMonth() - createdDate.getMonth();
+
+    return yearsDifference * 12 + monthsDifference;
+  }
+
+  const joinedMonths = calculateMonthsSince(
+    selectedCombo?.data?.storeInfo?.createdDate
+  );
+
+  const displayJoinedTime =
+    joinedMonths <= 0
+      ? " this month"
+      : ` ${joinedMonths} month${joinedMonths > 1 ? "s" : ""} ago`;
+
+  //handleAddToCart
   const handleAddToCart = useCallback(async () => {
     if (!selectedCombo?.data?.quantity) {
       message.warning("Combo is out of stock.");
@@ -862,7 +888,82 @@ const ComboDetail = () => {
             </Col>
           </Row>
         </div>
+        <div className="flex items-center bg-white border rounded-md shadow-md p-4 my-4">
+          {selectedCombo.data?.storeInfo ? (
+            <>
+              {/* Avatar của shop */}
+              <div className="flex-shrink-0 mr-4">
+                <Link
+                  to={`/shop-infomation/${selectedCombo.data.storeInfo.id}`}
+                >
+                  <img
+                    src={selectedCombo.data.storeInfo.imageUrl}
+                    alt={selectedCombo.data.storeInfo.name}
+                    className="w-16 h-16 rounded-full object-cover border-gray-300 border"
+                  />
+                </Link>
+              </div>
 
+              <div className="flex-shrink-0">
+                <h1 className="text-lg font-medium">
+                  {selectedCombo.data.storeInfo.name}
+                </h1>
+
+                <div className="flex gap-2 mt-2 flex-none">
+                  <Link to={`/chat/${selectedCombo?.data?.storeInfo.ownerId}`}>
+                    <button className=" px-4 py-2 border border-blue-500 bg-blue-100 text-blue-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
+                      <MessageOutlined className="mr-2" />
+                      Chat Now
+                    </button>
+                  </Link>
+                  <Link
+                    to={`/shop-infomation/${selectedCombo.data.storeInfo.id}`}
+                  >
+                    <button className="px-4 py-2 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 transition-colors text-sm">
+                      <ShopOutlined className="mr-2" />
+                      View Shop
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="h-20 w-px bg-gray-300 mx-4"></div>
+
+              <div className="grid grid-cols-2 gap-4 w-full">
+                {/* Cột 1 */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <span className="text-gray-500">Evaluates:</span>
+                    <span className="text-blue-600">
+                      {selectedCombo.data.storeInfo.numberOfFeedbacks}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <span className="text-gray-500">Products:</span>
+                    <span className="text-blue-600">
+                      {selectedCombo.data.storeInfo.storeNumberOfProducts ||
+                        "N/A"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cột 2 */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <span className="text-gray-500">Joined:</span>
+                    <span className="text-blue-600">{displayJoinedTime}</span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <span className="text-gray-500">None:</span>
+                    <span className="text-blue-600">none</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <p>No shop information available.</p>
+          )}
+        </div>
         <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold text-headerBg mb-6 tracking-wide">
             Labs related to combo
