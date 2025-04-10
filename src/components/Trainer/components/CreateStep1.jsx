@@ -602,7 +602,7 @@ import {
   createLabInformation,
   getLabInformation,
   uploadLabVideo,
-  updateLabInformation, // Thêm import mới
+  updateLabInformation,
 } from "./../../../redux/slices/labSlice";
 import { fetchCombos } from "./../../../redux/slices/comboSlice";
 import { uploadFiles } from "./../../../api/apiConfig";
