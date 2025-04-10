@@ -200,8 +200,8 @@ const initialState = {
   labs: [],
   playlist: [],
   labInfo: null,
-  videoUrl: null, // Lưu URL của video vừa upload
-  videoFileName: null, // Lưu tên file video
+  videoUrl: null, 
+  videoFileName: null, 
   loading: false,
   error: null,
 };
@@ -280,7 +280,7 @@ const labSlice = createSlice({
       })
       .addCase(getLabAdminPagination.fulfilled, (state, action) => {
         state.loading = false;
-        state.labs = action.payload;
+        state.labs = action.payload.data;
       })
       .addCase(getLabAdminPagination.rejected, (state, action) => {
         state.loading = false;

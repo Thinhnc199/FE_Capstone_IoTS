@@ -239,10 +239,10 @@ const Step2Form = ({ labId, onBack }) => {
               videoUrl: result.id,
             });
             setUploadProgress(((i + 1) / videos.length) * 100);
-          } catch (err) {
+          } catch (error) {
             notification.error({
               message: "Failed to upload video",
-              description: err?.message || "Unknown error",
+              description: error || "Unknown error",
             });
             return;
           }
@@ -470,7 +470,7 @@ const Step2Form = ({ labId, onBack }) => {
 
       </div> */}
       <div className="flex justify-between mt-6">
-        {!isDrafted ? (
+        {!isDrafted || isEditing ? (
           <>
             <Button onClick={onBack} disabled={isDrafted && !isEditing}>
               <LeftCircleOutlined />

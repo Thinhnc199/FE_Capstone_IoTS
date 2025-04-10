@@ -19,7 +19,7 @@ const { Option } = Select;
 const LabsTable = ({ role, comboId, userId, storeId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { labs, loading: labLoading } = useSelector((state) => state.lab);
+  const { labs } = useSelector((state) => state.lab);
   const { combos, loading: comboLoading } = useSelector((state) => state.combo);
 
   const [pagination, setPagination] = useState({

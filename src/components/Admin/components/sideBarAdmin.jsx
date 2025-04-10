@@ -68,7 +68,17 @@ const items2 = [
       { key: "lp", label: <Link to="/admin/list-product">List products</Link> },
       {
         key: "cm",
-        label: <Link to="/admin/category-management">Category Management</Link>,
+        label: (
+          <Link to="/admin/category-management">Categories Management</Link>
+        ),
+      },
+      {
+        key: "mcombo",
+        label: <Link to="/admin/combos-management">Combos Management</Link>,
+      },
+      {
+        key: "mlab",
+        label: <Link to="/admin/labs-management">Labs Management</Link>,
       },
     ],
   },

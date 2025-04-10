@@ -25,7 +25,7 @@ const ComboDetailModal = ({ visible, onCancel, combo }) => {
   return (
     <Modal
       title={combo?.name || "Loading..."}
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       footer={null}
       width={900}
