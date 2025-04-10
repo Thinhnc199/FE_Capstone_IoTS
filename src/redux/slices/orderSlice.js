@@ -282,7 +282,22 @@ export const changeCancelledStatus = createAsyncThunk(
       message.success(response.data.message);
       return response.data;
     } catch (error) {
-      message.error(error);
+      message.warning(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const changeCancelledCashPayment = createAsyncThunk(
+  "createOrders/changeCancelledCashPayment",
+  async ({ orderId }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        `/api/Order/order-status/cash-payment/cancelled/${orderId}`
+      );
+      message.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      message.warning(error);
       return rejectWithValue(error);
     }
   }

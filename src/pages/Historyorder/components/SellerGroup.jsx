@@ -8,11 +8,13 @@ import { OrderItem } from "./OrderItem";
 export const SellerGroup = ({
   group,
   orderId,
+
   onFeedbackClick,
   onWarrantyRequestClick,
+  onReceivedClick,
 }) => (
-  <div className="rounded-md mb-4">
-    <div className="flex justify-between items-center border-b pb-3 mb-3">
+  <div className=" mb-4 border-b border-gray-300 ">
+    <div className="flex justify-between items-center pb-3 mb-3">
       <div className="flex items-center space-x-3">
         <p className="font-bold text-md">{group.sellerName}</p>
         <div className="flex space-x-2">
@@ -30,14 +32,14 @@ export const SellerGroup = ({
       </div>
       <div className="flex items-center space-x-3">
         <OrderStatusTag statusId={group.orderItemStatus} />
-        {group.orderItemStatus === 5 && (
+        {/* {group.orderItemStatus === 5 && (
           <Button
             className="bg-blue-500 text-white rounded-md border border-blue-500"
             onClick={() => onFeedbackClick({ ...group, orderId })}
           >
             Feedback
           </Button>
-        )}
+        )} */}
       </div>
     </div>
 
@@ -48,6 +50,28 @@ export const SellerGroup = ({
         onWarrantyRequestClick={onWarrantyRequestClick}
       />
     ))}
+    <div className=" justify-end flex items-center my-2">
+      {" "}
+      {group.orderItemStatus === 5 && (
+        <Button
+          className="bg-blue-500 text-white rounded-md border border-blue-500"
+          onClick={() => onFeedbackClick({ ...group, orderId })}
+        >
+          Feedback
+        </Button>
+      )}
+      {group.orderItemStatus === 3 && (
+        <Button
+          className="bg-green-500 text-white rounded-md  border border-green-500"
+          onClick={() => {
+            console.log("Received clicked", group.sellerId, orderId);
+            onReceivedClick(orderId, group.sellerId);
+          }}
+        >
+          Received Order
+        </Button>
+      )}
+    </div>
   </div>
 );
 
@@ -68,6 +92,8 @@ SellerGroup.propTypes = {
     ).isRequired,
   }).isRequired,
   orderId: PropTypes.number,
+  sellerId: PropTypes.number,
   onFeedbackClick: PropTypes.func.isRequired,
   onWarrantyRequestClick: PropTypes.func.isRequired,
+  onReceivedClick: PropTypes.func.isRequired,
 };

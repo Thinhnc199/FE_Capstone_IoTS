@@ -15,11 +15,12 @@ export const OrderCard = ({
   onTrackClick,
   onCancelClick,
   onWarrantyRequestClick,
+  onCancelCashPayment,
 }) => {
   const trackingId = order.orderDetailsGrouped[0]?.trackingId;
 
   return (
-    <div className="p-6 rounded-lg shadow-md mb-6 border border-gray-200 bg-white">
+    <div className="p-6 rounded-lg shadow-md my-6 border border-gray-200 bg-white">
       <div className="flex justify-between items-center border-b pb-4 mb-4">
         <div>
           <div className="flex items-center space-x-2 mb-2">
@@ -50,9 +51,9 @@ export const OrderCard = ({
           {order.orderStatusId === 1 ? (
             <p className="text-green-600 pl-3">PAID</p>
           ) : order.orderStatusId === 2 ? (
-            <p className="text-red-600">CANCELLED</p>
+            <p className="text-red-600 pl-3">CANCELLED</p>
           ) : (
-            <p className="text-yellow-600">CASH PAYMENT</p>
+            <p className="text-yellow-600 pl-3">CASH PAYMENT</p>
           )}
         </div>
       </div>
@@ -63,11 +64,12 @@ export const OrderCard = ({
           orderId={order.orderId}
           key={`${order.orderId}-${group.sellerId}`}
           onFeedbackClick={onFeedbackClick}
+          onReceivedClick={onReceivedClick}
           onWarrantyRequestClick={onWarrantyRequestClick}
         />
       ))}
 
-      <div className="flex justify-between items-center border-t pt-4">
+      <div className="flex justify-between items-center  pt-4">
         <div className="flex items-center space-x-4">
           <span className="font-medium">Shipping fee:</span>
           <span>{order.shippingFee.toLocaleString("vi-VN")}₫</span>
@@ -81,7 +83,7 @@ export const OrderCard = ({
       </div>
 
       <div className="flex justify-end space-x-3 mt-6">
-        {order.orderDetailsGrouped.some(
+        {/* {order.orderDetailsGrouped.some(
           (group) => group.orderItemStatus === 3
         ) && (
           <Button
@@ -95,23 +97,31 @@ export const OrderCard = ({
           >
             Received Order
           </Button>
-        )}
+        )} */}
 
         {order.orderDetailsGrouped.some(
           (group) => group.orderItemStatus === 1
-        ) && (
-          <Button
-            className="bg-red-500 text-white rounded-md border border-red-500"
-            onClick={() =>
-              onCancelClick(
-                order.orderId,
-                order.orderDetailsGrouped[0].sellerId
-              )
-            }
-          >
-            Cancel Order
-          </Button>
-        )}
+        ) &&
+          (order.orderStatusId === 3 ? (
+            <Button
+              className="bg-red-500 text-white rounded-md border border-red-500"
+              onClick={() => onCancelCashPayment(order.orderId)}
+            >
+              Cancel Order
+            </Button>
+          ) : (
+            <Button
+              className="bg-red-500 text-white rounded-md border border-red-500"
+              onClick={() =>
+                onCancelClick(
+                  order.orderId,
+                  order.orderDetailsGrouped[0].sellerId
+                )
+              }
+            >
+              Cancel Order
+            </Button>
+          ))}
       </div>
     </div>
   );
@@ -148,4 +158,5 @@ OrderCard.propTypes = {
   onTrackClick: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func.isRequired,
   onWarrantyRequestClick: PropTypes.func.isRequired,
+  onCancelCashPayment: PropTypes.func.isRequired,
 };

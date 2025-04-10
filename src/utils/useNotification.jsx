@@ -1,15 +1,20 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNotifications, markAllAsRead } from "../redux/slices/notificationSlice"; // Điều chỉnh đường dẫn nếu cần
+import {
+  fetchNotifications,
+  markAllAsRead,
+} from "../redux/slices/notificationSlice"; // Điều chỉnh đường dẫn nếu cần
 import { Dropdown, Badge } from "antd";
 import { BellOutlined, LoadingOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 const useNotification = () => {
   const dispatch = useDispatch();
-  const { notifications = [], unreadCount = 0, loading = false } = useSelector(
-    (state) => state.notification || {}
-  );
+  const {
+    notifications = [],
+    unreadCount = 0,
+    loading = false,
+  } = useSelector((state) => state.notification || {});
   const token = localStorage.getItem("token");
 
   // Fetch notifications khi đã đăng nhập
@@ -21,7 +26,7 @@ const useNotification = () => {
 
   // Menu cho Dropdown thông báo
   const notificationMenu = (
-    <div className="w-80 max-h-96 overflow-y-auto bg-white shadow-lg rounded-md border border-gray-200">
+    <div className="w-80 max-h-96 overflow-y-auto bg-white shadow-lg rounded-md border border-gray-200 ">
       {loading ? (
         <div className="p-3 text-center text-gray-500">
           <LoadingOutlined spin /> Loading...

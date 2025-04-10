@@ -40,7 +40,7 @@ import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
 import RegisterCustomer from "../pages/RegisterCustomer";
 import CategoryManagement from "../components/Admin/ProductsManageAdmin/CategoryManagement";
-import HistoryOrder from "../pages/HistoryOrder";
+
 import ComboTable from "../components/StoreIoT/components/ComboTable";
 import Teststore from "../components/StoreIoT/Teststore";
 import Checkout from "../pages/Checkout/Checkout";
@@ -88,7 +88,7 @@ const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
   { path: "/home", component: Home, layout: MainLayout },
-  { path: "/testt", component: HistoryOrders, layout: MainLayout },
+  { path: "/history-order", component: HistoryOrders, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
   { path: "/about", component: AboutIoTs, layout: MainLayout },
@@ -124,11 +124,11 @@ const publicRoute = [
     component: Checkout,
     layout: null,
   },
-  {
-    path: "/history-order",
-    component: HistoryOrder,
-    layout: MainLayout,
-  },
+  // {
+  //   path: "/history-order",
+  //   component: HistoryOrder,
+  //   layout: MainLayout,
+  // },
   {
     path: "/profile",
     component: ProfilePage,
