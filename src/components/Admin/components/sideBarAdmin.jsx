@@ -22,11 +22,11 @@ const items2 = [
     label: "Accounts",
     backgroundColor: "white",
     children: [
-      {
-        key: "la",
-        label: <Link to="/admin/list-account">List Account</Link>,
-        icon: <UnorderedListOutlined />,
-      },
+      // {
+      //   key: "la",
+      //   label: <Link to="/admin/list-account">List Account</Link>,
+      //   icon: <UnorderedListOutlined />,
+      // },
       // {
       //   key: "admin",
       //   label: <Link to="/admin/admin-account">Admin Account</Link>,
