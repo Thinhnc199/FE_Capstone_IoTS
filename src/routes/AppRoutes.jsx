@@ -97,7 +97,7 @@ import StoreAccountManage from "../components/Staff/StoreAccountManage";
 import TrainerAccountManage from "../components/Staff/TrainerAccountManage";
 import CustomerAccountManage from "../components/Staff/CustomerAccountManage";
 import DashBoardStaff from "../components/Staff/DashBoardStaff";
-import DashBoardManager from "../components/Manager/DashBoardManager";
+// import DashBoardManager from "../components/Manager/DashBoardManager";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -358,12 +358,12 @@ const publicRoute = [
   //manager
   {
     path: "/manager/dashboard",
-    component: DashBoardManager,
+    component: DashBoard,
     layout: ManagerLayout,
   },
   {
     path: "/manager",
-    component: DashBoardManager,
+    component: DashBoard,
     layout: ManagerLayout,
   },
 
