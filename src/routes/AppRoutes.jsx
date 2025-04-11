@@ -4,6 +4,8 @@ import Register from "../pages/Register";
 import RegisterEmail from "../pages/RegisterEmail";
 import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../components/Admin/AdminLayout";
+import StaffLayout from "../components/Staff/StaffLayout";
+import ManagerLayout from "../components/Manager/ManagerLayout";
 import ListAccount from "../components/Admin/ListAccount";
 import ListProducts from "../components/Admin/ProductsManageAdmin/ListProducts";
 import DashBoard from "../components/Admin/DashBoard";
@@ -84,13 +86,18 @@ import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin
 import ReportRequest from "../components/Admin/ReportRequest";
 
 import UpdateProductPage from "../components/StoreIoT/UpdateProductPage";
-
 import CombosManagement from "../components/Admin/CombosManagement";
-
 import HistoryOrders from "../pages/Historyorder/HistoryOrder";
 import ComboDetailPage from "../components/Admin/ComboDetailPage";
 import LabsManagement from "../components/Admin/LabsManagement";
 import LabDetailAdmin from "../components/Admin/LabDetailAdmin";
+//staff
+import ListAccountManage from "../components/Staff/ListAccountManage";
+import StoreAccountManage from "../components/Staff/StoreAccountManage";
+import TrainerAccountManage from "../components/Staff/TrainerAccountManage";
+import CustomerAccountManage from "../components/Staff/CustomerAccountManage";
+import DashBoardStaff from "../components/Staff/DashBoardStaff";
+import DashBoardManager from "../components/Manager/DashBoardManager";
 const publicRoute = [
   { path: "/test", component: Test, layout: TrainerLayout },
   { path: "/", component: Home, layout: MainLayout },
@@ -315,6 +322,51 @@ const publicRoute = [
     component: LabDetailAdmin,
     layout: AdminLayout,
   },
+  //Staff
+  {
+    path: "/staff/list-account",
+    component: ListAccountManage,
+    layout: StaffLayout,
+  },
+
+  {
+    path: "/staff/dashboard",
+    component: DashBoardStaff,
+    layout: StaffLayout,
+  },
+  {
+    path: "/staff",
+    component: DashBoardStaff,
+    layout: StaffLayout,
+  },
+
+  {
+    path: "/staff/store-account",
+    component: StoreAccountManage,
+    layout: StaffLayout,
+  },
+  {
+    path: "/staff/trainer-account",
+    component: TrainerAccountManage,
+    layout: StaffLayout,
+  },
+  {
+    path: "/staff/customer-account",
+    component: CustomerAccountManage,
+    layout: StaffLayout,
+  },
+  //manager
+  {
+    path: "/manager/dashboard",
+    component: DashBoardManager,
+    layout: ManagerLayout,
+  },
+  {
+    path: "/manager",
+    component: DashBoardManager,
+    layout: ManagerLayout,
+  },
+
   // Store
   {
     path: "/store",
