@@ -199,12 +199,14 @@ export const fetchHistoryOrderAdmin = createAsyncThunk(
     }
   }
 );
+
 export const changePackingStatus = createAsyncThunk(
   "createOrders/changePackingStatus",
-  async ({ orderId }, { rejectWithValue }) => {
+  async ({ orderId, orderProductInfo }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `/api/Order/order-status/packing/${orderId}`
+        `/api/Order/order-status/packing/${orderId}`,
+        { orderProductInfo }
       );
       message.success(response.data.message);
       return response.data;

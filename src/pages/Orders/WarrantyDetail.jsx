@@ -157,8 +157,8 @@ const WarrantyDetail = () => {
             <p>{warranty.id}</p>
           </div>
           <div>
-            <p className="text-textColer font-semibold">Order ID:</p>
-            <p>{warranty.orderId}</p>
+            <p className="text-textColer font-semibold">Order code:</p>
+            <p>{warranty.orderCode}</p>
           </div>
           <div>
             <p className="text-textColer font-semibold">Product Name:</p>
