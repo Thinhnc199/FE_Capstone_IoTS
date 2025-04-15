@@ -673,10 +673,10 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
           notification.success({ message: "Video uploaded successfully!" });
         } catch (err) {
           console.error("Auto-upload video failed:", err);
-          notification.error({
-            message: "Failed to upload video",
-            description: err?.message || "Unknown error",
-          });
+          // notification.error({
+          //   message: "Failed to upload video",
+          //   description: err?.message || "Unknown error",
+          // });
           setVideoFile(null);
         } finally {
           setUploading(false);

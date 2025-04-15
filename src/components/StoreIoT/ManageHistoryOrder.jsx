@@ -115,6 +115,12 @@ const OrderItem = ({ item }) => (
       <div className="ml-4">
         <p className="font-medium">{item.nameProduct}</p>
         <p className="text-gray-600">Quantity: {item.quantity}</p>
+        {item.physicalSerialNumbers &&
+          item.physicalSerialNumbers.length > 0 && (
+            <p className="text-gray-600">
+              Serial Numbers: {item.physicalSerialNumbers.join(", ")}
+            </p>
+          )}
       </div>
     </div>
     <p className="text-red-500 font-medium">
@@ -130,6 +136,7 @@ OrderItem.propTypes = {
     nameProduct: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
+    physicalSerialNumbers: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
 };
 
@@ -482,6 +489,7 @@ export default function ManageHistoryOrder() {
   const [currentOrder, setCurrentOrder] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [trackingInfo, setTrackingInfo] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
   const showConfirmModal = (title, content, onConfirm) => {
@@ -493,6 +501,17 @@ export default function ManageHistoryOrder() {
       onOk: onConfirm,
     });
   };
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+    dispatch(
+      fetchHistoryOrderStoreTrainer({
+        pageIndex: 1, // Reset về trang đầu tiên khi tìm kiếm
+        pageSize,
+        StatusFilter: statusFilter,
+        searchKeyword: value,
+      })
+    );
+  };
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
   };
@@ -503,6 +522,7 @@ export default function ManageHistoryOrder() {
         pageIndex,
         pageSize,
         StatusFilter: statusFilter,
+        searchKeyword,
       })
     );
   }, [dispatch, pageIndex, pageSize, statusFilter]);
@@ -675,6 +695,19 @@ export default function ManageHistoryOrder() {
                     </div>
                   }
                 >
+                  <div className=" pt-4">
+                    <Input.Search
+                      placeholder="Search by order code"
+                      allowClear
+                      // enterButton="Search"
+                      size="large"
+                      value={searchKeyword}
+                      onChange={(e) => setSearchKeyword(e.target.value)}
+                      onSearch={handleSearch}
+
+                      // className="max-w-md"
+                    />
+                  </div>
                   <div className="py-4">
                     {loading ? (
                       <div className="text-center py-8">

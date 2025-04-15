@@ -1,13 +1,16 @@
 // redux/labSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from './../../api/apiConfig';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "./../../api/apiConfig";
 import { message } from "antd";
 // Action Types
 export const getLabMemberPagination = createAsyncThunk(
-  'lab/getLabMemberPagination',
+  "lab/getLabMemberPagination",
   async ({ comboId, params }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/lab/member/get-lab-pagination/${comboId}`, params);
+      const response = await api.post(
+        `/api/lab/member/get-lab-pagination/${comboId}`,
+        params
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -16,10 +19,13 @@ export const getLabMemberPagination = createAsyncThunk(
 );
 
 export const getLabStorePagination = createAsyncThunk(
-  'lab/getLabStorePagination',
+  "lab/getLabStorePagination",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/lab/store-management/get-lab-pagination', params);
+      const response = await api.post(
+        "/api/lab/store-management/get-lab-pagination",
+        params
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -28,10 +34,13 @@ export const getLabStorePagination = createAsyncThunk(
 );
 
 export const getLabTrainerPagination = createAsyncThunk(
-  'lab/getLabTrainerPagination',
+  "lab/getLabTrainerPagination",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/lab/trainer-management/get-lab-pagination', params);
+      const response = await api.post(
+        "/api/lab/trainer-management/get-lab-pagination",
+        params
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -40,10 +49,13 @@ export const getLabTrainerPagination = createAsyncThunk(
 );
 
 export const getLabCustomerPagination = createAsyncThunk(
-  'lab/getLabCustomerPagination',
+  "lab/getLabCustomerPagination",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/lab/user-management/get-lab-pagination', params);
+      const response = await api.post(
+        "/api/lab/user-management/get-lab-pagination",
+        params
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -51,12 +63,14 @@ export const getLabCustomerPagination = createAsyncThunk(
   }
 );
 
-
 export const getLabAdminPagination = createAsyncThunk(
-  'lab/getLabAdminPagination',
+  "lab/getLabAdminPagination",
   async (params, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/lab/admin-manager-management/get-lab-pagination', params);
+      const response = await api.post(
+        "/api/lab/admin-manager-management/get-lab-pagination",
+        params
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -65,10 +79,13 @@ export const getLabAdminPagination = createAsyncThunk(
 );
 
 export const createLabInformation = createAsyncThunk(
-  'lab/createLabInformation',
+  "lab/createLabInformation",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/lab/trainer-management/create-lab-information', data);
+      const response = await api.post(
+        "/api/lab/trainer-management/create-lab-information",
+        data
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -77,10 +94,13 @@ export const createLabInformation = createAsyncThunk(
 );
 
 export const createLabVideoPlaylist = createAsyncThunk(
-  'lab/createLabVideoPlaylist',
+  "lab/createLabVideoPlaylist",
   async ({ labId, playlist }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/lab/trainer-management/create-or-update-lab-video-playlist/${labId}`, playlist);
+      const response = await api.post(
+        `/api/lab/trainer-management/create-or-update-lab-video-playlist/${labId}`,
+        playlist
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -89,7 +109,7 @@ export const createLabVideoPlaylist = createAsyncThunk(
 );
 
 export const getLabPlaylist = createAsyncThunk(
-  'lab/getLabPlaylist',
+  "lab/getLabPlaylist",
   async (labId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/api/lab/get-lab-playlist/${labId}`);
@@ -101,7 +121,7 @@ export const getLabPlaylist = createAsyncThunk(
 );
 
 export const getLabInformation = createAsyncThunk(
-  'lab/getLabInformation',
+  "lab/getLabInformation",
   async (labId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/api/lab/get-lab-information/${labId}`);
@@ -113,10 +133,12 @@ export const getLabInformation = createAsyncThunk(
 );
 
 export const submitLab = createAsyncThunk(
-  'lab/submitLab',
+  "lab/submitLab",
   async (labId, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/lab/trainer-management/submit-lab/${labId}`);
+      const response = await api.post(
+        `/api/lab/trainer-management/submit-lab/${labId}`
+      );
       return response.data;
     } catch (error) {
       console.error("Error submitting lab:", error);
@@ -126,10 +148,13 @@ export const submitLab = createAsyncThunk(
 );
 
 export const updateLabInformation = createAsyncThunk(
-  'lab/updateLabInformation',
+  "lab/updateLabInformation",
   async ({ labId, data }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/api/lab/trainer-management/update-lab-information/${labId}`, data);
+      const response = await api.put(
+        `/api/lab/trainer-management/update-lab-information/${labId}`,
+        data
+      );
       return response.data;
     } catch (error) {
       console.error("Error updating lab information:", error);
@@ -143,7 +168,9 @@ export const approveLab = createAsyncThunk(
   "lab/approveLab",
   async (labId, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/lab/store-management/approve/${labId}`);
+      const response = await api.post(
+        `/api/lab/store-management/approve/${labId}`
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to approve lab");
@@ -156,7 +183,10 @@ export const rejectLab = createAsyncThunk(
   "lab/rejectLab",
   async ({ labId, remark }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/lab/store-management/reject/${labId}`, { remark });
+      const response = await api.post(
+        `/api/lab/store-management/reject/${labId}`,
+        { remark }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to reject lab");
@@ -175,7 +205,9 @@ export const uploadLabVideo = createAsyncThunk(
       const response = await api.post("/api/file/upload-videos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
-          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
           console.log(`Upload Progress: ${percent}%`);
         },
       });
@@ -186,10 +218,13 @@ export const uploadLabVideo = createAsyncThunk(
 
       return rejectWithValue("Failed to upload video");
     } catch (error) {
-      console.error("❌ Video Upload Error:", error);
+      if (error.response?.status === 413) {
+        message.warning("Request Entity Too Large");
+        return rejectWithValue("Request Entity Too Large");
+      }
       const errorMessage =
-        error.response?.data?.message || "Failed to upload video. Please try again.";
-      message.error(errorMessage);
+        error.response?.data?.message || "Request Entity Too Large";
+      message.warning(errorMessage);
       return rejectWithValue(errorMessage);
     }
   }
@@ -200,22 +235,23 @@ const initialState = {
   labs: [],
   playlist: [],
   labInfo: null,
-  videoUrl: null, 
-  videoFileName: null, 
+  videoUrl: null,
+  videoFileName: null,
   loading: false,
   error: null,
 };
 
 // Slice
 const labSlice = createSlice({
-  name: 'lab',
+  name: "lab",
   initialState,
   reducers: {
     clearError: (state) => {
       state.error = null;
       state.labInfo = null;
     },
-    resetVideoState: (state) => { // Reset trạng thái video
+    resetVideoState: (state) => {
+      // Reset trạng thái video
       state.videoUrl = null;
       state.videoFileName = null;
     },
@@ -248,19 +284,19 @@ const labSlice = createSlice({
         state.error = action.payload;
       })
 
- // Get Lab Store Pagination
- .addCase(getLabCustomerPagination.pending, (state) => {
-  state.loading = true;
-})
-.addCase(getLabCustomerPagination.fulfilled, (state, action) => {
-  state.loading = false;
-  state.labs = action.payload.data;
-})
-.addCase(getLabCustomerPagination.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload;
-})
-      
+      // Get Lab Store Pagination
+      .addCase(getLabCustomerPagination.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getLabCustomerPagination.fulfilled, (state, action) => {
+        state.loading = false;
+        state.labs = action.payload.data;
+      })
+      .addCase(getLabCustomerPagination.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
       // Get Lab Trainer Pagination
       .addCase(getLabTrainerPagination.pending, (state) => {
         state.loading = true;
@@ -307,7 +343,7 @@ const labSlice = createSlice({
       })
       .addCase(updateLabInformation.fulfilled, (state, action) => {
         state.loading = false;
-        state.labInfo = action.payload.data; 
+        state.labInfo = action.payload.data;
       })
       .addCase(updateLabInformation.rejected, (state, action) => {
         state.loading = false;
