@@ -20,7 +20,7 @@ export const OrderCard = ({
   const trackingId = order.orderDetailsGrouped[0]?.trackingId;
 
   return (
-    <div className="p-6 rounded-lg shadow-md my-6 border border-gray-200 bg-white">
+    <div className="p-6 rounded-lg shadow-md my-4 border border-gray-200 bg-white">
       <div className="flex justify-between items-center border-b pb-4 mb-4">
         <div>
           <div className="flex items-center space-x-2 mb-2">

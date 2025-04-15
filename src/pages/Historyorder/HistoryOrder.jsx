@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Typography, Card, Spin, Modal, message } from "antd";
+import { Typography, Card, Spin, Modal, message, Input } from "antd";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 
@@ -28,6 +28,7 @@ dayjs.locale("vi");
 export default function HistoryOrders() {
   const dispatch = useDispatch();
   const [statusFilter, setStatusFilter] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedSellerGroup, setSelectedSellerGroup] = useState(null);
   const [trackingInfo, setTrackingInfo] = useState(null);
   const [cancelOrderInfo, setCancelOrderInfo] = useState({
@@ -52,19 +53,32 @@ export default function HistoryOrders() {
     orderItemId: null,
   });
 
-  const { historyOrders, loading } = useSelector((state) => state.orders);
+  const { historyOrders, pageIndex, pageSize, loading } = useSelector(
+    (state) => state.orders
+  );
 
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
+    setSearchKeyword("");
   };
-
-  const fetchOrders = () => {
-    dispatch(fetchHistoryOrder({ StatusFilter: statusFilter }));
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+    fetchOrders(value);
+  };
+  const fetchOrders = (value) => {
+    dispatch(
+      fetchHistoryOrder({
+        pageIndex: 1, // Reset về trang đầu tiên khi tìm kiếm
+        pageSize,
+        StatusFilter: statusFilter,
+        searchKeyword: value,
+      })
+    );
   };
 
   useEffect(() => {
     fetchOrders();
-  }, [dispatch, statusFilter]);
+  }, [dispatch, pageIndex, pageSize, statusFilter]);
 
   const handleFeedbackClick = (group) => {
     setSelectedSellerGroup(group);
@@ -215,6 +229,17 @@ export default function HistoryOrders() {
             totalCount={historyOrders.totalCount}
             className="mb-6"
           >
+            <div className="pt-4">
+              <Input.Search
+                placeholder="Search by order code"
+                allowClear
+                size="large"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                onSearch={handleSearch}
+              />
+            </div>
+
             {loading ? (
               <div className="text-center py-8">
                 <Spin size="large" />

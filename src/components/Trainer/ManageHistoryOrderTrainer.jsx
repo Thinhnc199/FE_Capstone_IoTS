@@ -1,4 +1,13 @@
-import { Typography, Card, Tabs, Spin, Button, message, Modal } from "antd";
+import {
+  Typography,
+  Card,
+  Tabs,
+  Spin,
+  Button,
+  message,
+  Modal,
+  Input,
+} from "antd";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -317,6 +326,7 @@ export default function ManageHistoryOrderTrainer() {
   const dispatch = useDispatch();
   const [statusFilter, setStatusFilter] = useState("");
   const [trackingInfo, setTrackingInfo] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
   const showConfirmModal = (title, content, onConfirm) => {
@@ -328,6 +338,17 @@ export default function ManageHistoryOrderTrainer() {
       onOk: onConfirm,
     });
   };
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+    dispatch(
+      fetchHistoryOrderStoreTrainer({
+        pageIndex: 1, // Reset về trang đầu tiên khi tìm kiếm
+        pageSize,
+        StatusFilter: statusFilter,
+        searchKeyword: value,
+      })
+    );
+  };
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
   };
@@ -338,6 +359,7 @@ export default function ManageHistoryOrderTrainer() {
         pageIndex,
         pageSize,
         StatusFilter: statusFilter,
+        searchKeyword,
       })
     );
   }, [dispatch, pageIndex, pageSize, statusFilter]);
@@ -422,6 +444,7 @@ export default function ManageHistoryOrderTrainer() {
         afterClose: () => URL.revokeObjectURL(pdfUrl), // Đảm bảo giải phóng bộ nhớ
       });
     } catch (error) {
+      console.error("Error previewing shipping label:", error);
       message.warning("GHTK delivery is currently disrupted.");
     }
   };
@@ -498,6 +521,19 @@ export default function ManageHistoryOrderTrainer() {
                     </div>
                   }
                 >
+                  <div className=" pt-4">
+                    <Input.Search
+                      placeholder="Search by order code"
+                      allowClear
+                      // enterButton="Search"
+                      size="large"
+                      value={searchKeyword}
+                      onChange={(e) => setSearchKeyword(e.target.value)}
+                      onSearch={handleSearch}
+
+                      // className="max-w-md"
+                    />
+                  </div>
                   <div className="py-4">
                     {loading ? (
                       <div className="text-center py-8">
