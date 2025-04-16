@@ -36,7 +36,6 @@ import DashBoardTrainer from "../components/Trainer/DashBoardTrainer";
 import DashBoardStore from "../components/StoreIoT/DashBoardStore";
 import WalletStore from "../components/StoreIoT/WalletStore";
 import ListProductStore from "../components/StoreIoT/ListProductStore";
-import Test from "../components/test";
 import AccessRestricted from "../pages/AccessRestricted";
 import CheckStatus from "../components/StoreIoT/CheckStatus";
 import SubmissionSuccess from "../components/StoreIoT/SubmissionSuccess";
@@ -75,7 +74,6 @@ import WalletManagement from "../components/Trainer/components/WalletManagement"
 import AdminWalletManagement from "../components/Admin/AdminWalletManagement";
 import CheckProcessOrderCash from "../pages/CheckProcessOrderCash";
 import ChatPage from "../pages/Chat/ChatPage";
-import ChatPageTest from "../pages/Chat/ChatPageTest";
 import UserDetail from "../components/Admin/UserDetail";
 import WarrantyTable from "../pages/Orders/WarrantyTable";
 import WarrantyTableStore from "../components/StoreIoT/WarrantyTableStore";
@@ -91,22 +89,16 @@ import HistoryOrders from "../pages/Historyorder/HistoryOrder";
 import ComboDetailPage from "../components/Admin/ComboDetailPage";
 import LabsManagement from "../components/Admin/LabsManagement";
 import LabDetailAdmin from "../components/Admin/LabDetailAdmin";
-//staff
 import ListAccountManage from "../components/Staff/ListAccountManage";
 import StoreAccountManage from "../components/Staff/StoreAccountManage";
 import TrainerAccountManage from "../components/Staff/TrainerAccountManage";
 import CustomerAccountManage from "../components/Staff/CustomerAccountManage";
 import DashBoardStaff from "../components/Staff/DashBoardStaff";
-// import DashBoardManager from "../components/Manager/DashBoardManager";
+import { Roles } from "../redux/constants";
 const publicRoute = [
-  { path: "/test", component: Test, layout: TrainerLayout },
-  { path: "/", component: Home, layout: MainLayout },
-  { path: "/home", component: Home, layout: MainLayout },
-  { path: "/history-order", component: HistoryOrders, layout: MainLayout },
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
-  { path: "/about", component: AboutIoTs, layout: MainLayout },
-  { path: "/combos", component: ComboPage, layout: MainLayout },
+
   { path: "/emailcustomer", component: RegisterEmail, layout: MainLayout },
   { path: "/verifyaccount/:id", component: VerifyAccount, layout: MainLayout },
   { path: "*", component: ErrorPage, layout: null },
@@ -118,56 +110,7 @@ const publicRoute = [
   },
   { path: "/StoreEmail", component: EmailOtpPage, layout: MainLayout },
   { path: "/OtpRegister", component: OtpUserInfoPage, layout: MainLayout },
-  {
-    path: "/contact",
-    component: ContactPage,
-    layout: MainLayout,
-  },
-  {
-    path: "/view-all",
-    component: ViewAllProduct,
-    layout: MainLayout,
-  },
-  {
-    path: "/cart",
-    component: CartProducts,
-    layout: MainLayout,
-  },
-  {
-    path: "/checkout",
-    component: Checkout,
-    layout: null,
-  },
-  // {
-  //   path: "/history-order",
-  //   component: HistoryOrder,
-  //   layout: MainLayout,
-  // },
-  {
-    path: "/profile",
-    component: ProfilePage,
-    layout: MainLayout,
-  },
-  {
-    path: "/chat",
-    component: ChatPage,
-    layout: MainLayout,
-  },
-  {
-    path: "/chat/:id",
-    component: ChatPage,
-    layout: MainLayout,
-  },
-  {
-    path: "/chat-test",
-    component: ChatPageTest,
-    layout: MainLayout,
-  },
-  {
-    path: "/shop-infomation/:id",
-    component: StoreInfoPage,
-    layout: MainLayout,
-  },
+
   {
     path: "/checkout-process-order",
     component: CheckProcessOrder,
@@ -178,415 +121,548 @@ const publicRoute = [
     component: CheckProcessOrderCash,
     layout: null,
   },
+];
+
+const privateRoute = [
+  //customer
+  {
+    path: "/",
+    component: Home,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/home",
+    component: Home,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/history-order",
+    component: HistoryOrders,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/labs-management",
+    component: CustomerLabsManagement,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/customer/lab-details/:labId",
+    component: CustomerLabDetail,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
   {
     path: "/detail/:id",
     component: DetailProducts,
     layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
   {
     path: "/combo-list",
     component: ComboList,
     layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
   {
     path: "/detail-combo/:comboId",
     component: ComboDetail,
     layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
   {
     path: "/transaction-history",
     component: WalletManagement,
     layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
   {
     path: "/warranties",
     component: WarrantyTable,
     layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
   {
     path: "/warranty-detail/:id",
     component: WarrantyDetail,
     layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
-  // Admin
-  { path: "/admin", component: DashBoard, layout: AdminLayout },
-  { path: "/admin/dashboard", component: DashBoard, layout: AdminLayout },
+  {
+    path: "/shop-infomation/:id",
+    component: StoreInfoPage,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+
+  {
+    path: "/contact",
+    component: ContactPage,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/view-all",
+    component: ViewAllProduct,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/cart",
+    component: CartProducts,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/checkout",
+    component: Checkout,
+    layout: null,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/profile",
+    component: ProfilePage,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/chat",
+    component: ChatPage,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/chat/:id",
+    component: ChatPage,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/about",
+    component: AboutIoTs,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  {
+    path: "/combos",
+    component: ComboPage,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+  },
+  // Admin Routes
+  {
+    path: "/admin",
+    component: DashBoard,
+    layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
+  },
+  {
+    path: "/admin/dashboard",
+    component: DashBoard,
+    layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
+  },
   {
     path: "/admin/list-account",
     component: ListAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/admin-account",
     component: AdminAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/staff-account",
     component: StaffAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/manager-account",
     component: ManagerAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/customer-account",
     component: CustomerAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/store-account",
     component: StoreAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/trainer-account",
     component: TrainerAccount,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/list-product",
     component: ListProducts,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/category-management",
     component: CategoryManagement,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/manage-history-order",
     component: ManageHistoryOrderAdmin,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
 
   {
     path: "/admin/Profile",
     component: Profile,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/create-manager-staff",
     component: CreateManagerStaff,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/user-request",
     component: UserRequest,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/user-request/:id",
     component: DetailUserRequest,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/wallet",
     component: AdminWalletManagement,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/user-detail/:id",
     component: UserDetail,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/report-request",
     component: ReportRequest,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/combos-management",
     component: CombosManagement,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/combos-management/:comboId",
     component: ComboDetailPage,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/labs-management",
     component: LabsManagement,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/labs-detail/:labId",
     component: LabsManagement,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
   {
     path: "/admin/detail-lab/:labId",
     component: LabDetailAdmin,
     layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
   },
-  //Staff
-  {
-    path: "/staff/list-account",
-    component: ListAccountManage,
-    layout: StaffLayout,
-  },
-
-  {
-    path: "/staff/dashboard",
-    component: DashBoardStaff,
-    layout: StaffLayout,
-  },
-  {
-    path: "/staff",
-    component: DashBoardStaff,
-    layout: StaffLayout,
-  },
-
-  {
-    path: "/staff/store-account",
-    component: StoreAccountManage,
-    layout: StaffLayout,
-  },
-  {
-    path: "/staff/trainer-account",
-    component: TrainerAccountManage,
-    layout: StaffLayout,
-  },
-  {
-    path: "/staff/customer-account",
-    component: CustomerAccountManage,
-    layout: StaffLayout,
-  },
-  //manager
-  {
-    path: "/manager/dashboard",
-    component: DashBoard,
-    layout: ManagerLayout,
-  },
-  {
-    path: "/manager",
-    component: DashBoard,
-    layout: ManagerLayout,
-  },
-
-  // Store
+  // Store Routes
   {
     path: "/store",
     component: DashBoardStore,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/registerStore",
     component: StoreRegistration,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/welcome",
     component: WelcomeStore,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/payment-packages",
     component: PaymentMembershipPage,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE, Roles.TRAINER],
   },
 
   {
     path: "/store/dashboard",
     component: DashBoardStore,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/list",
     component: DashBoardStore,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/manage-order",
     component: ManageHistoryOrder,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/wallet",
     component: WalletStore,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/list-product",
     component: ListProductStore,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/create-product",
     component: CreateProductPage,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/list-product/edit/:id",
     component: UpdateProductPage,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/status",
     component: CheckStatus,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/submission-Success",
     component: SubmissionSuccess,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/combo-managerment",
     component: ComboTable,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/test-managerment",
     component: Teststore,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE],
   },
   // /combo/update/${comboId}
   {
     path: "/store/combo/update/:comboId",
     component: ComboUpdatePage,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/address",
     component: AddressSelector,
     layout: StoreLayout,
+    allowedRoles: [Roles.STORE],
   },
 
   {
     path: "/store/lab-request",
     component: LabRequest,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/detail-labRequest/:labId",
     component: LabDetail,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/labs-management",
     component: StoreLabsManagement,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/combo-labs",
     component: ComboLabsManagement,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/transaction-history",
     component: WalletManagement,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/warranties-request",
     component: WarrantyTableStore,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
   {
     path: "/store/warranty-detail/:id",
     component: WarrantyDetail,
     layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
   },
-  {
-    path: "/labs-management",
-    component: CustomerLabsManagement,
-    layout: MainLayout,
-  },
-  {
-    path: "/customer/lab-details/:labId",
-    component: CustomerLabDetail,
-    layout: MainLayout,
-  },
+
+  // Trainer Routes
 
   {
     path: "/trainer",
     component: DashBoardTrainer,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/dashboard",
     component: DashBoardTrainer,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
-  {
-    path: "/payment-packages",
-    component: PaymentMembershipPage,
-    layout: TrainerLayout,
-  },
+
   {
     path: "/trainer/registerTrainer",
     component: TrainerRegister,
     layout: TrainerLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/update-lab/:labId",
     component: CreateLab,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/create-lab",
     component: NewCreateLab,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/manage-history-order",
     component: ManageHistoryOrderTrainer,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/labs-management",
     component: TrainerLabsManagement,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/detail-lab/:labId",
     component: LabDetailTrainer,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
-  // {
-  //   path: "/test-his",
-  //   component: Register,
-  //   layout: MainLayout,
-  // },
+
   {
     path: "/trainer/wallet",
     component: WalletTrainer,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
   },
   {
     path: "/trainer/transaction-history",
     component: WalletManagement,
     layout: TrainerIotLayout,
+    allowedRoles: [Roles.TRAINER],
+  },
+  //Manager Routes
+  {
+    path: "/manager/dashboard",
+    component: DashBoard,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  {
+    path: "/manager",
+    component: DashBoard,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  //Staff Staff
+  {
+    path: "/staff/list-account",
+    component: ListAccountManage,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+
+  {
+    path: "/staff/dashboard",
+    component: DashBoardStaff,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+  {
+    path: "/staff",
+    component: DashBoardStaff,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+
+  {
+    path: "/staff/store-account",
+    component: StoreAccountManage,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+  {
+    path: "/staff/trainer-account",
+    component: TrainerAccountManage,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+  {
+    path: "/staff/customer-account",
+    component: CustomerAccountManage,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
   },
 ];
-
-const privateRoute = [];
-// if (allowedroles === Roles.ADMIN ) {
-//   publicRoute.push({
-//     path: "/admin",
-//     component: AccountList,
-//     layout: AdminPage,
-//   });
-// }
-// if (allowedroles == Roles.STORE) {
-//   publicRoute.push({
-//     path: "/admin",
-//     component: AccountList,
-//     layout: AdminPage,
-//   });
-// }
-// const privateRoute = [
-//   // Admin Routes
-//   {
-//     path: "/admin",
-//     component: DashBoard,
-//     layout: AdminLayout,
-
-//     allowedRoles: ["ADMIN"],
-//   },
 
 export { publicRoute, privateRoute };

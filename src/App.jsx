@@ -28,7 +28,7 @@ const App = () => {
                 );
               })}
 
-              {privateRoute.map((route, index) => {
+              {/* {privateRoute.map((route, index) => {
                 const Page = route.component;
                 const Layout = route.layout ? route.layout : Fragment;
                 return (
@@ -37,6 +37,24 @@ const App = () => {
                     path={route.path}
                     element={
                       <PrivateRoute layout={Layout}>
+                        <Page />
+                      </PrivateRoute>
+                    }
+                  />
+                );
+              })} */}
+              {privateRoute.map((route, index) => {
+                const Page = route.component;
+                const Layout = route.layout || Fragment;
+                return (
+                  <Route
+                    key={`private-${index}`}
+                    path={route.path}
+                    element={
+                      <PrivateRoute
+                        allowedRoles={route.allowedRoles || []}
+                        layout={Layout}
+                      >
                         <Page />
                       </PrivateRoute>
                     }

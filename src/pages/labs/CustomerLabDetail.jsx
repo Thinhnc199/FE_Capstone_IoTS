@@ -67,8 +67,8 @@ const LabDetail = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen text-red-500">
-        Error: {error}
+      <div className="flex justify-center items-center h-screen text-blue-500">
+        {error}
       </div>
     );
   }
