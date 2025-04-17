@@ -32,6 +32,7 @@ export default function HeaderManager() {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
+    localStorage.clear();
     navigate("/login");
   };
 

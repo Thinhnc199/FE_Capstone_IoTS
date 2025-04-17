@@ -38,6 +38,7 @@ export default function HeaderStore() {
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
     localStorage.removeItem("storeId");
+    localStorage.clear();
     navigate("/login");
   };
 
