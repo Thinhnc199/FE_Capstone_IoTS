@@ -30,35 +30,36 @@ export const OrderItem = ({ item, onWarrantyRequestClick }) => {
         <p className="text-red-500 font-medium">
           {item.price.toLocaleString("vi-VN")}₫
         </p>
-        {item.orderItemStatus === 6 && isWarrantyApplicable && (
-          <div className="flex items-end flex-col space-x-2">
-            {isWarrantyValid ? (
-              <span className="text-gray-500 text-xs flex gap-1">
-                <p className="text-green-700">Warranty until:</p>
-                {formatDate(item.warrantyEndDate)}
-              </span>
-            ) : (
-              ""
-            )}
+        {(item.orderItemStatus === 6 || item.orderItemStatus === 8) &&
+          isWarrantyApplicable && (
+            <div className="flex items-end flex-col space-x-2">
+              {isWarrantyValid ? (
+                <span className="text-gray-500 text-xs flex gap-1">
+                  <p className="text-green-700">Warranty until:</p>
+                  {formatDate(item.warrantyEndDate)}
+                </span>
+              ) : (
+                ""
+              )}
 
-            {isWarrantyValid ? (
-              <Button
-                // shape="round"
-                className="border-none text-yellow-500 flex items-center justify-center  shadow-none hover:bg-yellow-100 bg-blue-50  "
-                onClick={() => onWarrantyRequestClick(item.orderItemId)}
-                style={{
-                  borderRadius: "8px",
-                  padding: "0px 0px",
-                }}
-              >
-                Warranty
-                <SafetyCertificateOutlined />
-              </Button>
-            ) : (
-              <span className="text-gray-500 text-xs">Warranty expired!</span>
-            )}
-          </div>
-        )}
+              {isWarrantyValid ? (
+                <Button
+                  // shape="round"
+                  className="border-none text-yellow-500 flex items-center justify-center  shadow-none hover:bg-yellow-100 bg-blue-50  "
+                  onClick={() => onWarrantyRequestClick(item.orderItemId)}
+                  style={{
+                    borderRadius: "8px",
+                    padding: "0px 0px",
+                  }}
+                >
+                  Warranty
+                  <SafetyCertificateOutlined />
+                </Button>
+              ) : (
+                <span className="text-gray-500 text-xs">Warranty expired!</span>
+              )}
+            </div>
+          )}
       </div>
     </div>
   );

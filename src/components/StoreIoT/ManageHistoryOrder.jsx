@@ -102,33 +102,55 @@ const formatDate = (dateString) => {
   return dayjs(dateString).format("DD/MM/YYYY HH:mm");
 };
 
-const OrderItem = ({ item }) => (
-  <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
-    <div className="flex items-center">
-      <img
-        src={item.imageUrl}
-        alt={item.nameProduct}
-        width={80}
-        height={80}
-        className="rounded-sm object-cover"
-      />
-      <div className="ml-4">
-        <p className="font-medium">{item.nameProduct}</p>
-        <p className="text-gray-600">Quantity: {item.quantity}</p>
-        {item.physicalSerialNumbers &&
-          item.physicalSerialNumbers.length > 0 && (
-            <p className="text-gray-600">
-              Serial Numbers: {item.physicalSerialNumbers.join(", ")}
-            </p>
+const OrderItem = ({ item }) => {
+  const currentDate = new Date();
+  const warrantyEndDate = new Date(item.warrantyEndDate);
+  const isWarrantyApplicable = item.productType !== 3;
+  const isWarrantyValid = warrantyEndDate > currentDate;
+  return (
+    <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
+      <div className="flex items-center">
+        <img
+          src={item.imageUrl}
+          alt={item.nameProduct}
+          width={80}
+          height={80}
+          className="rounded-sm object-cover"
+        />
+        <div className="ml-4">
+          <p className="font-medium">{item.nameProduct}</p>
+          <p className="text-gray-600">Quantity: {item.quantity}</p>
+          {item.physicalSerialNumbers &&
+            item.physicalSerialNumbers.length > 0 && (
+              <p className="text-gray-600">
+                Serial Numbers: {item.physicalSerialNumbers.join(", ")}
+              </p>
+            )}
+        </div>
+      </div>
+      <div className="flex items-end space-x-4 flex-col-reverse">
+        <p className="text-red-500 font-medium">
+          {item.price.toLocaleString("vi-VN")}₫
+        </p>
+        {(item.orderItemStatus === 6 ||
+          item.orderItemStatus === 8 ||
+          item.orderItemStatus === 5) &&
+          isWarrantyApplicable && (
+            <div className="flex items-end flex-col space-x-2">
+              {isWarrantyValid ? (
+                <span className="text-gray-500 text-xs flex gap-1">
+                  <p className="text-green-700">Warranty until:</p>
+                  {formatDate(item.warrantyEndDate)}
+                </span>
+              ) : (
+                <span className="text-gray-500 text-xs">Warranty expired!</span>
+              )}
+            </div>
           )}
       </div>
     </div>
-    <p className="text-red-500 font-medium">
-      {item.price.toLocaleString("vi-VN")}₫
-    </p>
-  </div>
-);
-
+  );
+};
 OrderItem.propTypes = {
   item: PropTypes.shape({
     orderItemId: PropTypes.number.isRequired,
@@ -136,6 +158,9 @@ OrderItem.propTypes = {
     nameProduct: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
+    orderItemStatus: PropTypes.number.isRequired,
+    productType: PropTypes.number.isRequired,
+    warrantyEndDate: PropTypes.string.isRequired,
     physicalSerialNumbers: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
 };

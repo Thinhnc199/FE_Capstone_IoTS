@@ -37,6 +37,7 @@ export default function HeaderTrainer() {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
+    localStorage.clear();
     navigate("/login");
   };
   const items = [

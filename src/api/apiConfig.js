@@ -43,7 +43,10 @@ api.interceptors.response.use(
 
       return Promise.reject("Token expired. Please log in again.");
     }
-
+    if (error.response?.status === 403) {
+      showNotification("warning", "Access Denied", "You don't have permission!");
+      // Có thể redirect về trang chủ hoặc ẩn chức năng không có quyền
+    }
     return Promise.reject(
       error.response?.data?.message || "An error occurred, please try again."
     );
