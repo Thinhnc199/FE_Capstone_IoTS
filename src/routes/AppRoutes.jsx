@@ -121,6 +121,16 @@ const publicRoute = [
     component: CheckProcessOrderCash,
     layout: null,
   },
+  {
+    path: "/contact",
+    component: ContactPage,
+    layout: MainLayout,
+  },
+  {
+    path: "/about",
+    component: AboutIoTs,
+    layout: MainLayout,
+  },
 ];
 
 const privateRoute = [
@@ -199,12 +209,6 @@ const privateRoute = [
   },
 
   {
-    path: "/contact",
-    component: ContactPage,
-    layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
-  },
-  {
     path: "/view-all",
     component: ViewAllProduct,
     layout: MainLayout,
@@ -240,12 +244,7 @@ const privateRoute = [
     layout: MainLayout,
     allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
   },
-  {
-    path: "/about",
-    component: AboutIoTs,
-    layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
-  },
+
   {
     path: "/combos",
     component: ComboPage,

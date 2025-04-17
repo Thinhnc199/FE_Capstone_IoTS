@@ -3,9 +3,10 @@ import Logo from "../../../assets/icons/logo2";
 
 import {
   ProductOutlined,
-  WalletOutlined,
+  // WalletOutlined,
   BarChartOutlined,
   HistoryOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -30,10 +31,15 @@ const items2 = [
     label: <Link to="/trainer/manage-history-order">History Order</Link>,
   },
 
+  // {
+  //   key: "sub6",
+  //   icon: <WalletOutlined />,
+  //   label: <Link to="/trainer/wallet">Wallet</Link>,
+  // },
   {
-    key: "sub6",
-    icon: <WalletOutlined />,
-    label: <Link to="/trainer/wallet">Wallet</Link>,
+    key: "sub9",
+    icon: <SwapOutlined />,
+    label: <Link to="/trainer/transaction-history">Transaction History</Link>,
   },
 ];
 

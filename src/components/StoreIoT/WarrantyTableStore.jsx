@@ -120,7 +120,7 @@ const WarrantyTableStore = () => {
       <div className=" max-w-6xl mb-4 ">
         <BreadcrumbNav
           items={[
-            { label: "Home", path: "/" },
+            { label: "Home", path: "/store" },
             { label: "store", path: "/store" },
             { label: "warranties request" },
           ]}

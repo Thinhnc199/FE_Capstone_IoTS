@@ -70,7 +70,7 @@ const WarrantyRequestModal = ({
     }
   };
 
-  // Validation 
+  // Validation
   const validateForm = () => {
     const errors = [];
 
@@ -173,6 +173,7 @@ const WarrantyRequestModal = ({
       cancelText="Close"
       width={600}
       okButtonProps={{ disabled: uploading }}
+      zIndex={1111}
     >
       <div className="space-y-4">
         <div>
@@ -198,7 +199,7 @@ const WarrantyRequestModal = ({
             <p className="text-red-500 text-sm mt-1">Description is required</p>
           )}
         </div>
-        
+
         <div>
           <label className="block text-gray-700 mb-1">
             Serial Number <span className="text-red-500">*</span>
@@ -209,7 +210,8 @@ const WarrantyRequestModal = ({
             value={formData.identifySerialNumber}
             onChange={handleFormChange}
             className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
-              touched.identifySerialNumber && !formData.identifySerialNumber.trim()
+              touched.identifySerialNumber &&
+              !formData.identifySerialNumber.trim()
                 ? "border-red-500"
                 : "border-gray-300"
             }`}
@@ -218,9 +220,12 @@ const WarrantyRequestModal = ({
               setTouched((prev) => ({ ...prev, identifySerialNumber: true }))
             }
           />
-          {touched.identifySerialNumber && !formData.identifySerialNumber.trim() && (
-            <p className="text-red-500 text-sm mt-1">Serial Number is required</p>
-          )}
+          {touched.identifySerialNumber &&
+            !formData.identifySerialNumber.trim() && (
+              <p className="text-red-500 text-sm mt-1">
+                Serial Number is required
+              </p>
+            )}
         </div>
         <div>
           <label className="block text-gray-700 mb-1">
@@ -233,7 +238,8 @@ const WarrantyRequestModal = ({
             onChange={handleFormChange}
             className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
               touched.contactNumber &&
-              (!formData.contactNumber.trim() || !/^0\d{9}$/.test(formData.contactNumber))
+              (!formData.contactNumber.trim() ||
+                !/^0\d{9}$/.test(formData.contactNumber))
                 ? "border-red-500"
                 : "border-gray-300"
             }`}
@@ -243,7 +249,9 @@ const WarrantyRequestModal = ({
             }
           />
           {touched.contactNumber && !formData.contactNumber.trim() && (
-            <p className="text-red-500 text-sm mt-1">Contact Number is required</p>
+            <p className="text-red-500 text-sm mt-1">
+              Contact Number is required
+            </p>
           )}
           {touched.contactNumber &&
             formData.contactNumber.trim() &&
@@ -276,7 +284,9 @@ const WarrantyRequestModal = ({
             <p className="text-gray-500 mt-1">Selected: {videoFile.name}</p>
           )}
           {touched.videoUrl && !formData.videoUrl && (
-            <p className="text-red-500 text-sm mt-1">Video evidence is required</p>
+            <p className="text-red-500 text-sm mt-1">
+              Video evidence is required
+            </p>
           )}
           {formData.videoUrl && (
             <div className="mt-4">
