@@ -69,11 +69,11 @@ const WalletManagement = () => {
   ];
 
   return (
-    <div className="container mx-auto p-8  ">
+    <div className="container mx-auto  ">
       <div className=" max-w-6xl mb-4 ">
         <BreadcrumbNav
           items={[
-            { label: "Home", path: "/" },
+            { label: "Home", path: "/store" },
             { label: "Transaction history" },
           ]}
         />

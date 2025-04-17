@@ -11,7 +11,8 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  HistoryOutlined,
+  // HistoryOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 
 export default function HeaderTrainer() {
@@ -52,10 +53,15 @@ export default function HeaderTrainer() {
       label: "Profile",
       icon: <EditOutlined />,
     },
+    // {
+    //   key: "3",
+    //   label: <Link to="/trainer/transaction-history">Transaction history</Link>,
+    //   icon: <HistoryOutlined />,
+    // },
     {
-      key: "3",
-      label: <Link to="/trainer/transaction-history">Transaction history</Link>,
-      icon: <HistoryOutlined />,
+      key: "sub6",
+      icon: <WalletOutlined />,
+      label: <Link to="/trainer/wallet">Wallet</Link>,
     },
     {
       key: "4",

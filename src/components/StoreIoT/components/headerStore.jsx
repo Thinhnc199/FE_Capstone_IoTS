@@ -12,7 +12,8 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  HistoryOutlined,
+  // HistoryOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 
 export default function HeaderStore() {
@@ -54,10 +55,15 @@ export default function HeaderStore() {
       label: "Profile",
       icon: <EditOutlined />,
     },
+    // {
+    //   key: "3",
+    //   label: <Link to="/store/transaction-history">Transaction history</Link>,
+    //   icon: <HistoryOutlined />,
+    // },
     {
-      key: "3",
-      label: <Link to="/store/transaction-history">Transaction history</Link>,
-      icon: <HistoryOutlined />,
+      key: "sub8",
+      icon: <WalletOutlined />,
+      label: <Link to="/store/wallet">Wallet</Link>,
     },
     {
       key: "4",

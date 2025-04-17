@@ -3,12 +3,13 @@ import Logo from "../../../assets/icons/logo2";
 
 import {
   ProductOutlined,
-  WalletOutlined,
+  // WalletOutlined,
   BarChartOutlined,
   ReadOutlined,
   AppstoreAddOutlined,
   HistoryOutlined,
   IssuesCloseOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -72,10 +73,15 @@ const items2 = [
     icon: <IssuesCloseOutlined />,
     label: <Link to="/store/warranties-request">Warranties</Link>,
   },
+  // {
+  //   key: "sub8",
+  //   icon: <WalletOutlined />,
+  //   label: <Link to="/store/wallet">Wallet</Link>,
+  // },
   {
-    key: "sub8",
-    icon: <WalletOutlined />,
-    label: <Link to="/store/wallet">Wallet</Link>,
+    key: "sub9",
+    icon: <SwapOutlined />,
+    label: <Link to="/store/transaction-history">Transaction History</Link>,
   },
   // {
   //   key: "sub3",

@@ -375,6 +375,7 @@ export default function ManageHistoryOrderAdmin() {
       message.success("Shipping label downloaded!");
     } catch (error) {
       message.warning("GHTK delivery is currently disrupted.");
+      console.error(error);
     }
   };
 
@@ -423,6 +424,7 @@ export default function ManageHistoryOrderAdmin() {
       });
     } catch (error) {
       message.warning("GHTK delivery is currently disrupted. ");
+      console.error(error);
     }
   };
   const handleSuccessOrder = async (orderId) => {
