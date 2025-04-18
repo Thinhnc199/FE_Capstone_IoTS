@@ -140,13 +140,13 @@ const privateRoute = [
     path: "/",
     component: Home,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
   {
     path: "/home",
     component: Home,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
   {
     path: "/history-order",
@@ -170,7 +170,7 @@ const privateRoute = [
     path: "/detail/:id",
     component: DetailProducts,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
   {
     path: "/combo-list",
@@ -182,7 +182,7 @@ const privateRoute = [
     path: "/detail-combo/:comboId",
     component: ComboDetail,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
   {
     path: "/transaction-history",
@@ -206,14 +206,14 @@ const privateRoute = [
     path: "/shop-infomation/:id",
     component: StoreInfoPage,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
 
   {
     path: "/view-all",
     component: ViewAllProduct,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
   {
     path: "/cart",

@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
@@ -21,7 +20,7 @@ const RegisterCustomer = () => {
   });
   const [error, setError] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const validateStep1 = () => {
     let errors = {};
@@ -120,7 +119,7 @@ const RegisterCustomer = () => {
           autoClose: 3000,
         }
       );
-      navigate("/login");
+      window.location.href = "/login";
     } catch (error) {
       console.error("Error registering customer:", error);
       // toast.error("Registration failed. Please try again.", {

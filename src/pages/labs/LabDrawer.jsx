@@ -151,7 +151,7 @@ const LabModal = ({ visible, onClose, labs }) => {
         }
       } catch (error) {
         console.error(`Error adding lab ${labId} to cart:`, error);
-        message.error(`Error adding to cart: ${error.message}`);
+        message.warning(` ${error.message}`);
       } finally {
         setAddingLabId(null);
       }

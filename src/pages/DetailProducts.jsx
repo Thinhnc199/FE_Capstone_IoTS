@@ -104,7 +104,7 @@ export default function DetailProducts() {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Error adding to cart: ${error.message}`);
+      message.warning(` ${error.message}`);
     }
   };
   const HandleBuynow = async () => {
@@ -129,7 +129,7 @@ export default function DetailProducts() {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Error adding to cart: ${error.message}`);
+      message.warning(` ${error.message}`);
     }
   };
 

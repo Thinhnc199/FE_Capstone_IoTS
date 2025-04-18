@@ -1,7 +1,7 @@
 import { Modal, Button, Dropdown, Space } from "antd";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { toggleSidebar } from "../../../redux/slices/sidebarSlice";
 import useNotification from "./../../../utils/useNotification.jsx";
 import { Link } from "react-router-dom";
@@ -21,7 +21,7 @@ export default function HeaderTrainer() {
     "https://vietlucoder.id.vn/img/Picsart_23-06-13_17-33-04-543.png";
   const { isSidebarOpen } = useSelector((state) => state.sidebar);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const TrainerName = localStorage.getItem("username") || "Hi, Owner";
 
   const showModal = () => {
@@ -38,7 +38,7 @@ export default function HeaderTrainer() {
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
     localStorage.clear();
-    navigate("/login");
+    window.location.href = "/login";
   };
   const items = [
     {

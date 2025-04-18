@@ -87,7 +87,8 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.clear();
     setIsModalVisible(false);
-    navigate("/login");
+    // navigate("/login");
+    window.location.href = "/login";
   };
 
   useEffect(() => {
