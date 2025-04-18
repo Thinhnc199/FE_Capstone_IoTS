@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/slices/storeSlice";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Input, Button, Spin, message } from "antd";
 
 const OtpUserInfoPage = () => {
   const location = useLocation();
   const { email, role } = location.state || {};
-
+  const phoneRegex = /^((09|03|07|08|05)+([0-9]{8}))$/;
   const [otp, setOtp] = useState("");
   const [formData, setFormData] = useState({
     fullname: "",
@@ -19,7 +19,7 @@ const OtpUserInfoPage = () => {
   });
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { loading } = useSelector((state) => state.store);
 
   const handleChange = (e) => {
@@ -40,7 +40,10 @@ const OtpUserInfoPage = () => {
       message.error("OTP must be 6 digits.");
       return;
     }
-
+    if (!phoneRegex.test(formData.phone)) {
+      message.error("Invalid Vietnamese phone number!");
+      return;
+    }
     const userInfo = {
       email: email,
       fullname: formData.fullname,
@@ -59,7 +62,7 @@ const OtpUserInfoPage = () => {
           roleId: role,
         })
       ).unwrap();
-      navigate("/login"); // Chỉ chạy khi thành công
+      window.location.href = "/login";
     } catch (error) {
       console.error("Registration error:", error);
       // Thông báo lỗi đã được xử lý trong storeSlice
@@ -197,7 +200,6 @@ const OtpUserInfoPage = () => {
 
 export default OtpUserInfoPage;
 
-
 // import { useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import { registerUser } from "../../redux/slices/storeSlice";
@@ -236,7 +238,7 @@ export default OtpUserInfoPage;
 //       message.error("Passwords do not match!");
 //       return;
 //     }
-    
+
 //     // Validate OTP length
 //     if (otp.length !== 6) {
 //       message.error("OTP must be 6 digits.");

@@ -621,7 +621,7 @@ const ComboDetail = () => {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.warning(`Error adding to cart: ${error}`);
+      message.warning(`${error}`);
     } finally {
       setIsAdding(false);
     }

@@ -39,12 +39,20 @@ api.interceptors.response.use(
       // ✅ Delay redirect to prevent instant UI refresh
       setTimeout(() => {
         window.location.href = "/login";
-      }, 2000);
+      }, 1000);
 
       return Promise.reject("Token expired. Please log in again.");
     }
     if (error.response?.status === 403) {
-      showNotification("warning", "Access Denied", "You don't have permission!");
+      localStorage.clear();
+      showNotification(
+        "warning",
+        "Access Denied",
+        "You don't have permission!"
+      );
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
       // Có thể redirect về trang chủ hoặc ẩn chức năng không có quyền
     }
     return Promise.reject(

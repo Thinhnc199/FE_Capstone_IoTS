@@ -22,13 +22,13 @@ import {
   ManOutlined,
   WomanOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { detailUser } = useSelector((state) => state.accounts);
   const userId = Number(localStorage.getItem("userId"));
 
@@ -48,7 +48,7 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");
+    window.location.href = "/login";
   };
 
   const handleUpdatePassword = async (values) => {

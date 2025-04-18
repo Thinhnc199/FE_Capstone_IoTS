@@ -50,26 +50,30 @@ const PrivateRoute = ({
       case Roles.CUSTOMER:
         return "/";
       default:
-        return "/login";
+        return "/";
     }
   };
+  // if (allowedRoles.length === 0) {
+  //   return <Layout>{children}</Layout>;
+  // }
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return allowedRoles.includes("UNAUTHENTICATED") ? (
+      <Layout>{children}</Layout>
+    ) : (
+      <Navigate to="/login" />
+    );
   }
 
-  // if (allowedRoles.length > 0 && !allowedRoles.includes(Number(role))) {
-  //   return <Navigate to="/Access-Restricted" />;
-  // }
-  if (allowedRoles.length > 0 && !allowedRoles.includes(Number(role))) {
-    // Chuyển hướng đến route tương ứng với role thay vì Access-Restricted
-    const redirectPath = getRedirectPathByRole(role);
-    return <Navigate to={redirectPath} replace />;
+  // Đã đăng nhập: kiểm tra role
+  const rolesToCheck = allowedRoles.filter((r) => r !== "UNAUTHENTICATED");
+  if (rolesToCheck.length > 0 && !rolesToCheck.includes(Number(role))) {
+    return <Navigate to={getRedirectPathByRole(role)} replace />;
   }
   return <Layout>{children}</Layout>;
 };
 
 PrivateRoute.propTypes = {
-  allowedRoles: PropTypes.arrayOf(PropTypes.number),
+  allowedRoles: PropTypes.array,
   layout: PropTypes.elementType,
   children: PropTypes.node,
 };

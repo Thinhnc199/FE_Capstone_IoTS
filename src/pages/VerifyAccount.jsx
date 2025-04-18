@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom"; // Thêm useNavigate
+import { useParams } from "react-router-dom"; // Thêm useNavigate
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
@@ -7,7 +7,7 @@ import { verifyAccounts } from "../redux/slices/accountSlice.js";
 const VerifyAccount = () => {
   const { id: requestId } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Sử dụng useNavigate để chuyển hướng
+  // const navigate = useNavigate(); // Sử dụng useNavigate để chuyển hướng
   const [loading, setLoading] = useState(false);
 
   const onFinish = (values) => {
@@ -24,7 +24,7 @@ const VerifyAccount = () => {
         message.success("Account verified successfully!");
         // Thêm setTimeout để chuyển hướng sau 1 giây
         setTimeout(() => {
-          navigate("/login"); // Chuyển hướng về trang login
+          window.location.href = "/login"; // Chuyển hướng về trang login
         }, 1000); // 1000ms = 1 giây
       })
       .catch((err) => {

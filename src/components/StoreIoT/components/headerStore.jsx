@@ -31,6 +31,7 @@ export default function HeaderStore() {
   };
 
   const handleLogout = () => {
+    localStorage.clear();
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     localStorage.removeItem("userId");
@@ -39,8 +40,9 @@ export default function HeaderStore() {
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
     localStorage.removeItem("storeId");
-    localStorage.clear();
-    navigate("/login");
+
+    // navigate("/login");
+    window.location.href = "/login";
   };
 
   const items = [
