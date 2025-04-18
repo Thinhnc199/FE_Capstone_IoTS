@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
+import { message } from "antd";
 
 // Helper function to handle async states
 const handleAsyncState = (builder, asyncThunk, onSuccess) => {
@@ -95,8 +96,10 @@ export const updatePassword = createAsyncThunk(
         oldPassword,
         newPassword,
       });
+      message.success("Update password successfully!");
       return response.data.data;
     } catch (error) {
+      message.error(error);
       return rejectWithValue(error);
     }
   }

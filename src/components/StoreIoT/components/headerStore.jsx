@@ -14,6 +14,7 @@ import {
   MenuUnfoldOutlined,
   // HistoryOutlined,
   WalletOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 
 export default function HeaderStore() {
@@ -89,6 +90,7 @@ export default function HeaderStore() {
 
       <div className="p-4 font-sans font-bold text-2xl flex items-center space-x-2">
         <div className="flex items-center space-x-3">
+          <MessageOutlined onClick={() => navigate("/store/chat")} />
           <NotificationDropdown />
 
           <img
