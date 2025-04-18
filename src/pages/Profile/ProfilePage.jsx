@@ -22,81 +22,62 @@ import {
   ManOutlined,
   WomanOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
-// Giả lập dữ liệu từ API
-// const detailUser = {
-//   id: 120,
-//   fullname: "John Doe",
-//   username: "supercustomer@gmail.com",
-//   email: "supercustomer@gmail.com",
-//   phone: "0767676284",
-//   address: "Bay Area, San Francisco, CA",
-//   provinceId: 0,
-//   provinceName: null,
-//   districtId: 0,
-//   districtName: null,
-//   wardId: 0,
-//   wardName: null,
-//   gender: 2, // 1: Male, 2: Female
-//   createdBy: null,
-//   createdDate: "2025-03-02T08:09:45.713",
-//   updatedBy: null,
-//   updatedDate: "2025-03-02T08:09:45.713",
-//   isActive: 1,
-//   roles: [
-//     {
-//       id: 5,
-//       label: "Customer",
-//       orders: 5,
-//       isActive: 1,
-//     },
-//   ],
-//   imageUrl: null,
-// };
-
-// Component chính
 export default function ProfilePage() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  // const [formData, setFormData] = useState(detailUser);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { detailUser } = useSelector((state) => state.accounts);
   const userId = Number(localStorage.getItem("userId"));
-
-  console.log("detailUser", detailUser);
 
   useEffect(() => {
     if (userId) {
       dispatch(fetchUserById({ id: userId }));
     }
   }, [dispatch, userId]);
+
   const handleChange = (e) => {
-    // setFormData({ ...formData, [e.target.name]: e.target.value });
     console.log(e);
   };
 
   const handleSaveChanges = () => {
     message.success("Profile updated successfully!");
-    // Dispatch API update here
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
   };
 
   const handleUpdatePassword = async (values) => {
     try {
       console.log("Updating password:", values);
-      await dispatch(
+      const resultAction = await dispatch(
         updatePassword({
           oldPassword: values.oldPassword,
           newPassword: values.newPassword,
         })
       );
-      message.success("Password updated successfully!");
-      setIsEditingPassword(false);
-      form.resetFields();
+
+      // Check if the action was fulfilled and successful
+      if (updatePassword.fulfilled.match(resultAction)) {
+        // message.success("Password updated successfully!");
+        setIsEditingPassword(false);
+        form.resetFields();
+        // Call logout function after successful password change
+        handleLogout();
+      } else if (resultAction.payload) {
+        // Handle API error messages
+        // message.error(
+        //   resultAction.payload.message || "Failed to update password"
+        // );
+      }
     } catch (error) {
-      message.error("Failed to update password. Please try again.", error);
+      console.error(error);
     }
   };
-
   return (
     <div className=" min-h-screen p-8 mx-auto container">
       <div className=" max-w-6xl mb-4 ">

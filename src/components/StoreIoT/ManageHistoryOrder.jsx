@@ -426,7 +426,7 @@ const SerialNumberModal = ({ visible, onCancel, onOk, items, loading }) => {
     >
       <div className="space-y-4">
         <p className="text-red-500 font-medium">
-          You must enter physicalSerialNumber before packing.
+          You must enter physical serial number before packing.
         </p>
 
         {items

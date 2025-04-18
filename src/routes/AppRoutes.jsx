@@ -94,6 +94,7 @@ import StoreAccountManage from "../components/Staff/StoreAccountManage";
 import TrainerAccountManage from "../components/Staff/TrainerAccountManage";
 import CustomerAccountManage from "../components/Staff/CustomerAccountManage";
 import DashBoardStaff from "../components/Staff/DashBoardStaff";
+import ChatStore from "../components/StoreIoT/ChatStore";
 import { Roles } from "../redux/constants";
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
@@ -542,6 +543,18 @@ const privateRoute = [
   {
     path: "/store/warranty-detail/:id",
     component: WarrantyDetail,
+    layout: StoreIotLayout,
+    allowedRoles: [Roles.STORE],
+  },
+  // {
+  //   path: "/store/chat/:id",
+  //   component: ChatStore,
+  //   layout: StoreIotLayout,
+  //   allowedRoles: [Roles.STORE],
+  // },
+  {
+    path: "/store/chat",
+    component: ChatStore,
     layout: StoreIotLayout,
     allowedRoles: [Roles.STORE],
   },
