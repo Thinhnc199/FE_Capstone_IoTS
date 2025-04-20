@@ -250,7 +250,7 @@ const privateRoute = [
     path: "/combos",
     component: ComboPage,
     layout: MainLayout,
-    allowedRoles: [Roles.CUSTOMER, Roles.ADMIN, Roles.MANAGER],
+    allowedRoles: [Roles.CUSTOMER, "UNAUTHENTICATED"],
   },
   // Admin Routes
   {

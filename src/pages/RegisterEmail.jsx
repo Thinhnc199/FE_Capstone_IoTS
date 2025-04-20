@@ -125,7 +125,7 @@ const RegisterEmail = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate email before submission
     if (!email.trim()) {
       setError("Email is required.");
@@ -150,12 +150,16 @@ const RegisterEmail = () => {
       });
 
       // Navigate after 2 seconds to allow toast visibility
+      // setTimeout(() => {
+      //   navigate("/register-Customer");
+      // }, 2000);
       setTimeout(() => {
-        navigate("/register-Customer");
+        navigate("/register-Customer", { state: { email } }); // Truyền email qua state
       }, 2000);
     } catch (err) {
       console.error("Failed to send OTP:", err);
-      const errorMessage = err.response?.data?.message || "Failed to send OTP. Please try again.";
+      const errorMessage =
+        err.response?.data?.message || "Failed to send OTP. Please try again.";
       setError(errorMessage);
       toast.error(errorMessage, {
         position: "top-right",
@@ -181,7 +185,7 @@ const RegisterEmail = () => {
           <h2 className="text-3xl font-bold text-[#007AFF] mb-6 text-center">
             Register with Email
           </h2>
-          
+
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <input
@@ -195,11 +199,9 @@ const RegisterEmail = () => {
                 required
                 disabled={loading}
               />
-              {error && (
-                <p className="text-red-500 text-sm mt-1">{error}</p>
-              )}
+              {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>
-            
+
             <button
               type="submit"
               className="w-full bg-[#007AFF] text-white py-3 rounded-lg font-bold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-[#007AFF] disabled:opacity-50 transition-all"
@@ -208,7 +210,7 @@ const RegisterEmail = () => {
               {loading ? "Sending OTP..." : "Send OTP"}
             </button>
           </form>
-          
+
           <p className="text-center mt-4 text-gray-600">
             Already have an account?{" "}
             <a href="/login" className="text-[#007AFF] hover:underline">

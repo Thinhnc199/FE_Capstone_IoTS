@@ -10,6 +10,7 @@ import {
   Divider,
   Modal,
   Form,
+  // Select,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePassword, fetchUserById } from "../../redux/slices/accountSlice";
@@ -154,15 +155,6 @@ export default function ProfilePage() {
                   <Input
                     name="fullName"
                     value={detailUser.fullname}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
-
-                  {/* Email */}
-                  <p className="text-md font-semibold">Email:</p>
-                  <Input
-                    name="email"
-                    value={detailUser.email}
                     onChange={handleChange}
                     className="w-full h-[2.5rem] rounded-sm"
                   />

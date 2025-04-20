@@ -45,16 +45,17 @@ const EmailOtpPage = () => {
 
       navigate("/OtpRegister", { state: { email, role: selectedRole } });
     } catch (error) {
+      message.error(error);
       console.error("❌ API Error Message:", error);
 
       // 🛠 Kiểm tra xem lỗi có phải là chuỗi không
-      const errorMessage =
-        typeof error === "string" ? error : "An unexpected error occurred.";
+      // const errorMessage =
+      //   typeof error === "string" ? error : "An unexpected error occurred.";
 
       // ✅ Hiển thị lỗi từ API ra màn hình
-      toast.error(errorMessage, {
-        position: "top-right",
-      });
+      // toast.error(errorMessage, {
+      //   position: "top-right",
+      // });
 
       // message.error({
       //   content: errorMessage,

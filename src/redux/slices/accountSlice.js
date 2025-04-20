@@ -130,6 +130,21 @@ export const updateRole = createAsyncThunk(
     }
   }
 );
+export const updateProfile = createAsyncThunk(
+  "accounts/updateProfile",
+  async ({ fullname, address, phone }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/user/update-user-profile`, {
+        fullname,
+        address,
+        phone,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 export const createManagerStaffs = createAsyncThunk(
   "accounts/createManagerStaff",

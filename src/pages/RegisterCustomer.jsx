@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
@@ -7,9 +7,11 @@ import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { registerCustomer } from "../api/apiConfig";
 
 const RegisterCustomer = () => {
+  const location = useLocation(); // Lấy location để truy cập state
+
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    email: "",
+    email: location.state?.email || "", // Lấy email từ state nếu có
     fullname: "",
     phone: "",
     address: "",
@@ -119,7 +121,7 @@ const RegisterCustomer = () => {
           autoClose: 3000,
         }
       );
-      window.location.href = "/login";
+      // window.location.href = "/login";
     } catch (error) {
       console.error("Error registering customer:", error);
       // toast.error("Registration failed. Please try again.", {
@@ -146,9 +148,14 @@ const RegisterCustomer = () => {
                   placeholder="Email"
                   className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007AFF] transition-all ${
                     error.email ? "border-red-500" : "border-gray-300"
+                  } ${
+                    location.state?.email
+                      ? "bg-gray-100 text-gray-600 cursor-not-allowed"
+                      : ""
                   }`}
                   value={form.email}
                   onChange={handleChange}
+                  disabled={!!location.state?.email}
                 />
                 {error.email && (
                   <p className="text-red-500 text-sm mt-1">{error.email}</p>
