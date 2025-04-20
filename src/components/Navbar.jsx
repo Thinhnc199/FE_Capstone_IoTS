@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { setCategoryFilterId } from "../redux/slices/productSlice.js";
 import { fetchPaginatedMaterialCategories } from "../redux/slices/materialCategorySlice";
 import {
   fetchCarts,
@@ -70,7 +71,16 @@ const Navbar = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  const handleCategoryClick = (categoryId) => {
+    handleCategoryModalCancel();
+    navigate("/view-all", {
+      state: { fromCategory: true }, // Thêm state này
+    });
+    // Đặt timeout nhỏ để đảm bảo navigate hoàn tất trước khi dispatch
+    setTimeout(() => {
+      dispatch(setCategoryFilterId(categoryId));
+    }, 50);
+  };
   const getCategoryButtonPosition = () => {
     if (categoryButtonRef.current) {
       const rect = categoryButtonRef.current.getBoundingClientRect();
@@ -339,7 +349,7 @@ const Navbar = () => {
               >
                 <MenuOutlined /> Category
               </Button>
-              {isCategoryModalVisible && (
+              {/* {isCategoryModalVisible && (
                 <div className="py-6">
                   <div
                     className="absolute bg-white shadow-lg rounded-sm scroll-y"
@@ -355,6 +365,39 @@ const Navbar = () => {
                         <div
                           key={category.id}
                           className="p-2 border-b border-gray-200 hover:bg-gray-50 cursor-pointer flex gap-2"
+                        >
+                          <ProductOutlined />
+                          <p className="font-semibold">{category.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                    style={{ top: "105px", left: 0, right: 0, bottom: 0 }}
+                    onClick={handleCategoryModalCancel}
+                  ></div>
+                </div>
+              )} */}
+              {isCategoryModalVisible && (
+                <div className="py-6">
+                  <div
+                    className="absolute bg-white shadow-lg rounded-sm scroll-y"
+                    style={{
+                      top: `${105}px`,
+                      left: `${left}px`,
+                      zIndex: 1050,
+                      width: "300px",
+                      maxHeight: "70vh", // Thêm max-height
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div className="flex flex-col gap-2">
+                      {activeData.map((category) => (
+                        <div
+                          key={category.id}
+                          className="p-2 border-b border-gray-200 hover:bg-gray-50 cursor-pointer flex gap-2"
+                          onClick={() => handleCategoryClick(category.id)} // Thêm onClick
                         >
                           <ProductOutlined />
                           <p className="font-semibold">{category.label}</p>

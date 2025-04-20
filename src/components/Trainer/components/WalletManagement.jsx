@@ -61,11 +61,24 @@ const WalletManagement = () => {
       key: "description",
     },
     {
-      title: "Balance",
-      dataIndex: "currentBallance",
-      key: "currentBallance",
-      render: (balance) => (balance ? `${balance.toLocaleString()}` : "N/A"),
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount) =>
+        amount ? (
+          <span className="text-green-600">
+            {(amount * 1000).toLocaleString("vi-VN")} đ
+          </span>
+        ) : (
+          <span className="text-gray-400">N/A</span>
+        ),
     },
+    // {
+    //   title: "Balance",
+    //   dataIndex: "currentBallance",
+    //   key: "currentBallance",
+    //   render: (balance) => (balance ? `${balance.toLocaleString()}` : "N/A"),
+    // },
   ];
 
   return (

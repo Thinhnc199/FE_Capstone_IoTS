@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react"; 
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCombos } from "./../../redux/slices/comboSlice";
 import { Input, Select } from "antd";
 import ComboList from "./components/ComboList";
-import debounce from "lodash/debounce"; 
-
+import debounce from "lodash/debounce";
+import BreadcrumbNav from "../../components/common/BreadcrumbNav";
+import Titles from "../../components/common/Titles";
 const { Option } = Select;
 
 const ComboPage = () => {
@@ -16,19 +17,20 @@ const ComboPage = () => {
   // Debounced function để gọi API
   const debouncedFetchCombos = useCallback(
     debounce((keyword) => {
-      dispatch(fetchCombos({ pageIndex: 1, pageSize: 18, searchKeyword: keyword }));
-    }, 600), 
-    [dispatch] 
+      dispatch(
+        fetchCombos({ pageIndex: 1, pageSize: 18, searchKeyword: keyword })
+      );
+    }, 600),
+    [dispatch]
   );
 
-  
   useEffect(() => {
     debouncedFetchCombos(searchKeyword);
-    return () => debouncedFetchCombos.cancel(); 
+    return () => debouncedFetchCombos.cancel();
   }, [searchKeyword, debouncedFetchCombos]);
 
   const handleSearchChange = (e) => {
-    setSearchKeyword(e.target.value); 
+    setSearchKeyword(e.target.value);
   };
 
   const handleSortChange = (value) => {
@@ -36,14 +38,19 @@ const ComboPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-12 px-6 bg-mainColer">
-      <div className="mb-8 p-4 rounded-md space-y-4 bg-white">
-        <h1 className="text-center text-3xl md:text-4xl font-bold text-headerBg mb-10">
-          Combo List
-        </h1>
+    <div className="container mx-auto p-4 sm:p-8">
+      <BreadcrumbNav
+        items={[{ label: "Home", path: "/" }, { label: "All combos" }]}
+      />
+      <div className="container mx-auto p-2 sm:p-4 bg-white shadow-lg my-4 sm:my-6">
+        <Titles
+          titleText="COMBOS - VIEW ALL"
+          colorText="text-headerBg"
+          strongText="font-semibold"
+        />
 
         {/* Filter Controls */}
-        <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
+        <div className="flex flex-col md:flex-row justify-between my-6 gap-4">
           <Input
             placeholder="Search combo by name"
             value={searchKeyword}

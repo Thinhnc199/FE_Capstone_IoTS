@@ -20,17 +20,32 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (
-    { pageIndex, pageSize, searchKeyword, startFilterDate, endFilterDate },
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+      categoryFilterId,
+    },
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.post(`/api/iot-device/get-pagination`, {
-        pageIndex,
-        pageSize,
-        searchKeyword,
-        startFilterDate,
-        endFilterDate,
-      });
+      const response = await api.post(
+        `/api/iot-device/get-pagination`,
+        {
+          pageIndex,
+          pageSize,
+          searchKeyword,
+          startFilterDate,
+          endFilterDate,
+        },
+        {
+          params: {
+            categoryFilterId,
+          },
+        }
+      );
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -132,6 +147,7 @@ const initialState = {
   pageIndex: 1,
   pageSize: 10,
   searchKeyword: "",
+  categoryFilterId: null,
   startFilterDate: null,
   endFilterDate: null,
   error: null,
@@ -165,6 +181,10 @@ const productSlice = createSlice({
     },
     setEndFilterDate: (state, action) => {
       state.endFilterDate = action.payload;
+    },
+    setCategoryFilterId: (state, action) => {
+      state.categoryFilterId = action.payload;
+      state.pageIndex = 1;
     },
   },
   extraReducers: (builder) => {
@@ -213,5 +233,6 @@ export const {
   setsearchKeyword,
   setEndFilterDate,
   setStartFilterDate,
+  setCategoryFilterId,
 } = productSlice.actions;
 export default productSlice.reducer;
