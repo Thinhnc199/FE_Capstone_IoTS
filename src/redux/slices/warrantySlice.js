@@ -1,5 +1,5 @@
 // import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import api from './../../api/apiConfig'; 
+// import api from './../../api/apiConfig';
 
 // // Async Thunks cho các API calls
 // export const getWarrantyById = createAsyncThunk(
@@ -208,83 +208,97 @@
 
 // // Export reducer
 // export default warrantySlice.reducer;
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from './../../api/apiConfig'; 
-
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "./../../api/apiConfig";
+import { message } from "antd";
 // Async Thunks cho các API calls
 export const getWarrantyById = createAsyncThunk(
-  'warranty/getById',
+  "warranty/getById",
   async (id, { rejectWithValue }) => {
     try {
       const response = await api.get(`/api/warranty-request/get/${id}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Error fetching warranty');
+      return rejectWithValue(error.response?.data || "Error fetching warranty");
     }
   }
 );
 
 export const createWarrantyRequest = createAsyncThunk(
-  'warranty/create',
+  "warranty/create",
   async (warrantyData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/warranty-request/create', warrantyData);
+      const response = await api.post(
+        "/api/warranty-request/create",
+        warrantyData
+      );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Error creating warranty');
+      message.error(error);
+      return rejectWithValue(error.response?.data || "Error creating warranty");
     }
   }
 );
 
 export const getWarrantyPagination = createAsyncThunk(
-  'warranty/getPagination',
-  async ({ pageIndex, pageSize, searchKeyword, statusFilter }, { rejectWithValue }) => {
+  "warranty/getPagination",
+  async (
+    { pageIndex, pageSize, searchKeyword, statusFilter },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await api.post('/api/warranty-request/get-pagination', {
+      const response = await api.post("/api/warranty-request/get-pagination", {
         pageIndex,
         pageSize,
         searchKeyword,
-        statusFilter
+        statusFilter,
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error || 'Error fetching warranty pagination');
+      return rejectWithValue(error || "Error fetching warranty pagination");
     }
   }
 );
 
 export const rejectWarrantyRequest = createAsyncThunk(
-  'warranty/reject',
+  "warranty/reject",
   async ({ id, remark }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/warranty-request/store/reject/${id}`, { remark });
+      const response = await api.post(
+        `/api/warranty-request/store/reject/${id}`,
+        { remark }
+      );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error || 'Error rejecting warranty');
+      return rejectWithValue(error || "Error rejecting warranty");
     }
   }
 );
 
 export const approveWarrantyRequest = createAsyncThunk(
-  'warranty/approve',
+  "warranty/approve",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/warranty-request/store/approve/${id}`);
+      const response = await api.post(
+        `/api/warranty-request/store/approve/${id}`
+      );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error || 'Error approving warranty');
+      return rejectWithValue(error || "Error approving warranty");
     }
   }
 );
 
 export const confirmWarrantySuccess = createAsyncThunk(
-  'warranty/confirmSuccess',
+  "warranty/confirmSuccess",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/warranty-request/confirm-success/${id}`);
+      const response = await api.post(
+        `/api/warranty-request/confirm-success/${id}`
+      );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error || 'Error confirming warranty success');
+      return rejectWithValue(error || "Error confirming warranty success");
     }
   }
 );
@@ -300,7 +314,9 @@ export const uploadWarrantyVideo = createAsyncThunk(
       const response = await api.post("/api/file/upload-videos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
-          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
           console.log(`Upload Progress: ${percent}%`);
         },
       });
@@ -310,9 +326,13 @@ export const uploadWarrantyVideo = createAsyncThunk(
 
       return rejectWithValue("Failed to upload video");
     } catch (error) {
-      console.error("❌ Warranty Video Upload Error:", error);
+      if (error.response?.status === 413) {
+        message.warning("Request Entity Too Large");
+        return rejectWithValue("Request Entity Too Large");
+      }
       const errorMessage =
-        error.response?.data?.message || "Failed to upload video. Please try again.";
+        error.response?.data?.message || "Request Entity Too Large";
+      message.warning(errorMessage);
       return rejectWithValue(errorMessage);
     }
   }
@@ -320,7 +340,7 @@ export const uploadWarrantyVideo = createAsyncThunk(
 
 // Warranty Slice
 const warrantySlice = createSlice({
-  name: 'warranty',
+  name: "warranty",
   initialState: {
     warranty: null,
     warranties: [],
@@ -331,8 +351,8 @@ const warrantySlice = createSlice({
     },
     loading: false,
     error: null,
-    videoUrl: null, 
-    videoFileName: null, 
+    videoUrl: null,
+    videoFileName: null,
   },
   reducers: {
     clearError: (state) => {
@@ -341,7 +361,8 @@ const warrantySlice = createSlice({
     clearWarranty: (state) => {
       state.warranty = null;
     },
-    resetVideoState: (state) => { // Thêm reducer để reset trạng thái video
+    resetVideoState: (state) => {
+      // Thêm reducer để reset trạng thái video
       state.videoUrl = null;
       state.videoFileName = null;
     },
@@ -404,9 +425,14 @@ const warrantySlice = createSlice({
       })
       .addCase(rejectWarrantyRequest.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.warranties.findIndex(w => w.id === action.meta.arg.id);
+        const index = state.warranties.findIndex(
+          (w) => w.id === action.meta.arg.id
+        );
         if (index !== -1) {
-          state.warranties[index] = { ...state.warranties[index], ...action.payload.data };
+          state.warranties[index] = {
+            ...state.warranties[index],
+            ...action.payload.data,
+          };
         }
       })
       .addCase(rejectWarrantyRequest.rejected, (state, action) => {
@@ -421,9 +447,14 @@ const warrantySlice = createSlice({
       })
       .addCase(approveWarrantyRequest.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.warranties.findIndex(w => w.id === action.meta.arg);
+        const index = state.warranties.findIndex(
+          (w) => w.id === action.meta.arg
+        );
         if (index !== -1) {
-          state.warranties[index] = { ...state.warranties[index], ...action.payload.data };
+          state.warranties[index] = {
+            ...state.warranties[index],
+            ...action.payload.data,
+          };
         }
       })
       .addCase(approveWarrantyRequest.rejected, (state, action) => {
@@ -438,9 +469,14 @@ const warrantySlice = createSlice({
       })
       .addCase(confirmWarrantySuccess.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.warranties.findIndex(w => w.id === action.meta.arg);
+        const index = state.warranties.findIndex(
+          (w) => w.id === action.meta.arg
+        );
         if (index !== -1) {
-          state.warranties[index] = { ...state.warranties[index], ...action.payload.data };
+          state.warranties[index] = {
+            ...state.warranties[index],
+            ...action.payload.data,
+          };
         }
       })
       .addCase(confirmWarrantySuccess.rejected, (state, action) => {
@@ -466,7 +502,8 @@ const warrantySlice = createSlice({
 });
 
 // Export actions
-export const { clearError, clearWarranty, resetVideoState } = warrantySlice.actions;
+export const { clearError, clearWarranty, resetVideoState } =
+  warrantySlice.actions;
 
 // Export reducer
 export default warrantySlice.reducer;
