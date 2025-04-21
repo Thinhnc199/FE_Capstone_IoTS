@@ -13,7 +13,11 @@ import {
   // Select,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePassword, fetchUserById } from "../../redux/slices/accountSlice";
+import {
+  updatePassword,
+  fetchUserById,
+  updateProfile,
+} from "../../redux/slices/accountSlice";
 import {
   UserOutlined,
   EditOutlined,
@@ -24,27 +28,49 @@ import {
   WomanOutlined,
 } from "@ant-design/icons";
 // import { useNavigate } from "react-router-dom";
-
+// const { Option } = Select;
 export default function ProfilePage() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [form] = Form.useForm();
+  const [profileForm] = Form.useForm();
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
   const { detailUser } = useSelector((state) => state.accounts);
   const userId = Number(localStorage.getItem("userId"));
 
+  // Khởi tạo form values khi detailUser thay đổi
+  useEffect(() => {
+    if (detailUser) {
+      profileForm.setFieldsValue({
+        fullname: detailUser.fullname,
+        phone: detailUser.phone,
+        address: detailUser.address,
+        gender: detailUser.gender,
+      });
+    }
+  }, [detailUser, profileForm]);
   useEffect(() => {
     if (userId) {
       dispatch(fetchUserById({ id: userId }));
     }
   }, [dispatch, userId]);
 
-  const handleChange = (e) => {
-    console.log(e);
-  };
+  const handleSaveChanges = async () => {
+    try {
+      const values = await profileForm.validateFields();
+      const resultAction = await dispatch(
+        updateProfile({
+          id: userId,
+          ...values,
+        })
+      );
 
-  const handleSaveChanges = () => {
-    message.success("Profile updated successfully!");
+      if (updateProfile.fulfilled.match(resultAction)) {
+        message.success("Profile updated successfully!");
+        dispatch(fetchUserById({ id: userId })); // Refresh data
+      }
+    } catch (error) {
+      console.error("Update profile failed:", error);
+    }
   };
 
   const handleLogout = () => {
@@ -62,18 +88,10 @@ export default function ProfilePage() {
         })
       );
 
-      // Check if the action was fulfilled and successful
       if (updatePassword.fulfilled.match(resultAction)) {
-        // message.success("Password updated successfully!");
         setIsEditingPassword(false);
         form.resetFields();
-        // Call logout function after successful password change
         handleLogout();
-      } else if (resultAction.payload) {
-        // Handle API error messages
-        // message.error(
-        //   resultAction.payload.message || "Failed to update password"
-        // );
       }
     } catch (error) {
       console.error(error);
@@ -146,76 +164,116 @@ export default function ProfilePage() {
           {/* Information and Project Status Cards */}
           <div className="w-full md:w-2/3 space-y-8">
             {/* Information Card */}
-            <Card className="shadow-sm shadow-blue-200 w-full rounded-sm ">
-              <div className="space-y-6">
-                {/* Grid Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-20 gap-y-6 items-center">
-                  {/* Full Name */}
-                  <p className="text-md font-semibold">Full Name:</p>
-                  <Input
-                    name="fullName"
-                    value={detailUser.fullname}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
+            <Card className="shadow-sm shadow-blue-200 w-full rounded-sm">
+              <Form form={profileForm}>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-20 gap-y-6 items-center">
+                    {/* Full Name */}
+                    <div className="flex">
+                      <p className="text-md font-semibold">Full Name:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
 
-                  {/* Phone */}
-                  <p className="text-md font-semibold">Phone:</p>
-                  <Input
-                    name="phone"
-                    value={detailUser.phone}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
+                    <Form.Item
+                      name="fullname"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your full name!",
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                    </Form.Item>
 
-                  {/* Address */}
-                  <p className=" text-md font-semibold">Address:</p>
-                  <Input
-                    name="address"
-                    value={detailUser.address}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
-                  {/* Save Changes Button */}
-                  <span></span>
-                  <Button
-                    type="primary"
-                    onClick={handleSaveChanges}
-                    className="w-1/4 "
-                  >
-                    Save Changes
-                  </Button>
+                    {/* Phone */}
+
+                    <div className="flex">
+                      <p className="text-md font-semibold">Phone:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
+                    <Form.Item
+                      name="phone"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your phone number!",
+                        },
+                        {
+                          pattern: /^[0-9]{10,15}$/,
+                          message: "Please enter a valid phone number!",
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                    </Form.Item>
+
+                    {/* Address */}
+
+                    <div className="flex">
+                      <p className="text-md font-semibold">Address:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
+                    <Form.Item
+                      name="address"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your address!",
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                    </Form.Item>
+
+                    {/* Gender */}
+                    {/* <p className="text-md font-semibold">Gender:</p>
+                    <Form.Item name="gender">
+                      <Select className="w-full h-[2.5rem] rounded-sm">
+                        <Option value={1}>Male</Option>
+                        <Option value={2}>Female</Option>
+                      </Select>
+                    </Form.Item> */}
+
+                    {/* Save Changes Button */}
+                    <span></span>
+                    <Button
+                      type="primary"
+                      onClick={handleSaveChanges}
+                      className="w-1/4"
+                    >
+                      Save Changes
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              </Form>
             </Card>
 
             {/* Project Status Card */}
             <Card className="shadow-sm shadow-blue-200 rounded-sm ">
               <div>
                 <h3 className="text-2xl font-semibold text-blue-600">
-                  Project Status
+                  Order Statistics
                 </h3>
                 <div className="space-y-2">
                   <div>
-                    <p className="text-lg">Web Design</p>
+                    <p className="text-lg">Total Orders</p>
                     <Progress percent={80} showInfo={false} />
                   </div>
                   <div>
-                    <p className="text-lg">Website Markup</p>
+                    <p className="text-lg">Completed</p>
                     <Progress percent={50} showInfo={false} status="success" />
                   </div>
                   <div>
-                    <p className="text-lg">One Page</p>
+                    <p className="text-lg">Pending</p>
                     <Progress
                       percent={30}
                       showInfo={false}
                       status="exception"
                     />
-                  </div>
-
-                  <div>
-                    <p className="text-lg">Backend API</p>
-                    <Progress percent={90} showInfo={false} />
                   </div>
                 </div>
               </div>
