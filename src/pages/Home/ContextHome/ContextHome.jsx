@@ -33,7 +33,7 @@ export default function ContextHome() {
         endFilterDate,
       })
     );
-    dispatch(fetchCombos({ pageIndex: 1, pageSize: 4, searchKeyword: "" }));
+    dispatch(fetchCombos({ pageIndex: 1, pageSize: 8, searchKeyword: "" }));
   }, [
     dispatch,
     pageIndex,
@@ -83,7 +83,30 @@ export default function ContextHome() {
 
   const responsiveComboSettings = {
     ...responsiveCarouselSettings,
-    slidesToShow: Math.min(combos?.length || 0, 4),
+    slidesToShow: Math.min(combos?.length || 0, 5),
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   return (

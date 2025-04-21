@@ -150,7 +150,7 @@ export default function DetailProducts() {
         <BreadcrumbNav
           items={[
             { label: "Home", path: "/" },
-            { label: "Shop", path: "/view-all" },
+            { label: "All Product", path: "/view-all" },
             { label: "Product Details" },
           ]}
         />

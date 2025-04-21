@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { EyeOutlined } from "@ant-design/icons";
-import { TypeDevice } from "../../../redux/constants";
-import { Card, Button, Skeleton, Badge, Rate } from "antd";
+import { Card, Button, Skeleton, Rate } from "antd";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -44,25 +43,14 @@ const ComboList = ({ sortOrder, loading }) => {
               hoverable
               cover={
                 <div className="relative group">
-                  {combo.deviceType === TypeDevice.NEWPRICE ? (
-                    <Badge.Ribbon
-                      text="New"
-                      color="red"
-                      className="text-textColer"
-                    >
-                      <img
-                        alt={combo.name}
-                        src={combo.imageUrl || "/placeholder.jpg"}
-                        className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-95 p-3"
-                      />
-                    </Badge.Ribbon>
-                  ) : (
-                    <img
-                      alt={combo.name}
-                      src={combo.imageUrl || "/placeholder.jpg"}
-                      className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-95 p-3"
-                    />
-                  )}
+                  {/* <Badge.Ribbon text="Combo" color="red"> */}
+                  <img
+                    alt={combo.name}
+                    src={combo.imageUrl || "/placeholder.jpg"}
+                    className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-95 p-3"
+                  />
+                  {/* </Badge.Ribbon> */}
+
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Button
                       shape="circle"

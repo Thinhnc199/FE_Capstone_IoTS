@@ -69,7 +69,7 @@ export default function ViewAllProduct() {
   return (
     <div className="container mx-auto p-4 sm:p-8">
       <BreadcrumbNav
-        items={[{ label: "Home", path: "/" }, { label: "All iot items" }]}
+        items={[{ label: "Home", path: "/" }, { label: "All Product" }]}
       />
       <div className="container mx-auto p-2 sm:p-4 bg-white shadow-lg my-4 sm:my-6">
         <Titles
