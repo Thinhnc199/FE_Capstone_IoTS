@@ -201,7 +201,7 @@ export default function ContextHome() {
         </div>
       </div> */}
 
-      <div className="mb-8 p-2 sm:p-4 rounded-md space-y-4 bg-white">
+      <div className=" p-2 sm:p-4 rounded-md space-y-4 bg-white">
         <Titles
           titleText="Hot"
           colorText="text-headerBg"
@@ -222,14 +222,11 @@ export default function ContextHome() {
           <p className="text-center text-gray-500">Loading combos...</p>
         ) : combos?.length > 0 ? (
           <Carousel {...responsiveComboSettings}>
-            {combos
-              .filter((combo) => combo.isActive === 1)
-              .slice(0, 4)
-              .map((combo) => (
-                <div key={combo.id} className="px-1 sm:px-2">
-                  <ComboCard combo={combo} />
-                </div>
-              ))}
+            {combos.map((combo) => (
+              <div key={combo.id} className="px-1 sm:px-2">
+                <ComboCard combo={combo} />
+              </div>
+            ))}
           </Carousel>
         ) : (
           <p className="text-center text-gray-500">No combos available</p>

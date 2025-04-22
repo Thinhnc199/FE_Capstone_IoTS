@@ -105,7 +105,6 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
     .addCase(asyncThunk.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
-      message.error(action.payload);
     });
 };
 
@@ -116,7 +115,8 @@ export const getRecentChat = createAsyncThunk(
       const response = await api.get(`/api/Message/recent-chats`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.toString());
+      console.error(error);
+      return rejectWithValue(error);
     }
   }
 );
@@ -130,7 +130,8 @@ export const getAllChat = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.toString());
+      console.error(error);
+      return rejectWithValue(error);
     }
   }
 );
@@ -145,7 +146,8 @@ export const chatRabbit = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.toString());
+      message.error("Sender or Receiver does not exist.");
+      return rejectWithValue(error);
     }
   }
 );
