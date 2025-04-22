@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Avatar, Button, Input } from "antd";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DynamicBreadcrumb from "../../components/common/DynamicBreadcrumb";
 import {
@@ -12,6 +12,7 @@ import {
 
 const ChatPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
   const messagesEndRef = useRef(null);
 
@@ -21,18 +22,12 @@ const ChatPage = () => {
   );
   const currentUserId = localStorage.getItem("userId");
 
-  // Xử lý khi chọn chat
   const handleChatSelect = (chat) => {
     dispatch(setCurrentChatUser(chat));
     dispatch(getAllChat({ receiverId: chat.userId }));
+    navigate(`/chat/${chat.userId}`); // 👉 update URL
   };
 
-  // Tự động cuộn xuống tin nhắn mới nhất
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
-
-  // Gửi tin nhắn
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
 
@@ -48,37 +43,45 @@ const ChatPage = () => {
     setInputValue("");
   };
 
-  // Hiệu ứng khi nhấn Enter
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSendMessage();
     }
   };
 
-  // Load dữ liệu ban đầu
   useEffect(() => {
     dispatch(getRecentChat());
-    if (id) {
-      const chat = dataRecent.find((c) => c.userId === id);
-      if (chat) {
-        dispatch(setCurrentChatUser(chat));
-        dispatch(getAllChat({ receiverId: id }));
-      }
-    }
-  }, [dispatch, id]);
+  }, [dispatch]);
 
-  // Tự động chọn chat khi dataRecent thay đổi
   useEffect(() => {
-    if (id && dataRecent.length > 0 && !currentChatUser) {
-      const chat = dataRecent.find((c) => c.userId === id);
-      if (chat) dispatch(setCurrentChatUser(chat));
-    }
-  }, [dataRecent, id, currentChatUser, dispatch]);
+    const fetchData = async () => {
+      if (id) {
+        const matched = dataRecent.find((c) => String(c.userId) === id);
+        if (matched) {
+          dispatch(setCurrentChatUser(matched));
+        }
 
-  // Tự động cuộn xuống khi có tin nhắn mới
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [dataAllChat]);
+        const resultAction = await dispatch(getAllChat({ receiverId: id }));
+        const data = resultAction.payload?.data;
+
+        if (!matched && Array.isArray(data) && data.length > 0) {
+          const firstMessage = data[0];
+          const fallbackUser = {
+            userId:
+              String(firstMessage.createdBy) === currentUserId
+                ? String(firstMessage.receiverId)
+                : String(firstMessage.createdBy),
+            username: firstMessage.name,
+            imageURL: firstMessage.imagUrl,
+            lastMessage: firstMessage.content,
+          };
+          dispatch(setCurrentChatUser(fallbackUser));
+        }
+      }
+    };
+
+    fetchData();
+  }, [id, dataRecent, dispatch, currentUserId]);
 
   return (
     <div
@@ -90,10 +93,7 @@ const ChatPage = () => {
       </div>
       <div
         className="flex shadow-md"
-        style={{
-          height: "calc(100vh - 12rem)",
-          minHeight: "500px", // Thiết lập chiều cao tối thiểu
-        }}
+        style={{ height: "calc(100vh - 12rem)", minHeight: "500px" }}
       >
         {/* Danh sách chat bên trái */}
         <div className="w-64 bg-white p-2 rounded-l-md border-r flex flex-col">
@@ -112,9 +112,12 @@ const ChatPage = () => {
                 <Avatar src={chat.imageURL} />
                 <div className="ml-3 overflow-hidden">
                   <p className="font-semibold truncate">{chat.username}</p>
-                  <p className="text-gray-500 text-sm truncate">
-                    {chat.lastMessage}
-                  </p>
+                  {/* Chỉ hiện lastMessage nếu không rỗng */}
+                  {chat.lastMessage?.trim() && (
+                    <p className="text-gray-500 text-sm truncate">
+                      {chat.lastMessage}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -137,7 +140,7 @@ const ChatPage = () => {
             )}
           </div>
 
-          {/* Nội dung chat - Sử dụng flex-col-reverse */}
+          {/* Nội dung chat */}
           <div className="flex-1 overflow-y-auto p-4 flex flex-col-reverse min-h-0">
             {dataAllChat.length === 0 ? (
               <div className="flex items-center justify-center h-full">
@@ -149,41 +152,44 @@ const ChatPage = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                {[...dataAllChat].reverse().map((message, index) => {
-                  const isCurrentUser =
-                    message.createdBy === Number(currentUserId);
-                  const showAvatar =
-                    index === 0 ||
-                    dataAllChat[index - 1]?.createdBy !== message.createdBy;
+                {[...dataAllChat]
+                  .filter((msg) => msg.content?.trim())
+                  .reverse()
+                  .map((message, index) => {
+                    const isCurrentUser =
+                      message.createdBy === Number(currentUserId);
+                    const showAvatar =
+                      index === 0 ||
+                      dataAllChat[index - 1]?.createdBy !== message.createdBy;
 
-                  return (
-                    <div
-                      key={index}
-                      className={`flex ${
-                        isCurrentUser ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      {!isCurrentUser && showAvatar && (
-                        <Avatar
-                          src={message.imagUrl || currentChatUser?.imageURL}
-                          className="self-end mr-2"
-                        />
-                      )}
-                      {!isCurrentUser && !showAvatar && (
-                        <div className="w-8 mr-2"></div>
-                      )}
+                    return (
                       <div
-                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                          isCurrentUser
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-800"
-                        } shadow`}
+                        key={index}
+                        className={`flex ${
+                          isCurrentUser ? "justify-end" : "justify-start"
+                        }`}
                       >
-                        {message.content}
+                        {!isCurrentUser && showAvatar && (
+                          <Avatar
+                            src={message.imagUrl || currentChatUser?.imageURL}
+                            className="self-end mr-2"
+                          />
+                        )}
+                        {!isCurrentUser && !showAvatar && (
+                          <div className="w-8 mr-2"></div>
+                        )}
+                        <div
+                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            isCurrentUser
+                              ? "bg-blue-500 text-white"
+                              : "bg-white text-gray-800"
+                          } shadow`}
+                        >
+                          {message.content}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 <div ref={messagesEndRef} />
               </div>
             )}

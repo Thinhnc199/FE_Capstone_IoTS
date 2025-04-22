@@ -34,7 +34,7 @@ const ProductCard = ({ product }) => {
 
       message.success("Product added to cart!");
     } catch (error) {
-      message.error(error.message || "Failed to add to cart");
+      console.warning(error);
     }
   };
   return (
