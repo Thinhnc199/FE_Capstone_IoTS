@@ -636,6 +636,9 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
   const [videoFile, setVideoFile] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const hasFetchedRef = useRef(false);
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN").format(price);
+  };
 
   useEffect(() => {
     dispatch(fetchCombos({ pageIndex: 1, pageSize: 10, searchKeyword: "" }));
@@ -827,7 +830,7 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (text) => <span>${text}</span>,
+      render: (text, record) => <>{formatPrice(record.price)}đ</>,
     },
   ];
 

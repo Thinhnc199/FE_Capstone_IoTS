@@ -30,7 +30,7 @@ const UpdateProductPage = () => {
       message.success("Product updated successfully");
       navigate("/store/list-product");
     } catch (error) {
-      message.error(`Update failed: ${error.message}`);
+      message.error(error);
     }
   };
 

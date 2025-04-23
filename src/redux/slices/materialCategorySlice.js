@@ -121,6 +121,7 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
+import { message } from "antd";
 
 // Helper function to handle async states
 const handleAsyncState = (builder, asyncThunk, onSuccess) => {
@@ -232,6 +233,7 @@ export const createMaterialCategory = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      message.error(error);
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }

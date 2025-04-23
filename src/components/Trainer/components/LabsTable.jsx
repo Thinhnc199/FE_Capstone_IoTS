@@ -21,6 +21,9 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
   const navigate = useNavigate();
   const { labs } = useSelector((state) => state.lab);
   const { combos, loading: comboLoading } = useSelector((state) => state.combo);
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN").format(price);
+  };
 
   const [pagination, setPagination] = useState({
     pageIndex: 1,
@@ -243,7 +246,8 @@ const LabsTable = ({ role, comboId, userId, storeId }) => {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price) => `${price} VND`,
+      // render: (price) => `${price} VND`,
+      render: (text, record) => <>{formatPrice(record.price)}đ</>,
       sorter: (a, b) => a.price - b.price,
     },
     {

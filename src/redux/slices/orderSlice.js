@@ -13,11 +13,12 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
     })
     .addCase(asyncThunk.fulfilled, (state, action) => {
       state.loading = false;
+      state.error = null;
       onSuccess?.(state, action);
     })
     .addCase(asyncThunk.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload || action.error.message;
     });
 };
 
@@ -67,8 +68,9 @@ export const checkSuccessOrder = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      message.warning("warning", error);
-      return rejectWithValue(error.message || "Unknown error");
+      // message.warning("warning", error);
+      // message.warning(error || "An error occurred");
+      return rejectWithValue(error || "Unknown error");
     }
   }
 );
