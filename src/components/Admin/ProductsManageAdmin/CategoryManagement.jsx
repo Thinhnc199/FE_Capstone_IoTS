@@ -443,7 +443,7 @@ export default function CategoryManagement() {
         })
       );
     } catch (error) {
-      message.error(`Error: ${error || "Something went wrong!"}`);
+      console.error(`Error: ${error || "Something went wrong!"}`);
     }
   };
 
@@ -638,9 +638,14 @@ export default function CategoryManagement() {
           >
             <Input placeholder="Enter label" />
           </Form.Item>
-          <Form.Item name="description" label="Description">
-            <TextArea placeholder="Enter description" />
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: "Please enter description" }]}
+          >
+            <TextArea rows={4} placeholder="Enter description" />
           </Form.Item>
+
           <Space>
             <Button onClick={onClose}>Cancel</Button>
             <Button type="primary" onClick={() => form.submit()}>

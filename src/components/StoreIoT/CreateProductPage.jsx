@@ -29,6 +29,7 @@ export default function CreateProductPage() {
   const [uploading, setUploading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const dispatch = useDispatch();
 
   const { paginatedData, loading } = useSelector(
@@ -64,7 +65,7 @@ export default function CreateProductPage() {
       } else {
         setFileList((prev) => [
           ...prev,
-          { url, name: file.name, uid: file.uid },
+          { url, name: file.name, uid: file.uid, thumbUrl: url },
         ]);
       }
       message.success("upload img success!");
@@ -73,11 +74,24 @@ export default function CreateProductPage() {
       message.error("upload img fail!");
       onError(err);
     } finally {
-      setUploading(false);
+      // setUploading(false);
+      setIsUploading(false);
     }
   };
 
   const handleSubmit = async (values) => {
+    // Kiểm tra ảnh chính
+    if (!imageUrl) {
+      message.error("Please upload main image");
+      return;
+    }
+
+    // Kiểm tra đang upload
+    if (isUploading) {
+      message.warning("Please wait for images to finish uploading");
+      return;
+    }
+
     console.log("Form values:", values);
     const attachments = fileList.map((file, index) => ({
       id: index,
@@ -113,7 +127,7 @@ export default function CreateProductPage() {
         setImageUrl("");
       })
       .catch((error) => {
-        message.error(`err: ${error.message}`);
+        message.error(error);
       });
   };
 
@@ -459,8 +473,13 @@ export default function CreateProductPage() {
             <Row gutter={24}>
               <Col span={12}>
                 <Form.Item
+                  name="mainImage"
                   label="Primary Image"
-                  rules={[{ required: true, message: "Please upload img" }]}
+                  rules={[
+                    { required: true, message: "Please upload main image" },
+                  ]}
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => e.fileList}
                 >
                   <Upload
                     name="file"

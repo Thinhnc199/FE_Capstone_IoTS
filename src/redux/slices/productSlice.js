@@ -48,7 +48,7 @@ export const fetchProducts = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -61,7 +61,7 @@ export const fetchProductDetails = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -74,7 +74,7 @@ export const createProducts = createAsyncThunk(
       });
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -88,7 +88,7 @@ export const updateProducts = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -101,7 +101,7 @@ export const activeProducts = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -115,7 +115,7 @@ export const deactiveProducts = createAsyncThunk(
 
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -137,7 +137,7 @@ export const getUrlImg = createAsyncThunk(
         return rejectWithValue(response.data.message || "Upload failed");
       }
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Upload error");
+      return rejectWithValue(error);
     }
   }
 );
