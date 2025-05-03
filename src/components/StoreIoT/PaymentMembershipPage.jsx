@@ -90,8 +90,8 @@ const PaymentMembershipPage = () => {
     setIsResultModalOpen(false);
     if (paymentResult?.responseCodeMessage === "Giao dịch thành công") {
       dispatch(getWalletBalance(userId));
-      navigate("/");
-      return;
+      // navigate("/");
+      // return;
     }
     dispatch(resetPayment());
     setHasProcessedPayment(false);
