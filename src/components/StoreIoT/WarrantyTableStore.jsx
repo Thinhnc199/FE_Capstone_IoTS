@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Tabs, Spin, Typography, Button, message } from "antd";
+import { Table, Tabs, Spin, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import {
   getWarrantyPagination,
   getWarrantyById,
-  confirmWarrantySuccess,
+  // confirmWarrantySuccess,
 } from "../../redux/slices/warrantySlice";
-import { ProductType } from "./../../redux/constants";
+import { ProductTypeReverse } from "./../../redux/constants";
 import BreadcrumbNav from "../common/BreadcrumbNav";
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -20,7 +20,7 @@ const WarrantyTableStore = () => {
   );
 
   // Lấy role từ localStorage
-  const userRole = parseInt(localStorage.getItem("role"), 10); // Sửa lại để parse đúng từ string
+  // const userRole = parseInt(localStorage.getItem("role"), 10); // Sửa lại để parse đúng từ string
 
   // Hàm gọi API phân trang theo status
   const fetchWarranties = (status, updatedPagination = pagination) => {
@@ -40,22 +40,22 @@ const WarrantyTableStore = () => {
 
   const handleProductClick = (id) => {
     dispatch(getWarrantyById(id)).then(() => {
-      navigate(`/warranty-detail/${id}`);
+      navigate(`/store/warranty-detail/${id}`);
     });
   };
 
   // Hàm xử lý xác nhận bảo hành thành công
-  const handleConfirmSuccess = async (id) => {
-    try {
-      await dispatch(confirmWarrantySuccess(id)).unwrap();
-      message.success("Warranty confirmed successfully!");
-      fetchWarranties(1); // Cập nhật lại danh sách Approved
-    } catch (error) {
-      message.error(
-        "Failed to confirm warranty: " + (error.message || "Unknown error")
-      );
-    }
-  };
+  // const handleConfirmSuccess = async (id) => {
+  //   try {
+  //     await dispatch(confirmWarrantySuccess(id)).unwrap();
+  //     message.success("Warranty confirmed successfully!");
+  //     fetchWarranties(1); // Cập nhật lại danh sách Approved
+  //   } catch (error) {
+  //     message.error(
+  //       "Failed to confirm warranty: " + (error.message || "Unknown error")
+  //     );
+  //   }
+  // };
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
@@ -77,7 +77,7 @@ const WarrantyTableStore = () => {
       title: "Product Type",
       dataIndex: "productType",
       key: "productType",
-      render: (type) => ProductType[type] || "Unknown",
+      render: (type) => ProductTypeReverse[type] || "Unknown",
     },
     { title: "Description", dataIndex: "description", key: "description" },
     {
@@ -91,20 +91,20 @@ const WarrantyTableStore = () => {
       key: "createdDate",
       render: (date) => new Date(date).toLocaleString(),
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) =>
-        userRole === 5 && record.status === 1 ? (
-          <Button
-            type="primary"
-            onClick={() => handleConfirmSuccess(record.id)}
-            loading={loading}
-          >
-            Confirm Success
-          </Button>
-        ) : null,
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, record) =>
+    //     userRole === 5 && record.status === 1 ? (
+    //       <Button
+    //         type="primary"
+    //         onClick={() => handleConfirmSuccess(record.id)}
+    //         loading={loading}
+    //       >
+    //         Confirm Success
+    //       </Button>
+    //     ) : null,
+    // },
   ];
 
   const handleTabChange = (key) => {
@@ -120,7 +120,7 @@ const WarrantyTableStore = () => {
       <div className=" max-w-6xl mb-4 ">
         <BreadcrumbNav
           items={[
-            { label: "Home", path: "/" },
+            { label: "Home", path: "/store" },
             { label: "store", path: "/store" },
             { label: "warranties request" },
           ]}

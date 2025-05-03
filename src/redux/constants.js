@@ -19,7 +19,11 @@ export const ProductType = {
 //   ACTIVE: 1,
 //   INACTIVE: 0,
 // };
-
+export const ProductTypeReverse = {
+  1: "DEVICE",
+  2: "COMBO",
+  3: "LAB",
+};
 export const TypeStatusOrder = {
   PENDING: 1,
   PACKING: 2,
