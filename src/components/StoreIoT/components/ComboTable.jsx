@@ -773,7 +773,7 @@ const ComboTable = () => {
 
   const {
     combos,
-    loading,
+    // loading,
     totalCount,
     pageIndex,
     pageSize,
@@ -849,11 +849,16 @@ const ComboTable = () => {
         ...prevList,
         { id: imageUrl, imageUrl, metaData: "" },
       ]);
+      // } catch (error) {
+      //   notification.error({
+      //     message: "Upload Failed",
+      //     description: error,
+      //   });
+      // }
     } catch (error) {
-      console.error("❌ File upload failed", error);
       notification.error({
         message: "Upload Failed",
-        description: error.message,
+        description: error,
       });
     }
   };
@@ -933,7 +938,7 @@ const ComboTable = () => {
     } catch (error) {
       notification.error({
         message: "Creation Failed",
-        description: error.message,
+        description: error,
       });
     }
   };

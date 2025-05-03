@@ -7,7 +7,7 @@ import {
   rejectWarrantyRequest,
   approveWarrantyRequest,
 } from "../../redux/slices/warrantySlice";
-import { Roles, ProductType } from "../../redux/constants";
+import { Roles, ProductTypeReverse } from "../../redux/constants";
 import { Spin, Modal, Button, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
@@ -157,8 +157,8 @@ const WarrantyDetail = () => {
             <p>{warranty.id}</p>
           </div>
           <div>
-            <p className="text-textColer font-semibold">Order ID:</p>
-            <p>{warranty.orderId}</p>
+            <p className="text-textColer font-semibold">Order code:</p>
+            <p>{warranty.orderCode}</p>
           </div>
           <div>
             <p className="text-textColer font-semibold">Product Name:</p>
@@ -166,7 +166,7 @@ const WarrantyDetail = () => {
           </div>
           <div>
             <p className="text-textColer font-semibold">Product Type:</p>
-            <p>{ProductType[warranty.productType] || "Unknown"}</p>
+            <p>{ProductTypeReverse[warranty.productType] || "Unknown"}</p>
           </div>
           <div>
             <p className="text-textColer font-semibold">Description:</p>

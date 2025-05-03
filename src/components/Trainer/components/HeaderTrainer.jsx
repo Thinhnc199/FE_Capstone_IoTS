@@ -1,7 +1,7 @@
 import { Modal, Button, Dropdown, Space } from "antd";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { toggleSidebar } from "../../../redux/slices/sidebarSlice";
 import useNotification from "./../../../utils/useNotification.jsx";
 import { Link } from "react-router-dom";
@@ -11,7 +11,8 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  HistoryOutlined,
+  // HistoryOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 
 export default function HeaderTrainer() {
@@ -20,7 +21,7 @@ export default function HeaderTrainer() {
     "https://vietlucoder.id.vn/img/Picsart_23-06-13_17-33-04-543.png";
   const { isSidebarOpen } = useSelector((state) => state.sidebar);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const TrainerName = localStorage.getItem("username") || "Hi, Owner";
 
   const showModal = () => {
@@ -36,7 +37,8 @@ export default function HeaderTrainer() {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
-    navigate("/login");
+    localStorage.clear();
+    window.location.href = "/login";
   };
   const items = [
     {
@@ -52,10 +54,15 @@ export default function HeaderTrainer() {
       label: "Profile",
       icon: <EditOutlined />,
     },
+    // {
+    //   key: "3",
+    //   label: <Link to="/trainer/transaction-history">Transaction history</Link>,
+    //   icon: <HistoryOutlined />,
+    // },
     {
-      key: "3",
-      label: <Link to="/trainer/transaction-history">Transaction history</Link>,
-      icon: <HistoryOutlined />,
+      key: "sub6",
+      icon: <WalletOutlined />,
+      label: <Link to="/trainer/wallet">Wallet</Link>,
     },
     {
       key: "4",

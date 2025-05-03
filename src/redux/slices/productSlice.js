@@ -20,20 +20,35 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (
-    { pageIndex, pageSize, searchKeyword, startFilterDate, endFilterDate },
+    {
+      pageIndex,
+      pageSize,
+      searchKeyword,
+      startFilterDate,
+      endFilterDate,
+      categoryFilterId,
+    },
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.post(`/api/iot-device/get-pagination`, {
-        pageIndex,
-        pageSize,
-        searchKeyword,
-        startFilterDate,
-        endFilterDate,
-      });
+      const response = await api.post(
+        `/api/iot-device/get-pagination`,
+        {
+          pageIndex,
+          pageSize,
+          searchKeyword,
+          startFilterDate,
+          endFilterDate,
+        },
+        {
+          params: {
+            categoryFilterId,
+          },
+        }
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -46,7 +61,7 @@ export const fetchProductDetails = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -59,7 +74,21 @@ export const createProducts = createAsyncThunk(
       });
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const updateProducts = createAsyncThunk(
+  "products/updateProducts",
+  async ({ id, ...productData }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(
+        `/api/iot-device/update-iot-device/${id}`,
+        productData
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error);
     }
   }
 );
@@ -72,7 +101,7 @@ export const activeProducts = createAsyncThunk(
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
@@ -86,30 +115,11 @@ export const deactiveProducts = createAsyncThunk(
 
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
+      return rejectWithValue(error);
     }
   }
 );
-// export const updateProducts = createAsyncThunk(
-//   "products/updateProducts",
-//   async ({ id }, { rejectWithValue }) => {
-//     try {
-//       const response = await api.put(
-//         `/api/iot-device/update-iot-device/${id}`,
-//         {
-//           pageIndex,
-//           pageSize,
-//           searchKeyword,
-//           startFilterDate,
-//           endFilterDate,
-//         }
-//       );
-//       return response.data.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data?.message || error.message);
-//     }
-//   }
-// );
+
 export const getUrlImg = createAsyncThunk(
   "products/getUrlImg",
   async (file, { rejectWithValue }) => {
@@ -127,7 +137,7 @@ export const getUrlImg = createAsyncThunk(
         return rejectWithValue(response.data.message || "Upload failed");
       }
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Upload error");
+      return rejectWithValue(error);
     }
   }
 );
@@ -137,6 +147,7 @@ const initialState = {
   pageIndex: 1,
   pageSize: 10,
   searchKeyword: "",
+  categoryFilterId: null,
   startFilterDate: null,
   endFilterDate: null,
   error: null,
@@ -171,6 +182,10 @@ const productSlice = createSlice({
     setEndFilterDate: (state, action) => {
       state.endFilterDate = action.payload;
     },
+    setCategoryFilterId: (state, action) => {
+      state.categoryFilterId = action.payload;
+      state.pageIndex = 1;
+    },
   },
   extraReducers: (builder) => {
     handleAsyncState(builder, fetchProducts, (state, action) => {
@@ -188,14 +203,18 @@ const productSlice = createSlice({
     });
 
     handleAsyncState(builder, activeProducts, (state, action) => {
-      // const updatedUser = action.payload;
-      // const index = state.users.findIndex((user) => user.id === updatedUser.id);
-      // if (index !== -1) {
-      //   state.users[index] = updatedUser;
-      // }
       state.items = state.items.map((item) =>
         item.id === action.payload.id ? action.payload : item
       );
+    });
+    handleAsyncState(builder, updateProducts, (state, action) => {
+      const updatedProduct = action.payload;
+      const index = state.items.findIndex(
+        (item) => item.id === updatedProduct.id
+      );
+      if (index !== -1) {
+        state.items[index] = updatedProduct;
+      }
     });
     handleAsyncState(builder, deactiveProducts, (state, action) => {
       const updatedProduct = action.payload;
@@ -214,5 +233,6 @@ export const {
   setsearchKeyword,
   setEndFilterDate,
   setStartFilterDate,
+  setCategoryFilterId,
 } = productSlice.actions;
 export default productSlice.reducer;

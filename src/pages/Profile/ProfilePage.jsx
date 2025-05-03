@@ -10,9 +10,14 @@ import {
   Divider,
   Modal,
   Form,
+  // Select,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePassword, fetchUserById } from "../../redux/slices/accountSlice";
+import {
+  updatePassword,
+  fetchUserById,
+  updateProfile,
+} from "../../redux/slices/accountSlice";
 import {
   UserOutlined,
   EditOutlined,
@@ -22,81 +27,107 @@ import {
   ManOutlined,
   WomanOutlined,
 } from "@ant-design/icons";
-
-// Giả lập dữ liệu từ API
-// const detailUser = {
-//   id: 120,
-//   fullname: "John Doe",
-//   username: "supercustomer@gmail.com",
-//   email: "supercustomer@gmail.com",
-//   phone: "0767676284",
-//   address: "Bay Area, San Francisco, CA",
-//   provinceId: 0,
-//   provinceName: null,
-//   districtId: 0,
-//   districtName: null,
-//   wardId: 0,
-//   wardName: null,
-//   gender: 2, // 1: Male, 2: Female
-//   createdBy: null,
-//   createdDate: "2025-03-02T08:09:45.713",
-//   updatedBy: null,
-//   updatedDate: "2025-03-02T08:09:45.713",
-//   isActive: 1,
-//   roles: [
-//     {
-//       id: 5,
-//       label: "Customer",
-//       orders: 5,
-//       isActive: 1,
-//     },
-//   ],
-//   imageUrl: null,
-// };
-
-// Component chính
+// import { useNavigate } from "react-router-dom";
+// const { Option } = Select;
 export default function ProfilePage() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  // const [formData, setFormData] = useState(detailUser);
   const [form] = Form.useForm();
+  const [profileForm] = Form.useForm();
   const dispatch = useDispatch();
   const { detailUser } = useSelector((state) => state.accounts);
   const userId = Number(localStorage.getItem("userId"));
+  const validatePassword = (password) => {
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-  console.log("detailUser", detailUser);
-
+    if (
+      !hasMinLength ||
+      !hasUpperCase ||
+      !hasLowerCase ||
+      !hasNumber ||
+      !hasSpecialChar
+    ) {
+      return "Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+    }
+    return null;
+  };
+  // Khởi tạo form values khi detailUser thay đổi
+  useEffect(() => {
+    if (detailUser) {
+      profileForm.setFieldsValue({
+        fullname: detailUser.fullname,
+        phone: detailUser.phone,
+        address: detailUser.address,
+        gender: detailUser.gender,
+        email: detailUser.email,
+      });
+    }
+  }, [detailUser, profileForm]);
   useEffect(() => {
     if (userId) {
       dispatch(fetchUserById({ id: userId }));
     }
   }, [dispatch, userId]);
-  const handleChange = (e) => {
-    // setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(e);
+
+  const handleSaveChanges = async () => {
+    try {
+      const values = await profileForm.validateFields();
+      const resultAction = await dispatch(
+        updateProfile({
+          id: userId,
+          ...values,
+        })
+      );
+
+      if (updateProfile.fulfilled.match(resultAction)) {
+        message.success("Profile updated successfully!");
+        dispatch(fetchUserById({ id: userId })); // Refresh data
+      }
+    } catch (error) {
+      console.error("Update profile failed:", error);
+    }
   };
 
-  const handleSaveChanges = () => {
-    message.success("Profile updated successfully!");
-    // Dispatch API update here
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
   };
 
   const handleUpdatePassword = async (values) => {
     try {
-      console.log("Updating password:", values);
-      await dispatch(
+      // Check if new password is same as old password
+      if (values.oldPassword === values.newPassword) {
+        message.error("New password matches old password!");
+        return;
+      }
+
+      const passwordError = validatePassword(values.newPassword);
+      if (passwordError) {
+        message.error(passwordError);
+        return;
+      }
+
+      const resultAction = await dispatch(
         updatePassword({
           oldPassword: values.oldPassword,
           newPassword: values.newPassword,
         })
       );
-      message.success("Password updated successfully!");
-      setIsEditingPassword(false);
-      form.resetFields();
+
+      if (updatePassword.fulfilled.match(resultAction)) {
+        setIsEditingPassword(false);
+        form.resetFields();
+        setTimeout(() => {
+          handleLogout();
+        }, 1000); // đợi 1 giây (1000ms)
+      }
     } catch (error) {
-      message.error("Failed to update password. Please try again.", error);
+      console.error(error);
     }
   };
-
   return (
     <div className=" min-h-screen p-8 mx-auto container">
       <div className=" max-w-6xl mb-4 ">
@@ -164,85 +195,177 @@ export default function ProfilePage() {
           {/* Information and Project Status Cards */}
           <div className="w-full md:w-2/3 space-y-8">
             {/* Information Card */}
-            <Card className="shadow-sm shadow-blue-200 w-full rounded-sm ">
-              <div className="space-y-6">
-                {/* Grid Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-20 gap-y-6 items-center">
-                  {/* Full Name */}
-                  <p className="text-md font-semibold">Full Name:</p>
-                  <Input
-                    name="fullName"
-                    value={detailUser.fullname}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
+            <Card className="shadow-sm shadow-blue-200 w-full rounded-sm">
+              <Form form={profileForm}>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-20 gap-y-6 items-center">
+                    {/* Full Name */}
+                    <div className="flex">
+                      <p className="text-md font-semibold">Full Name:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
 
-                  {/* Email */}
-                  <p className="text-md font-semibold">Email:</p>
-                  <Input
-                    name="email"
-                    value={detailUser.email}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
+                    <Form.Item
+                      name="fullname"
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (!value || value.trim().length === 0) {
+                              return Promise.reject(
+                                new Error("Full name is required")
+                              );
+                            }
+                            if (value.trim().length < 5) {
+                              return Promise.reject(
+                                new Error(
+                                  "Full Name must be at least 5 characters"
+                                )
+                              );
+                            }
+                            if (value.trim().length > 50) {
+                              return Promise.reject(
+                                new Error(
+                                  "Full Name cannot exceed 50 characters"
+                                )
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                    </Form.Item>
+                    {/* Address */}
 
-                  {/* Phone */}
-                  <p className="text-md font-semibold">Phone:</p>
-                  <Input
-                    name="phone"
-                    value={detailUser.phone}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
+                    <div className="flex">
+                      <p className="text-md font-semibold">Address:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
+                    <Form.Item
+                      name="address"
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (!value || value.trim().length === 0) {
+                              return Promise.reject(
+                                new Error("Address is required")
+                              );
+                            }
+                            if (value.trim().length < 5) {
+                              return Promise.reject(
+                                new Error(
+                                  "Address must be at least 5 characters"
+                                )
+                              );
+                            }
+                            if (value.trim().length > 255) {
+                              return Promise.reject(
+                                new Error(
+                                  "Address cannot exceed 255 characters"
+                                )
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                    </Form.Item>
+                    {/* Phone */}
 
-                  {/* Address */}
-                  <p className=" text-md font-semibold">Address:</p>
-                  <Input
-                    name="address"
-                    value={detailUser.address}
-                    onChange={handleChange}
-                    className="w-full h-[2.5rem] rounded-sm"
-                  />
-                  {/* Save Changes Button */}
-                  <span></span>
-                  <Button
-                    type="primary"
-                    onClick={handleSaveChanges}
-                    className="w-1/4 "
-                  >
-                    Save Changes
-                  </Button>
+                    <div className="flex">
+                      <p className="text-md font-semibold">Phone:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
+                    <Form.Item
+                      name="phone"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your phone number!",
+                        },
+                        {
+                          pattern: /^[0-9]{10,15}$/,
+                          message: "Please enter a valid phone number!",
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input
+                        disabled
+                        className="w-full h-[2.5rem] rounded-sm"
+                      />
+                    </Form.Item>
+                    {/* Address */}
+
+                    <div className="flex">
+                      <p className="text-md font-semibold">Email:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
+                    <Form.Item
+                      name="email"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your Email!",
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input
+                        disabled
+                        className="w-full h-[2.5rem] rounded-sm"
+                      />
+                    </Form.Item>
+                    {/* Gender */}
+                    {/* <p className="text-md font-semibold">Gender:</p>
+                    <Form.Item name="gender">
+                      <Select className="w-full h-[2.5rem] rounded-sm">
+                        <Option value={1}>Male</Option>
+                        <Option value={2}>Female</Option>
+                      </Select>
+                    </Form.Item> */}
+
+                    {/* Save Changes Button */}
+                    <span></span>
+                    <Button
+                      type="primary"
+                      onClick={handleSaveChanges}
+                      className="w-1/4"
+                    >
+                      Save Changes
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              </Form>
             </Card>
 
             {/* Project Status Card */}
             <Card className="shadow-sm shadow-blue-200 rounded-sm ">
               <div>
                 <h3 className="text-2xl font-semibold text-blue-600">
-                  Project Status
+                  Order Statistics
                 </h3>
                 <div className="space-y-2">
                   <div>
-                    <p className="text-lg">Web Design</p>
+                    <p className="text-lg">Total Orders</p>
                     <Progress percent={80} showInfo={false} />
                   </div>
                   <div>
-                    <p className="text-lg">Website Markup</p>
+                    <p className="text-lg">Completed</p>
                     <Progress percent={50} showInfo={false} status="success" />
                   </div>
                   <div>
-                    <p className="text-lg">One Page</p>
+                    <p className="text-lg">Pending</p>
                     <Progress
                       percent={30}
                       showInfo={false}
                       status="exception"
                     />
-                  </div>
-
-                  <div>
-                    <p className="text-lg">Backend API</p>
-                    <Progress percent={90} showInfo={false} />
                   </div>
                 </div>
               </div>
@@ -273,6 +396,18 @@ export default function ProfilePage() {
               label="New Password"
               rules={[
                 { required: true, message: "Please input your new password!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (value && getFieldValue("oldPassword") === value) {
+                      return Promise.reject(
+                        new Error("New password matches old password!")
+                      );
+                    }
+                    const error = validatePassword(value);
+                    if (error) return Promise.reject(new Error(error));
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <Input.Password />

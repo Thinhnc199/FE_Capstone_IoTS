@@ -13,11 +13,12 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
     })
     .addCase(asyncThunk.fulfilled, (state, action) => {
       state.loading = false;
+      state.error = null;
       onSuccess?.(state, action);
     })
     .addCase(asyncThunk.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload || action.error.message;
     });
 };
 
@@ -67,8 +68,9 @@ export const checkSuccessOrder = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      message.warning("warning", error);
-      return rejectWithValue(error.message || "Unknown error");
+      // message.warning("warning", error);
+      // message.warning(error || "An error occurred");
+      return rejectWithValue(error || "Unknown error");
     }
   }
 );
@@ -199,12 +201,14 @@ export const fetchHistoryOrderAdmin = createAsyncThunk(
     }
   }
 );
+
 export const changePackingStatus = createAsyncThunk(
   "createOrders/changePackingStatus",
-  async ({ orderId }, { rejectWithValue }) => {
+  async ({ orderId, orderProductInfo }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `/api/Order/order-status/packing/${orderId}`
+        `/api/Order/order-status/packing/${orderId}`,
+        { orderProductInfo }
       );
       message.success(response.data.message);
       return response.data;
@@ -320,7 +324,7 @@ export const getPrintLabel = createAsyncThunk(
       message.success("success to received Order ");
       return { blob: response.data, filename };
     } catch (error) {
-      message.warning("Failed to update status:", error);
+      // message.warning("Failed to update status:", error);
       return rejectWithValue(error.toString());
     }
   }
@@ -379,7 +383,7 @@ export const createCashPayment = createAsyncThunk(
       // message.success(response.data.message);
       return response.data;
     } catch (error) {
-      message.error(error);
+      // message.error(error);
       return rejectWithValue(error);
     }
   }

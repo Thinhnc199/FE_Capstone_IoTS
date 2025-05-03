@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/apiConfig";
+import { message } from "antd";
 
 // Helper function to handle async states
 const handleAsyncState = (builder, asyncThunk, onSuccess) => {
@@ -95,8 +96,10 @@ export const updatePassword = createAsyncThunk(
         oldPassword,
         newPassword,
       });
+      message.success("Update password successfully!");
       return response.data.data;
     } catch (error) {
+      message.error(error);
       return rejectWithValue(error);
     }
   }
@@ -120,6 +123,21 @@ export const updateRole = createAsyncThunk(
     try {
       const response = await api.put(`/api/user/update-user-role/${id}`, {
         roleIdList,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+export const updateProfile = createAsyncThunk(
+  "accounts/updateProfile",
+  async ({ fullname, address, phone }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/user/update-user-profile`, {
+        fullname,
+        address,
+        phone,
       });
       return response.data.data;
     } catch (error) {

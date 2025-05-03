@@ -18,10 +18,12 @@ export const SellerGroup = ({
       <div className="flex items-center space-x-3">
         <p className="font-bold text-md">{group.sellerName}</p>
         <div className="flex space-x-2">
+          {/* <Link to={`/chat/${group.storeId}`}> */}
           <button className="px-1 py-1 border border-blue-500 bg-blue-500 text-white rounded-sm hover:bg-white hover:text-blue-500 transition-colors text-xs">
             <MessageOutlined className="mr-2" />
             Chat Now
           </button>
+          {/* </Link> */}
           <Link to={`/shop-infomation/${group.storeId}`}>
             <button className="px-1 py-1 border border-gray-300 text-gray-600 rounded-sm hover:bg-gray-100 transition-colors text-xs">
               <ShopOutlined className="mr-2" />

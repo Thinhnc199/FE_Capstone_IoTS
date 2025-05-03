@@ -374,7 +374,8 @@ export default function ManageHistoryOrderAdmin() {
 
       message.success("Shipping label downloaded!");
     } catch (error) {
-      message.error("Error loading label: " + error);
+      message.warning("GHTK delivery is currently disrupted.");
+      console.error(error);
     }
   };
 
@@ -422,7 +423,8 @@ export default function ManageHistoryOrderAdmin() {
         afterClose: () => URL.revokeObjectURL(pdfUrl), // Đảm bảo giải phóng bộ nhớ
       });
     } catch (error) {
-      message.error("Failed to preview label: " + error);
+      message.warning("GHTK delivery is currently disrupted. ");
+      console.error(error);
     }
   };
   const handleSuccessOrder = async (orderId) => {

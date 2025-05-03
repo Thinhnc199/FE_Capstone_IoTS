@@ -12,7 +12,9 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  HistoryOutlined,
+  // HistoryOutlined,
+  WalletOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 
 export default function HeaderStore() {
@@ -29,6 +31,7 @@ export default function HeaderStore() {
   };
 
   const handleLogout = () => {
+    localStorage.clear();
     localStorage.removeItem("token");
     localStorage.removeItem("email");
     localStorage.removeItem("userId");
@@ -37,7 +40,9 @@ export default function HeaderStore() {
     localStorage.removeItem("role");
     localStorage.removeItem("imageUrl");
     localStorage.removeItem("storeId");
-    navigate("/login");
+
+    // navigate("/login");
+    window.location.href = "/login";
   };
 
   const items = [
@@ -54,10 +59,15 @@ export default function HeaderStore() {
       label: "Profile",
       icon: <EditOutlined />,
     },
+    // {
+    //   key: "3",
+    //   label: <Link to="/store/transaction-history">Transaction history</Link>,
+    //   icon: <HistoryOutlined />,
+    // },
     {
-      key: "3",
-      label: <Link to="/store/transaction-history">Transaction history</Link>,
-      icon: <HistoryOutlined />,
+      key: "sub8",
+      icon: <WalletOutlined />,
+      label: <Link to="/store/wallet">Wallet</Link>,
     },
     {
       key: "4",
@@ -82,6 +92,7 @@ export default function HeaderStore() {
 
       <div className="p-4 font-sans font-bold text-2xl flex items-center space-x-2">
         <div className="flex items-center space-x-3">
+          <MessageOutlined onClick={() => navigate("/store/chat")} />
           <NotificationDropdown />
 
           <img

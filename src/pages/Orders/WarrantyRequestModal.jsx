@@ -49,7 +49,6 @@ const WarrantyRequestModal = ({
           message.success("Video uploaded successfully!");
           setVideoFile(null);
         } catch {
-          message.error("Failed to upload video");
           setVideoFile(null);
         }
       };
@@ -70,7 +69,7 @@ const WarrantyRequestModal = ({
     }
   };
 
-  // Validation 
+  // Validation
   const validateForm = () => {
     const errors = [];
 
@@ -138,7 +137,6 @@ const WarrantyRequestModal = ({
       onClose();
       if (fetchOrders) fetchOrders();
     } catch (error) {
-      message.error("Failed to submit warranty request");
       console.error("Warranty request error:", error);
     }
   };
@@ -173,9 +171,71 @@ const WarrantyRequestModal = ({
       cancelText="Close"
       width={600}
       okButtonProps={{ disabled: uploading }}
+      zIndex={1111}
     >
       <div className="space-y-4">
         <div>
+          <label className="block text-gray-700 mb-1">
+            Physical Serial Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="identifySerialNumber"
+            value={formData.identifySerialNumber}
+            onChange={handleFormChange}
+            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
+              touched.identifySerialNumber &&
+              !formData.identifySerialNumber.trim()
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
+            placeholder="Physical serial number"
+            onBlur={() =>
+              setTouched((prev) => ({ ...prev, identifySerialNumber: true }))
+            }
+          />
+          {touched.identifySerialNumber &&
+            !formData.identifySerialNumber.trim() && (
+              <p className="text-red-500 text-sm mt-1">
+                Serial Number is required
+              </p>
+            )}
+        </div>
+        <div>
+          <label className="block text-gray-700 mb-1">
+            Contact Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={handleFormChange}
+            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
+              touched.contactNumber &&
+              (!formData.contactNumber.trim() ||
+                !/^0\d{9}$/.test(formData.contactNumber))
+                ? "border-red-500"
+                : "border-gray-300"
+            }`}
+            placeholder="10-digit phone number starting with 0"
+            onBlur={() =>
+              setTouched((prev) => ({ ...prev, contactNumber: true }))
+            }
+          />
+          {touched.contactNumber && !formData.contactNumber.trim() && (
+            <p className="text-red-500 text-sm mt-1">
+              Contact Number is required
+            </p>
+          )}
+          {touched.contactNumber &&
+            formData.contactNumber.trim() &&
+            !/^0\d{9}$/.test(formData.contactNumber) && (
+              <p className="text-red-500 text-sm mt-1">
+                Contact number must be 10 digits starting with 0
+              </p>
+            )}
+        </div>
+        {/* <div>
           <label className="block text-gray-700 mb-1">
             Description <span className="text-red-500">*</span>
           </label>
@@ -197,61 +257,29 @@ const WarrantyRequestModal = ({
           {touched.description && !formData.description.trim() && (
             <p className="text-red-500 text-sm mt-1">Description is required</p>
           )}
-        </div>
-        
+        </div> */}
         <div>
           <label className="block text-gray-700 mb-1">
-            Serial Number <span className="text-red-500">*</span>
+            Description <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            name="identifySerialNumber"
-            value={formData.identifySerialNumber}
+          <textarea
+            name="description"
+            value={formData.description}
             onChange={handleFormChange}
             className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
-              touched.identifySerialNumber && !formData.identifySerialNumber.trim()
+              touched.description && !formData.description.trim()
                 ? "border-red-500"
                 : "border-gray-300"
             }`}
-            placeholder="Product serial number"
+            placeholder="Describe the issue"
             onBlur={() =>
-              setTouched((prev) => ({ ...prev, identifySerialNumber: true }))
+              setTouched((prev) => ({ ...prev, description: true }))
             }
+            rows={4} // Bạn có thể điều chỉnh số dòng hiển thị
           />
-          {touched.identifySerialNumber && !formData.identifySerialNumber.trim() && (
-            <p className="text-red-500 text-sm mt-1">Serial Number is required</p>
+          {touched.description && !formData.description.trim() && (
+            <p className="text-red-500 text-sm mt-1">Description is required</p>
           )}
-        </div>
-        <div>
-          <label className="block text-gray-700 mb-1">
-            Contact Number <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="contactNumber"
-            value={formData.contactNumber}
-            onChange={handleFormChange}
-            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500 ${
-              touched.contactNumber &&
-              (!formData.contactNumber.trim() || !/^0\d{9}$/.test(formData.contactNumber))
-                ? "border-red-500"
-                : "border-gray-300"
-            }`}
-            placeholder="10-digit phone number starting with 0"
-            onBlur={() =>
-              setTouched((prev) => ({ ...prev, contactNumber: true }))
-            }
-          />
-          {touched.contactNumber && !formData.contactNumber.trim() && (
-            <p className="text-red-500 text-sm mt-1">Contact Number is required</p>
-          )}
-          {touched.contactNumber &&
-            formData.contactNumber.trim() &&
-            !/^0\d{9}$/.test(formData.contactNumber) && (
-              <p className="text-red-500 text-sm mt-1">
-                Contact number must be 10 digits starting with 0
-              </p>
-            )}
         </div>
         <div>
           <label className="block text-gray-700 mb-1">
@@ -276,7 +304,9 @@ const WarrantyRequestModal = ({
             <p className="text-gray-500 mt-1">Selected: {videoFile.name}</p>
           )}
           {touched.videoUrl && !formData.videoUrl && (
-            <p className="text-red-500 text-sm mt-1">Video evidence is required</p>
+            <p className="text-red-500 text-sm mt-1">
+              Video evidence is required
+            </p>
           )}
           {formData.videoUrl && (
             <div className="mt-4">

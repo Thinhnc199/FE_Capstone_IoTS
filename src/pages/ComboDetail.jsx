@@ -500,6 +500,7 @@ import { fetchComboDetails, fetchCombos } from "../redux/slices/comboSlice";
 import { fetchAddCarts, fetchCarts } from "../redux/slices/cartSlice";
 import { fetchFeedbackHistory } from "../redux/slices/feedbackSlice"; // Thêm feedback action
 import { useParams, useNavigate } from "react-router-dom";
+import BreadcrumbNav from "../components/common/BreadcrumbNav";
 import {
   InputNumber,
   Button,
@@ -621,7 +622,7 @@ const ComboDetail = () => {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Error adding to cart: ${error}`);
+      message.warning(`${error}`);
     } finally {
       setIsAdding(false);
     }
@@ -649,7 +650,7 @@ const ComboDetail = () => {
         throw new Error(result.payload || "Unknown error");
       }
     } catch (error) {
-      message.error(`Error adding to cart: ${error.message}`);
+      message.warning(`Error adding to cart: ${error.message}`);
     }
   };
 
@@ -685,7 +686,7 @@ const ComboDetail = () => {
           throw new Error(result.payload || "Failed to add lab to cart");
         }
       } catch (error) {
-        message.error(`Error: ${error.message}`);
+        message.warning(` ${error.message}`);
       } finally {
         setAddingLabId(null);
       }
@@ -729,6 +730,15 @@ const ComboDetail = () => {
   return (
     <div className="min-h-screen py-8 px-4 bg-mainColer">
       <div className="container mx-auto max-w-7xl">
+        <div className=" max-w-6xl mb-4 ">
+          <BreadcrumbNav
+            items={[
+              { label: "Home", path: "/" },
+              { label: "All combos", path: "/combos" },
+              { label: "Combo Details" },
+            ]}
+          />
+        </div>
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="col-span-full">
             <h1 className="text-2xl font-bold w-full">

@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AuthenticationLayout from "../layouts/AuthenticationLayout";
@@ -8,9 +7,11 @@ import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { registerCustomer } from "../api/apiConfig";
 
 const RegisterCustomer = () => {
+  const location = useLocation(); // Lấy location để truy cập state
+
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    email: "",
+    email: location.state?.email || "", // Lấy email từ state nếu có
     fullname: "",
     phone: "",
     address: "",
@@ -21,7 +22,7 @@ const RegisterCustomer = () => {
   });
   const [error, setError] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const validateStep1 = () => {
     let errors = {};
@@ -29,7 +30,13 @@ const RegisterCustomer = () => {
     else if (!/\S+@\S+\.\S+/.test(form.email))
       errors.email = "Email is invalid.";
 
-    if (!form.fullname.trim()) errors.fullname = "Full name is required.";
+    if (!form.fullname.trim()) {
+      errors.fullname = "Full name is required.";
+    } else if (form.fullname.trim().length < 5) {
+      errors.fullname = "Full name must be at least 5 characters.";
+    } else if (form.fullname.trim().length > 50) {
+      errors.fullname = "Full name cannot exceed 50 characters.";
+    }
 
     if (!form.phone.trim()) {
       errors.phone = "Phone number is required.";
@@ -44,10 +51,29 @@ const RegisterCustomer = () => {
   const validateStep2 = () => {
     let errors = {};
     if (!form.otp.trim()) errors.otp = "OTP is required.";
-    if (form.password.length < 6)
-      errors.password = "Password must be at least 6 characters.";
-    if (form.password !== form.confirmPassword)
+
+    // Validate password
+    if (!form.password) {
+      errors.password = "Password is required.";
+    } else if (form.password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
+    } else if (!/[A-Z]/.test(form.password)) {
+      errors.password = "Password must contain at least one uppercase letter.";
+    } else if (!/[a-z]/.test(form.password)) {
+      errors.password = "Password must contain at least one lowercase letter.";
+    } else if (!/[0-9]/.test(form.password)) {
+      errors.password = "Password must contain at least one number.";
+    } else if (!/[!@#$%^&*]/.test(form.password)) {
+      errors.password = "Password must contain at least one special character.";
+    }
+
+    // Validate confirm password
+    if (!form.confirmPassword) {
+      errors.confirmPassword = "Please confirm your password.";
+    } else if (form.password !== form.confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";
+    }
+
     return errors;
   };
 
@@ -113,14 +139,20 @@ const RegisterCustomer = () => {
 
     try {
       const response = await registerCustomer(data);
-      toast.success(
-        response.message || "Registration successful! Please log in.",
-        {
-          position: "top-right",
-          autoClose: 3000,
-        }
-      );
-      navigate("/login");
+      const rawMessage = response.message?.toLowerCase(); // normalize
+
+      const displayMessage =
+        rawMessage && rawMessage !== "success"
+          ? response.message
+          : "Account created successfully. ";
+
+      toast.success(displayMessage, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
     } catch (error) {
       console.error("Error registering customer:", error);
       // toast.error("Registration failed. Please try again.", {
@@ -147,9 +179,14 @@ const RegisterCustomer = () => {
                   placeholder="Email"
                   className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007AFF] transition-all ${
                     error.email ? "border-red-500" : "border-gray-300"
+                  } ${
+                    location.state?.email
+                      ? "bg-gray-100 text-gray-600 cursor-not-allowed"
+                      : ""
                   }`}
                   value={form.email}
                   onChange={handleChange}
+                  disabled={!!location.state?.email}
                 />
                 {error.email && (
                   <p className="text-red-500 text-sm mt-1">{error.email}</p>

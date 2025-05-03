@@ -61,19 +61,32 @@ const WalletManagement = () => {
       key: "description",
     },
     {
-      title: "Balance",
-      dataIndex: "currentBallance",
-      key: "currentBallance",
-      render: (balance) => (balance ? `${balance.toLocaleString()}` : "N/A"),
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount) =>
+        amount ? (
+          <span className="text-green-600">
+            {(amount * 1000).toLocaleString("vi-VN")} đ
+          </span>
+        ) : (
+          <span className="text-gray-400">N/A</span>
+        ),
     },
+    // {
+    //   title: "Balance",
+    //   dataIndex: "currentBallance",
+    //   key: "currentBallance",
+    //   render: (balance) => (balance ? `${balance.toLocaleString()}` : "N/A"),
+    // },
   ];
 
   return (
-    <div className="container mx-auto p-8  ">
+    <div className="container mx-auto  ">
       <div className=" max-w-6xl mb-4 ">
         <BreadcrumbNav
           items={[
-            { label: "Home", path: "/" },
+            { label: "Home", path: "/store" },
             { label: "Transaction history" },
           ]}
         />

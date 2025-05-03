@@ -1,4 +1,13 @@
-import { Typography, Card, Tabs, Spin, Button, message, Modal } from "antd";
+import {
+  Typography,
+  Card,
+  Tabs,
+  Spin,
+  Input,
+  Button,
+  message,
+  Modal,
+} from "antd";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -93,27 +102,55 @@ const formatDate = (dateString) => {
   return dayjs(dateString).format("DD/MM/YYYY HH:mm");
 };
 
-const OrderItem = ({ item }) => (
-  <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
-    <div className="flex items-center">
-      <img
-        src={item.imageUrl}
-        alt={item.nameProduct}
-        width={80}
-        height={80}
-        className="rounded-sm object-cover"
-      />
-      <div className="ml-4">
-        <p className="font-medium">{item.nameProduct}</p>
-        <p className="text-gray-600">Quantity: {item.quantity}</p>
+const OrderItem = ({ item }) => {
+  const currentDate = new Date();
+  const warrantyEndDate = new Date(item.warrantyEndDate);
+  const isWarrantyApplicable = item.productType !== 3;
+  const isWarrantyValid = warrantyEndDate > currentDate;
+  return (
+    <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
+      <div className="flex items-center">
+        <img
+          src={item.imageUrl}
+          alt={item.nameProduct}
+          width={80}
+          height={80}
+          className="rounded-sm object-cover"
+        />
+        <div className="ml-4">
+          <p className="font-medium">{item.nameProduct}</p>
+          <p className="text-gray-600">Quantity: {item.quantity}</p>
+          {item.physicalSerialNumbers &&
+            item.physicalSerialNumbers.length > 0 && (
+              <p className="text-gray-600">
+                Serial Numbers: {item.physicalSerialNumbers.join(", ")}
+              </p>
+            )}
+        </div>
+      </div>
+      <div className="flex items-end space-x-4 flex-col-reverse">
+        <p className="text-red-500 font-medium">
+          {item.price.toLocaleString("vi-VN")}₫
+        </p>
+        {(item.orderItemStatus === 6 ||
+          item.orderItemStatus === 8 ||
+          item.orderItemStatus === 5) &&
+          isWarrantyApplicable && (
+            <div className="flex items-end flex-col space-x-2">
+              {isWarrantyValid ? (
+                <span className="text-gray-500 text-xs flex gap-1">
+                  <p className="text-green-700">Warranty until:</p>
+                  {formatDate(item.warrantyEndDate)}
+                </span>
+              ) : (
+                <span className="text-gray-500 text-xs">Warranty expired!</span>
+              )}
+            </div>
+          )}
       </div>
     </div>
-    <p className="text-red-500 font-medium">
-      {item.price.toLocaleString("vi-VN")}₫
-    </p>
-  </div>
-);
-
+  );
+};
 OrderItem.propTypes = {
   item: PropTypes.shape({
     orderItemId: PropTypes.number.isRequired,
@@ -121,6 +158,10 @@ OrderItem.propTypes = {
     nameProduct: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
+    orderItemStatus: PropTypes.number.isRequired,
+    productType: PropTypes.number.isRequired,
+    warrantyEndDate: PropTypes.string.isRequired,
+    physicalSerialNumbers: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
 };
 
@@ -194,12 +235,12 @@ const OrderCard = ({
             {order.orderStatusId === 1 ? (
               <p className="text-green-600 pl-3">PAID</p>
             ) : order.orderStatusId === 2 ? (
-              <p className="text-red-600">CANCELLED</p>
+              <p className="text-red-600 pl-3">CANCELLED</p>
             ) : (
-              <p className="text-yellow-600">CASH PAYMENT</p>
+              <p className="text-yellow-600 pl-3">CASH PAYMENT</p>
             )}
           </div>
-          <div>
+          <div className="flex justify-end items-center space-x-2 mt-2">
             {" "}
             {Array.isArray(order.orderDetailsGrouped) &&
               order.orderDetailsGrouped.length > 0 && (
@@ -313,10 +354,167 @@ OrderCard.propTypes = {
   onSuccessOrder: PropTypes.func.isRequired,
   onPreviewShippingLabel: PropTypes.func.isRequired,
 };
+const SerialNumberModal = ({ visible, onCancel, onOk, items, loading }) => {
+  const [serialNumbers, setSerialNumbers] = useState({});
+  const [errors, setErrors] = useState({});
+
+  const handleSerialNumberChange = (orderItemId, index, value) => {
+    setSerialNumbers((prev) => ({
+      ...prev,
+      [orderItemId]: {
+        ...prev[orderItemId],
+        [index]: value,
+      },
+    }));
+
+    // Clear error when user types
+    if (errors[`${orderItemId}-${index}`]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[`${orderItemId}-${index}`];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    items
+      .filter((item) => item.warrantyMonths > 0)
+      .forEach((item) => {
+        Array.from({ length: item.quantity }).forEach((_, index) => {
+          const key = `${item.orderItemId}-${index}`;
+          if (!serialNumbers[item.orderItemId]?.[index]?.trim()) {
+            newErrors[key] = "Serial number is required";
+            isValid = false;
+          }
+        });
+      });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    const orderProductInfo = items
+      .filter((item) => item.warrantyMonths > 0)
+      .map((item) => {
+        const serialsForItem = serialNumbers[item.orderItemId] || {};
+        return {
+          orderItemId: item.orderItemId,
+          physicalSerialNumber: Object.values(serialsForItem).filter(Boolean),
+        };
+      });
+
+    onOk(orderProductInfo);
+  };
+
+  return (
+    <Modal
+      title="Enter Physical Serial Numbers"
+      visible={visible}
+      onOk={handleSubmit}
+      onCancel={onCancel}
+      confirmLoading={loading}
+      width={800}
+    >
+      <div className="space-y-4">
+        <p className="text-red-500 font-medium">
+          You must enter physical serial number before packing.
+        </p>
+
+        {items
+          .filter((item) => item.warrantyMonths > 0)
+          .map((item) => (
+            <div key={item.orderItemId} className="border p-4 rounded-md">
+              <div className="flex items-start mb-2">
+                <img
+                  src={item.imageUrl}
+                  alt={item.nameProduct}
+                  className="w-16 h-16 object-cover rounded mr-3"
+                />
+                <div>
+                  <p className="font-medium">{item.nameProduct}</p>
+                  <p>Quantity: {item.quantity}</p>
+                  <p>Warranty: {item.warrantyMonths} months</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2">
+                {Array.from({ length: item.quantity }).map((_, index) => {
+                  const errorKey = `${item.orderItemId}-${index}`;
+                  return (
+                    <div key={index} className="flex flex-col">
+                      <div className="flex items-center">
+                        <span className="mr-2 w-8">#{index + 1}:</span>
+                        <Input
+                          placeholder={`Enter serial number for item ${
+                            index + 1
+                          }`}
+                          value={serialNumbers[item.orderItemId]?.[index] || ""}
+                          onChange={(e) =>
+                            handleSerialNumberChange(
+                              item.orderItemId,
+                              index,
+                              e.target.value
+                            )
+                          }
+                          status={errors[errorKey] ? "error" : ""}
+                        />
+                      </div>
+                      {errors[errorKey] && (
+                        <div className="text-red-500 text-sm ml-10">
+                          {errors[errorKey]}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+        {items.filter((item) => item.warrantyMonths === 0).length > 0 && (
+          <div className="mt-4 p-3 bg-gray-100 rounded-md">
+            <p className="font-medium">
+              Non-warranty items (no serial number required):
+            </p>
+            <ul className="list-disc pl-5 mt-2">
+              {items
+                .filter((item) => item.warrantyMonths === 0)
+                .map((item) => (
+                  <li key={item.orderItemId}>
+                    {item.nameProduct} (Qty: {item.quantity})
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+};
+
+SerialNumberModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onOk: PropTypes.func.isRequired,
+  items: PropTypes.array.isRequired,
+  loading: PropTypes.bool,
+};
 export default function ManageHistoryOrder() {
   const dispatch = useDispatch();
+  const [serialModalVisible, setSerialModalVisible] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
   const [trackingInfo, setTrackingInfo] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
   const showConfirmModal = (title, content, onConfirm) => {
@@ -328,6 +526,17 @@ export default function ManageHistoryOrder() {
       onOk: onConfirm,
     });
   };
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+    dispatch(
+      fetchHistoryOrderStoreTrainer({
+        pageIndex: 1, // Reset về trang đầu tiên khi tìm kiếm
+        pageSize,
+        StatusFilter: statusFilter,
+        searchKeyword: value,
+      })
+    );
+  };
   const handleTabChange = (key) => {
     setStatusFilter(key === "0" ? "" : key);
   };
@@ -338,27 +547,39 @@ export default function ManageHistoryOrder() {
         pageIndex,
         pageSize,
         StatusFilter: statusFilter,
+        searchKeyword,
       })
     );
   }, [dispatch, pageIndex, pageSize, statusFilter]);
 
-  const handleProceedToPacking = async (orderId) => {
-    showConfirmModal(
-      "Confirm proceed to packing",
-      "Are you sure you want to proceed to packing this order?",
-      async () => {
-        await dispatch(changePackingStatus({ orderId })).unwrap();
-        dispatch(
-          fetchHistoryOrderStoreTrainer({
-            pageIndex,
-            pageSize,
-            StatusFilter: statusFilter,
-          })
-        );
-      }
-    );
+  const handleProceedToPacking = (order) => {
+    setCurrentOrder(order);
+    setSerialModalVisible(true);
   };
 
+  const handleConfirmPacking = async (orderProductInfo) => {
+    try {
+      await dispatch(
+        changePackingStatus({
+          orderId: currentOrder.orderId,
+          orderProductInfo,
+        })
+      ).unwrap();
+
+      // message.success("Order status updated to packing successfully");
+      setSerialModalVisible(false);
+
+      dispatch(
+        fetchHistoryOrderStoreTrainer({
+          pageIndex,
+          pageSize,
+          StatusFilter: statusFilter,
+        })
+      );
+    } catch (error) {
+      console.error("Failed to update order status: " + error.message);
+    }
+  };
   const handleCreateShippingLabel = async (trackingId) => {
     try {
       const result = await dispatch(getPrintLabel({ trackingId })).unwrap();
@@ -422,7 +643,8 @@ export default function ManageHistoryOrder() {
         afterClose: () => URL.revokeObjectURL(pdfUrl), // Đảm bảo giải phóng bộ nhớ
       });
     } catch (error) {
-      message.error("Failed to preview label: " + error);
+      message.warning("GHTK delivery is currently disrupted.");
+      console.log(error);
     }
   };
   const handleSuccessOrder = async (orderId) => {
@@ -498,6 +720,19 @@ export default function ManageHistoryOrder() {
                     </div>
                   }
                 >
+                  <div className=" pt-4">
+                    <Input.Search
+                      placeholder="Search by order code"
+                      allowClear
+                      // enterButton="Search"
+                      size="large"
+                      value={searchKeyword}
+                      onChange={(e) => setSearchKeyword(e.target.value)}
+                      onSearch={handleSearch}
+
+                      // className="max-w-md"
+                    />
+                  </div>
                   <div className="py-4">
                     {loading ? (
                       <div className="text-center py-8">
@@ -510,7 +745,9 @@ export default function ManageHistoryOrder() {
                           <OrderCard
                             order={order}
                             key={order.orderId}
-                            onProceedToPacking={handleProceedToPacking}
+                            onProceedToPacking={() =>
+                              handleProceedToPacking(order)
+                            }
                             onCreateShippingLabel={handleCreateShippingLabel}
                             onUpdateToDelivering={handleUpdateToDelivering}
                             onSuccessOrder={handleSuccessOrder}
@@ -580,6 +817,13 @@ export default function ManageHistoryOrder() {
             </div>
           </Modal>
         )}
+        <SerialNumberModal
+          visible={serialModalVisible}
+          onCancel={() => setSerialModalVisible(false)}
+          onOk={handleConfirmPacking}
+          items={currentOrder?.orderDetailsGrouped[0]?.items || []}
+          loading={loading}
+        />
       </div>
     </div>
   );
