@@ -37,33 +37,33 @@ const Login = () => {
     return re.test(String(email).toLowerCase());
   };
 
-  const validatePassword = (password) => {
-    const hasMinLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  // const validatePassword = (password) => {
+  //   const hasMinLength = password.length >= 8;
+  //   const hasUpperCase = /[A-Z]/.test(password);
+  //   const hasLowerCase = /[a-z]/.test(password);
+  //   const hasNumber = /[0-9]/.test(password);
+  //   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    return {
-      isValid:
-        hasMinLength &&
-        hasUpperCase &&
-        hasLowerCase &&
-        hasNumber &&
-        hasSpecialChar,
-      message: !hasMinLength
-        ? "Password must be at least 8 characters long"
-        : !hasUpperCase
-        ? "Password must include at least one uppercase letter"
-        : !hasLowerCase
-        ? "Password must include at least one lowercase letter"
-        : !hasNumber
-        ? "Password must include at least one number"
-        : !hasSpecialChar
-        ? "Password must include at least one special character"
-        : "",
-    };
-  };
+  //   return {
+  //     isValid:
+  //       hasMinLength &&
+  //       hasUpperCase &&
+  //       hasLowerCase &&
+  //       hasNumber &&
+  //       hasSpecialChar,
+  //     message: !hasMinLength
+  //       ? "Password must be at least 8 characters long"
+  //       : !hasUpperCase
+  //       ? "Password must include at least one uppercase letter"
+  //       : !hasLowerCase
+  //       ? "Password must include at least one lowercase letter"
+  //       : !hasNumber
+  //       ? "Password must include at least one number"
+  //       : !hasSpecialChar
+  //       ? "Password must include at least one special character"
+  //       : "",
+  //   };
+  // };
   // ✅ Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -80,15 +80,19 @@ const Login = () => {
       formValid = false;
     }
     // Password validation
+    // if (!credentials.password) {
+    //   newErrors.password = "The Password field is required.";
+    //   formValid = false;
+    // } else {
+    //   const passwordValidation = validatePassword(credentials.password);
+    //   if (!passwordValidation.isValid) {
+    //     newErrors.password = passwordValidation.message;
+    //     formValid = false;
+    //   }
+    // }
     if (!credentials.password) {
       newErrors.password = "The Password field is required.";
       formValid = false;
-    } else {
-      const passwordValidation = validatePassword(credentials.password);
-      if (!passwordValidation.isValid) {
-        newErrors.password = passwordValidation.message;
-        formValid = false;
-      }
     }
 
     if (!formValid) {
