@@ -32,7 +32,38 @@ const Login = () => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
 
+  const validatePassword = (password) => {
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    return {
+      isValid:
+        hasMinLength &&
+        hasUpperCase &&
+        hasLowerCase &&
+        hasNumber &&
+        hasSpecialChar,
+      message: !hasMinLength
+        ? "Password must be at least 8 characters long"
+        : !hasUpperCase
+        ? "Password must include at least one uppercase letter"
+        : !hasLowerCase
+        ? "Password must include at least one lowercase letter"
+        : !hasNumber
+        ? "Password must include at least one number"
+        : !hasSpecialChar
+        ? "Password must include at least one special character"
+        : "",
+    };
+  };
   // ✅ Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -40,13 +71,24 @@ const Login = () => {
     let formValid = true;
     const newErrors = { email: "", password: "" };
 
+    // Email validation
     if (!credentials.email) {
-      newErrors.email = "Email is required!";
+      newErrors.email = "The Email field is required.";
+      formValid = false;
+    } else if (!validateEmail(credentials.email)) {
+      newErrors.email = "Please enter a valid email address";
       formValid = false;
     }
+    // Password validation
     if (!credentials.password) {
-      newErrors.password = "Password is required!";
+      newErrors.password = "The Password field is required.";
       formValid = false;
+    } else {
+      const passwordValidation = validatePassword(credentials.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = passwordValidation.message;
+        formValid = false;
+      }
     }
 
     if (!formValid) {

@@ -36,7 +36,24 @@ export default function ProfilePage() {
   const dispatch = useDispatch();
   const { detailUser } = useSelector((state) => state.accounts);
   const userId = Number(localStorage.getItem("userId"));
+  const validatePassword = (password) => {
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
+    if (
+      !hasMinLength ||
+      !hasUpperCase ||
+      !hasLowerCase ||
+      !hasNumber ||
+      !hasSpecialChar
+    ) {
+      return "Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character.";
+    }
+    return null;
+  };
   // Khởi tạo form values khi detailUser thay đổi
   useEffect(() => {
     if (detailUser) {
@@ -45,6 +62,7 @@ export default function ProfilePage() {
         phone: detailUser.phone,
         address: detailUser.address,
         gender: detailUser.gender,
+        email: detailUser.email,
       });
     }
   }, [detailUser, profileForm]);
@@ -80,7 +98,18 @@ export default function ProfilePage() {
 
   const handleUpdatePassword = async (values) => {
     try {
-      console.log("Updating password:", values);
+      // Check if new password is same as old password
+      if (values.oldPassword === values.newPassword) {
+        message.error("New password matches old password!");
+        return;
+      }
+
+      const passwordError = validatePassword(values.newPassword);
+      if (passwordError) {
+        message.error(passwordError);
+        return;
+      }
+
       const resultAction = await dispatch(
         updatePassword({
           oldPassword: values.oldPassword,
@@ -91,7 +120,9 @@ export default function ProfilePage() {
       if (updatePassword.fulfilled.match(resultAction)) {
         setIsEditingPassword(false);
         form.resetFields();
-        handleLogout();
+        setTimeout(() => {
+          handleLogout();
+        }, 1000); // đợi 1 giây (1000ms)
       }
     } catch (error) {
       console.error(error);
@@ -178,15 +209,72 @@ export default function ProfilePage() {
                       name="fullname"
                       rules={[
                         {
-                          required: true,
-                          message: "Please input your full name!",
+                          validator: (_, value) => {
+                            if (!value || value.trim().length === 0) {
+                              return Promise.reject(
+                                new Error("Full name is required")
+                              );
+                            }
+                            if (value.trim().length < 5) {
+                              return Promise.reject(
+                                new Error(
+                                  "Full Name must be at least 5 characters"
+                                )
+                              );
+                            }
+                            if (value.trim().length > 50) {
+                              return Promise.reject(
+                                new Error(
+                                  "Full Name cannot exceed 50 characters"
+                                )
+                              );
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                       className="w-full mb-0"
                     >
                       <Input className="w-full h-[2.5rem] rounded-sm" />
                     </Form.Item>
+                    {/* Address */}
 
+                    <div className="flex">
+                      <p className="text-md font-semibold">Address:</p>
+                      <span className="text-red-500 ml-1">*</span>
+                    </div>
+                    <Form.Item
+                      name="address"
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (!value || value.trim().length === 0) {
+                              return Promise.reject(
+                                new Error("Address is required")
+                              );
+                            }
+                            if (value.trim().length < 5) {
+                              return Promise.reject(
+                                new Error(
+                                  "Address must be at least 5 characters"
+                                )
+                              );
+                            }
+                            if (value.trim().length > 255) {
+                              return Promise.reject(
+                                new Error(
+                                  "Address cannot exceed 255 characters"
+                                )
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      className="w-full mb-0"
+                    >
+                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                    </Form.Item>
                     {/* Phone */}
 
                     <div className="flex">
@@ -207,28 +295,32 @@ export default function ProfilePage() {
                       ]}
                       className="w-full mb-0"
                     >
-                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                      <Input
+                        disabled
+                        className="w-full h-[2.5rem] rounded-sm"
+                      />
                     </Form.Item>
-
                     {/* Address */}
 
                     <div className="flex">
-                      <p className="text-md font-semibold">Address:</p>
+                      <p className="text-md font-semibold">Email:</p>
                       <span className="text-red-500 ml-1">*</span>
                     </div>
                     <Form.Item
-                      name="address"
+                      name="email"
                       rules={[
                         {
                           required: true,
-                          message: "Please input your address!",
+                          message: "Please input your Email!",
                         },
                       ]}
                       className="w-full mb-0"
                     >
-                      <Input className="w-full h-[2.5rem] rounded-sm" />
+                      <Input
+                        disabled
+                        className="w-full h-[2.5rem] rounded-sm"
+                      />
                     </Form.Item>
-
                     {/* Gender */}
                     {/* <p className="text-md font-semibold">Gender:</p>
                     <Form.Item name="gender">
@@ -304,6 +396,18 @@ export default function ProfilePage() {
               label="New Password"
               rules={[
                 { required: true, message: "Please input your new password!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (value && getFieldValue("oldPassword") === value) {
+                      return Promise.reject(
+                        new Error("New password matches old password!")
+                      );
+                    }
+                    const error = validatePassword(value);
+                    if (error) return Promise.reject(new Error(error));
+                    return Promise.resolve();
+                  },
+                }),
               ]}
             >
               <Input.Password />

@@ -14,20 +14,35 @@ const handleAsyncState = (builder, asyncThunk, onSuccess) => {
     })
     .addCase(asyncThunk.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload || action.error.message;
     });
 };
 
 // Fetch combos
 export const fetchCombos = createAsyncThunk(
   "combo/fetchCombos",
-  async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue, dispatch }) => {
+  async (
+    { pageIndex, pageSize, searchKeyword },
+    { rejectWithValue, dispatch }
+  ) => {
     try {
-      console.log("📡 Fetching Combos with params:", { pageIndex, pageSize, searchKeyword });
-      const response = await api.post(`/api/combo/get-pagination`, { pageIndex, pageSize, searchKeyword: searchKeyword || "" });
+      console.log("📡 Fetching Combos with params:", {
+        pageIndex,
+        pageSize,
+        searchKeyword,
+      });
+      const response = await api.post(`/api/combo/get-pagination`, {
+        pageIndex,
+        pageSize,
+        searchKeyword: searchKeyword || "",
+      });
       console.log("✅ API Response:", response.data);
 
-      if (!response.data || !response.data.data || !Array.isArray(response.data.data.data)) {
+      if (
+        !response.data ||
+        !response.data.data ||
+        !Array.isArray(response.data.data.data)
+      ) {
         throw new Error("API response is missing expected data structure");
       }
 
@@ -39,8 +54,18 @@ export const fetchCombos = createAsyncThunk(
       };
     } catch (error) {
       console.error("❌ Error fetching combos:", error);
-      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to fetch combos."));
-      return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch combos.");
+      dispatch(
+        setComboError(
+          error.response?.data?.message ||
+            error.message ||
+            "Failed to fetch combos."
+        )
+      );
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch combos."
+      );
     }
   }
 );
@@ -59,27 +84,65 @@ export const fetchComboDetails = createAsyncThunk(
 );
 
 // Create new combo
+// export const createCombo = createAsyncThunk(
+//   "combo/createCombo",
+//   async (comboData, { rejectWithValue, dispatch }) => {
+//     try {
+//       const storeId = localStorage.getItem("storeId");
+//       if (!storeId) {
+//         throw new Error(
+//           "❌ Store ID is missing! Make sure the store is loaded before creating a combo."
+//         );
+//       }
+//       if (!comboData || Object.keys(comboData).length === 0) {
+//         throw new Error(
+//           "❌ Payload is missing! Please provide valid combo data."
+//         );
+//       }
+
+//       const payload = { ...comboData, storeId };
+//       console.log("📡 Sending Payload:", JSON.stringify(payload, null, 2));
+//       const response = await api.post("/api/combo/create-combo", payload);
+//       console.log("✅ Combo Created:", response.data);
+//       return response.data;
+//     } catch (error) {
+//       console.error("❌ Error creating combo:", error);
+//       dispatch(
+//         setComboError(
+//           error.response?.data?.message ||
+//             error.message ||
+//             "Failed to create combo."
+//         )
+//       );
+//       return rejectWithValue(
+//         error.response?.data?.message ||
+//           error.message ||
+//           "Failed to create combo."
+//       );
+//     }
+//   }
+// );
 export const createCombo = createAsyncThunk(
   "combo/createCombo",
-  async (comboData, { rejectWithValue, dispatch }) => {
+  async (comboData, { rejectWithValue }) => {
     try {
       const storeId = localStorage.getItem("storeId");
       if (!storeId) {
-        throw new Error("❌ Store ID is missing! Make sure the store is loaded before creating a combo.");
+        throw new Error(
+          "❌ Store ID is missing! Make sure the store is loaded before creating a combo."
+        );
       }
       if (!comboData || Object.keys(comboData).length === 0) {
-        throw new Error("❌ Payload is missing! Please provide valid combo data.");
+        throw new Error(
+          "❌ Payload is missing! Please provide valid combo data."
+        );
       }
 
       const payload = { ...comboData, storeId };
-      console.log("📡 Sending Payload:", JSON.stringify(payload, null, 2));
       const response = await api.post("/api/combo/create-combo", payload);
-      console.log("✅ Combo Created:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Error creating combo:", error);
-      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to create combo."));
-      return rejectWithValue(error.response?.data?.message || error.message || "Failed to create combo.");
+      return rejectWithValue(error);
     }
   }
 );
@@ -87,13 +150,15 @@ export const createCombo = createAsyncThunk(
 // Update combo
 export const updateCombo = createAsyncThunk(
   "combo/updateCombo",
-  async ({ comboId, comboData }, { rejectWithValue, dispatch }) => {
+  async ({ comboId, comboData }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/combo/update-combo/${comboId}`, comboData);
+      const response = await api.post(
+        `/api/combo/update-combo/${comboId}`,
+        comboData
+      );
       return response.data;
     } catch (error) {
-      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to update combo."));
-      return rejectWithValue(error.response?.data?.message || error.message || "Failed to update combo.");
+      return rejectWithValue(error);
     }
   }
 );
@@ -103,13 +168,25 @@ export const activeCombos = createAsyncThunk(
   "combo/activeCombos",
   async ({ comboId }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await api.put(`/api/combo/combo-status/activate`, { comboId });
+      const response = await api.put(`/api/combo/combo-status/activate`, {
+        comboId,
+      });
       console.log("✅ Combo Activated:", response.data);
       return { id: comboId, isActive: 1 }; // Trả về dữ liệu để cập nhật state
     } catch (error) {
       console.error("❌ Error activating combo:", error);
-      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to activate combo."));
-      return rejectWithValue(error.response?.data?.message || error.message || "Failed to activate combo.");
+      dispatch(
+        setComboError(
+          error.response?.data?.message ||
+            error.message ||
+            "Failed to activate combo."
+        )
+      );
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to activate combo."
+      );
     }
   }
 );
@@ -119,13 +196,25 @@ export const deactiveCombos = createAsyncThunk(
   "combo/deactiveCombos",
   async ({ comboId }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await api.put(`/api/combo/combo-status/deactivate`, { comboId });
+      const response = await api.put(`/api/combo/combo-status/deactivate`, {
+        comboId,
+      });
       console.log("✅ Combo Deactivated:", response.data);
       return { id: comboId, isActive: 0 }; // Trả về dữ liệu để cập nhật state
     } catch (error) {
       console.error("❌ Error deactivating combo:", error);
-      dispatch(setComboError(error.response?.data?.message || error.message || "Failed to deactivate combo."));
-      return rejectWithValue(error.response?.data?.message || error.message || "Failed to deactivate combo.");
+      dispatch(
+        setComboError(
+          error.response?.data?.message ||
+            error.message ||
+            "Failed to deactivate combo."
+        )
+      );
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to deactivate combo."
+      );
     }
   }
 );
@@ -134,7 +223,9 @@ export const deactiveCombos = createAsyncThunk(
 export const fetchIotDeviceDetails = createAsyncThunk(
   "combo/fetchIotDeviceDetails",
   async (id) => {
-    const response = await api.get(`/api/iot-device/get-iot-device-details-by-id/${id}`);
+    const response = await api.get(
+      `/api/iot-device/get-iot-device-details-by-id/${id}`
+    );
     return response.data;
   }
 );
@@ -145,10 +236,18 @@ export const fetchIotDevices = createAsyncThunk(
   async ({ pageIndex, pageSize, searchKeyword }, { rejectWithValue }) => {
     try {
       console.log("📡 API Request:", { pageIndex, pageSize, searchKeyword });
-      const response = await api.post(`/api/iot-device/get-pagination`, { pageIndex, pageSize, searchKeyword });
+      const response = await api.post(`/api/iot-device/get-pagination`, {
+        pageIndex,
+        pageSize,
+        searchKeyword,
+      });
       console.log("✅ API Response:", response.data);
 
-      if (!response.data || !response.data.data || !Array.isArray(response.data.data.data)) {
+      if (
+        !response.data ||
+        !response.data.data ||
+        !Array.isArray(response.data.data.data)
+      ) {
         throw new Error("API response is missing expected data structure");
       }
 
@@ -240,7 +339,9 @@ const comboSlice = createSlice({
     handleAsyncState(builder, fetchIotDevices, (state, action) => {
       console.log("📌 Updating Redux Store with IoT Devices:", action.payload);
       if (!action.payload || !Array.isArray(action.payload.data)) {
-        console.warn("⚠️ API không trả về danh sách thiết bị, đặt giá trị rỗng");
+        console.warn(
+          "⚠️ API không trả về danh sách thiết bị, đặt giá trị rỗng"
+        );
         state.iotDevices = [];
       } else {
         state.iotDevices = action.payload.data;
@@ -250,5 +351,12 @@ const comboSlice = createSlice({
 });
 
 // Export actions & reducer
-export const { setPageIndex, setPageSize, setSearchKeyword, setStartFilterDate, setEndFilterDate, setComboError } = comboSlice.actions;
+export const {
+  setPageIndex,
+  setPageSize,
+  setSearchKeyword,
+  setStartFilterDate,
+  setEndFilterDate,
+  setComboError,
+} = comboSlice.actions;
 export default comboSlice.reducer;
