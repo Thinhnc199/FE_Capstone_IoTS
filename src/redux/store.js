@@ -22,6 +22,7 @@ import notificationSlice from "./slices/notificationSlice";
 import warrantySlice from "./slices/warrantySlice";
 import chatSlice from "./slices/chatSlice";
 import statisticSlice from "./slices/dashboardSlice";
+import bankReducer from "./slices/bankSlice";
 const store = configureStore({
   reducer: {
     orders: orderSlice,
@@ -47,6 +48,7 @@ const store = configureStore({
     notification: notificationSlice,
     warranty: warrantySlice,
     statistics: statisticSlice,
+    banks: bankReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

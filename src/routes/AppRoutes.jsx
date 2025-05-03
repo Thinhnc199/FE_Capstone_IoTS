@@ -443,7 +443,7 @@ const privateRoute = [
     allowedRoles: [Roles.STORE],
   },
   {
-    path: "/store/wallet",
+    path: "/store/cashout-management",
     component: WalletStore,
     layout: StoreIotLayout,
     allowedRoles: [Roles.STORE],

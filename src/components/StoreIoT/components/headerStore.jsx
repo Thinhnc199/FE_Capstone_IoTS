@@ -67,7 +67,7 @@ export default function HeaderStore() {
     {
       key: "sub8",
       icon: <WalletOutlined />,
-      label: <Link to="/store/wallet">Wallet</Link>,
+      label: <Link to="/store/transaction-history">Wallet</Link>,
     },
     {
       key: "4",

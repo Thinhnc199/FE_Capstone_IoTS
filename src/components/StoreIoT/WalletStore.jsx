@@ -132,13 +132,13 @@ const WalletStore = () => {
   };
 
   return (
-    <div className="p-0  min-h-screen">
+    <div className="mx-auto container">
       <div className=" max-w-6xl mb-4 ">
         <BreadcrumbNav
           items={[
             { label: "Home", path: "/" },
             { label: "store", path: "/store" },
-            { label: "wallet" },
+            { label: "cashout management" },
           ]}
         />
       </div>
@@ -150,7 +150,7 @@ const WalletStore = () => {
             Cashout Management
           </h1>
           {/* Balance and Cashout Button */}
-          <div className="flex  justify-between  items-center mb-6 bg-white p-4 rounded-lg shadow">
+          {/* <div className="flex  justify-between  items-center mb-6 bg-white p-4 rounded-lg shadow">
             <div className="flex space-x-2">
               <h2 className="text-xl font-bold font-Mainfont ">
                 Current Balance:
@@ -167,7 +167,7 @@ const WalletStore = () => {
             >
               Withdraw
             </Button>
-          </div>
+          </div> */}
           <Tabs defaultActiveKey="0" onChange={handleTabChange}>
             {statusTabs.map((tab) => (
               <TabPane tab={tab.title} key={tab.key}>
