@@ -63,7 +63,7 @@ const ProductStoreTables = ({
   const handleUpdateProducts = () => {
     if (selectedProduct) {
       // dispatch(updateRole({ id: selectedUser.id, roleIdList: [selectedRole] }));
-      message.success("User product updated successfully");
+      // message.success("User product updated successfully");
       handleCloseModal();
     }
   };
@@ -78,6 +78,14 @@ const ProductStoreTables = ({
       title: " Name",
       dataIndex: "name",
       key: "name",
+      render: (text, record) => (
+        <span
+          className="text-blue-500 hover:text-blue-700 cursor-pointer hover:underline"
+          onClick={() => navigate(`/store/list-product/edit/${record.id}`)}
+        >
+          {text}
+        </span>
+      ),
     },
     {
       title: " Product",
