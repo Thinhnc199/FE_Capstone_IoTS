@@ -1569,6 +1569,7 @@ const StoreRegistration = () => {
       setExistingAttachments(
         storeDetails.storeAttachments.map((att) => att.imageUrl)
       );
+      setStoreAttachments([]);
     }
   }, [storeDetails]);
 
@@ -1623,10 +1624,19 @@ const StoreRegistration = () => {
       return;
     }
 
-    const allAttachments = [
-      ...existingAttachments,
-      ...newAttachmentsUrls.filter(Boolean),
+    // const allAttachments = [
+    //   ...existingAttachments,
+    //   ...newAttachmentsUrls.filter(Boolean),
+    // ];
+
+    // Create a Set to ensure uniqueness (removes duplicates)
+    const uniqueAttachments = [
+      ...new Set([
+        ...existingAttachments,
+        ...newAttachmentsUrls.filter(Boolean),
+      ]),
     ];
+
     const storeData = {
       ...values,
       provinceId: selectedProvinceId,
@@ -1634,7 +1644,8 @@ const StoreRegistration = () => {
       wardId: selectedWardId,
       addressId: selectedAddressId,
       imageUrl: logoUrl, // This is now the URL string from response.data.id
-      storeAttachments: allAttachments.map((url) => ({ imageUrl: url })), // URLs are correctly mapped
+      storeAttachments: uniqueAttachments.map((url) => ({ imageUrl: url })), // URLs are correctly mapped
+      // storeAttachments: allAttachments.map((url) => ({ imageUrl: url })), // URLs are correctly mapped
     };
 
     try {
@@ -1644,6 +1655,8 @@ const StoreRegistration = () => {
         const storeResponse = await dispatch(getStoreDetails(userId));
         if (storeResponse.payload && storeResponse.payload.data) {
           setStoreId(storeResponse.payload.data.id);
+          // Clear temporary uploads after successful submission
+          setStoreAttachments([]);
         }
       }
       // notification.success({
