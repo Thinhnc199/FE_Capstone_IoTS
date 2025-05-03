@@ -134,7 +134,21 @@ export default function StaffAccount() {
           <Form.Item
             name="fullname"
             label="Full Name"
-            rules={[{ required: true, message: "Please enter full name" }]}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value || value.trim().length === 0) {
+                    return Promise.reject(new Error("Full name is required"));
+                  }
+                  if (value.trim().length < 2) {
+                    return Promise.reject(
+                      new Error("Full name must be at least 2 characters")
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input placeholder="Enter full name" />
           </Form.Item>
@@ -158,7 +172,7 @@ export default function StaffAccount() {
                 name="phone"
                 label="Phone"
                 rules={[
-                  { required: true, message: "Please enter phone number" },
+                  { required: true, message: "Phone is required" },
                   {
                     pattern: /^[0-9]{10,11}$/,
                     message: "Invalid phone number format",
@@ -173,7 +187,26 @@ export default function StaffAccount() {
           <Form.Item
             name="address"
             label="Address"
-            rules={[{ required: true, message: "Please enter address" }]}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value || value.trim().length === 0) {
+                    return Promise.reject(new Error("Address is required"));
+                  }
+                  if (value.trim().length < 5) {
+                    return Promise.reject(
+                      new Error("Address must be at least 5 characters")
+                    );
+                  }
+                  if (value.trim().length > 255) {
+                    return Promise.reject(
+                      new Error("Address cannot exceed 255 characters")
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input.TextArea rows={3} placeholder="Enter address" />
           </Form.Item>
