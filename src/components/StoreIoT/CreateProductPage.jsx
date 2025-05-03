@@ -14,8 +14,13 @@ import {
   Button,
   Spin,
   Image,
+  Tooltip,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  MinusCircleOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -172,12 +177,28 @@ export default function CreateProductPage() {
               <Col span={12}>
                 <Form.Item
                   name="weight"
-                  label="Weight"
-                  rules={[{ required: true, message: "Please enter weight" }]}
+                  label={
+                    <span>
+                      Weight (kg)
+                      <Tooltip title="Please enter weight in kilograms (e.g. 0.5 for 500 grams)">
+                        <QuestionCircleOutlined
+                          style={{ marginLeft: 5, color: "#1890ff" }}
+                        />
+                      </Tooltip>
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: "Please enter weight" },
+                    {
+                      type: "number",
+                      min: 0.01,
+                      message: "Weight must be at least 0.01 kg",
+                    },
+                  ]}
                 >
                   <InputNumber
                     min={0}
-                    placeholder="Enter weight"
+                    placeholder="Enter weight in kg"
                     style={{ width: "100%" }}
                   />
                 </Form.Item>
@@ -267,12 +288,25 @@ export default function CreateProductPage() {
               <Col span={12}>
                 <Form.Item
                   name="price"
-                  label="Price"
+                  label={
+                    <span>
+                      Price (VND)
+                      <Tooltip title="Please enter price in Vietnamese Dong">
+                        <QuestionCircleOutlined
+                          style={{ marginLeft: 5, color: "#1890ff" }}
+                        />
+                      </Tooltip>
+                    </span>
+                  }
                   rules={[{ required: true, message: "Please enter price" }]}
                 >
                   <InputNumber
                     min={0}
-                    placeholder="Enter price"
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    placeholder="Enter price in VND"
                     style={{ width: "100%" }}
                   />
                 </Form.Item>

@@ -1073,11 +1073,26 @@ const ProductForm = ({
         </Row>
       </Card>
 
-      <Form.Item>
+      {/* <Form.Item style={{ textAlign: "left" }}>
         <Button type="primary" htmlType="submit" loading={loading}>
           {isEditMode ? "Update Product" : "Create Product"}
         </Button>
-      </Form.Item>
+      </Form.Item> */}
+      {/* Thay thế phần Form.Item cuối cùng bằng đoạn code này */}
+      <Row justify="end">
+        <Col>
+          <Form.Item style={{ margin: 0 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              style={{ marginLeft: 0 }}
+            >
+              {isEditMode ? "Update Product" : "Create Product"}
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
     </Form>
   );
 };
