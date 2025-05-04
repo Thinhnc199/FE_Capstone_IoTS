@@ -425,6 +425,14 @@ export default function DetailProducts() {
                         </p>
                       </div>
                     )}
+                    {product.notes && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Note</h3>
+                        <p className="text-gray-700 whitespace-pre-line">
+                          {product.notes}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Basic Info - Chỉ hiển thị nếu có ít nhất một trường dữ liệu */}
                     {(product.weight ||

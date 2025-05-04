@@ -571,8 +571,13 @@ import {
   Image,
   message,
   Card,
+  Tooltip,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  MinusCircleOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
 // import { getUrlImg } from "../../redux/slices/productSlice";
 import { getUrlImg } from "../../../redux/slices/productSlice";
 const { TextArea } = Input;
@@ -684,7 +689,17 @@ const ProductForm = ({
             <Form.Item
               name="name"
               label="Product Name"
-              rules={[{ required: true, message: "Please enter product name" }]}
+              rules={[
+                { required: true, message: "Please enter product name" },
+                {
+                  min: 5,
+                  message: "Product name must be at least 5 characters",
+                },
+                {
+                  max: 255,
+                  message: "Product name cannot exceed 255 characters",
+                },
+              ]}
             >
               <Input placeholder="Enter product name" />
             </Form.Item>
@@ -695,8 +710,24 @@ const ProductForm = ({
           <Col span={12}>
             <Form.Item
               name="weight"
-              label="Weight"
-              rules={[{ required: true, message: "Please enter weight" }]}
+              label={
+                <span>
+                  Weight (kg)
+                  <Tooltip title="Please enter weight in kilograms (e.g. 0.5 for 500 grams)">
+                    <QuestionCircleOutlined
+                      style={{ marginLeft: 5, color: "#1890ff" }}
+                    />
+                  </Tooltip>
+                </span>
+              }
+              rules={[
+                { required: true, message: "Please enter weight" },
+                {
+                  type: "number",
+                  min: 0.01,
+                  message: "Weight must be at least 0.01 kg",
+                },
+              ]}
             >
               <InputNumber
                 min={0}
@@ -735,7 +766,13 @@ const ProductForm = ({
             <Form.Item
               name="manufacturer"
               label="Manufacturer"
-              rules={[{ required: true, message: "Please enter manufacturer" }]}
+              rules={[
+                { required: true, message: "Please enter manufacturer" },
+                {
+                  max: 255,
+                  message: "Manufacturer cannot exceed 255 characters",
+                },
+              ]}
             >
               <Input placeholder="Enter manufacturer" />
             </Form.Item>
@@ -744,7 +781,13 @@ const ProductForm = ({
             <Form.Item
               name="model"
               label="Model"
-              rules={[{ required: true, message: "Please enter model" }]}
+              rules={[
+                { required: true, message: "Please enter model" },
+                {
+                  max: 255,
+                  message: "Model cannot exceed 255 characters",
+                },
+              ]}
             >
               <Input placeholder="Enter model" />
             </Form.Item>
@@ -758,6 +801,10 @@ const ProductForm = ({
               label="Serial Number"
               rules={[
                 { required: true, message: "Please enter serial number" },
+                {
+                  max: 255,
+                  message: "Serial Number cannot exceed 255 characters",
+                },
               ]}
             >
               <Input placeholder="Enter serial number" />
@@ -769,6 +816,12 @@ const ProductForm = ({
               label="Warranty (months)"
               rules={[
                 { required: true, message: "Please enter warranty month" },
+                {
+                  type: "number",
+                  min: 0,
+                  max: 100,
+                  message: "Warranty must be between 0 and 100 months",
+                },
               ]}
             >
               <InputNumber
@@ -784,12 +837,25 @@ const ProductForm = ({
           <Col span={12}>
             <Form.Item
               name="price"
-              label="Price"
+              label={
+                <span>
+                  Price (VND)
+                  <Tooltip title="Please enter price in Vietnamese Dong">
+                    <QuestionCircleOutlined
+                      style={{ marginLeft: 5, color: "#1890ff" }}
+                    />
+                  </Tooltip>
+                </span>
+              }
               rules={[{ required: true, message: "Please enter price" }]}
             >
               <InputNumber
                 min={0}
-                placeholder="Enter price"
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                placeholder="Enter price in VND"
                 style={{ width: "100%" }}
               />
             </Form.Item>
@@ -798,7 +864,15 @@ const ProductForm = ({
             <Form.Item
               name="quantity"
               label="Quantity"
-              rules={[{ required: true, message: "Please enter quantity" }]}
+              rules={[
+                { required: true, message: "Please enter quantity" },
+                {
+                  type: "number",
+                  min: 0,
+                  max: 9999,
+                  message: "quantity must be between 0 and 9999 items",
+                },
+              ]}
             >
               <InputNumber
                 min={0}
@@ -817,9 +891,24 @@ const ProductForm = ({
             <Form.Item
               name="summary"
               label="Summary"
-              rules={[{ required: true, message: "Please enter summary" }]}
+              rules={[
+                { required: true, message: "Please enter summary" },
+                {
+                  min: 5,
+                  message: "Summary must be at least 5 characters",
+                },
+                {
+                  max: 500,
+                  message: "Summary cannot exceed 500 characters",
+                },
+              ]}
             >
-              <TextArea rows={2} placeholder="Enter summary" />
+              <TextArea
+                rows={2}
+                placeholder="Enter summary"
+                showCount
+                maxLength={500}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -829,9 +918,24 @@ const ProductForm = ({
             <Form.Item
               name="description"
               label="Description"
-              rules={[{ required: true, message: "Please enter description" }]}
+              rules={[
+                { required: true, message: "Please enter description" },
+                {
+                  min: 5,
+                  message: "Description must be at least 5 characters",
+                },
+                {
+                  max: 1000,
+                  message: "Description cannot exceed 1000 characters",
+                },
+              ]}
             >
-              <TextArea rows={4} placeholder="Enter description" />
+              <TextArea
+                rows={4}
+                placeholder="Enter description"
+                showCount
+                maxLength={1000}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -843,9 +947,22 @@ const ProductForm = ({
               label="Specifications"
               rules={[
                 { required: true, message: "Please enter specifications" },
+                {
+                  min: 5,
+                  message: "Specifications must be at least 5 characters",
+                },
+                {
+                  max: 500,
+                  message: "Specifications cannot exceed 500 characters",
+                },
               ]}
             >
-              <TextArea rows={4} placeholder="Enter specifications" />
+              <TextArea
+                rows={4}
+                placeholder="Enter specifications"
+                showCount
+                maxLength={500}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -855,9 +972,17 @@ const ProductForm = ({
             <Form.Item
               name="notes"
               label="Notes"
-              rules={[{ required: true, message: "Please enter notes" }]}
+              rules={[
+                { required: true, message: "Please enter notes" },
+                { max: 500, message: "Notes cannot exceed 500 characters" },
+              ]}
             >
-              <TextArea rows={2} placeholder="Enter notes" />
+              <TextArea
+                rows={2}
+                placeholder="Enter notes"
+                showCount
+                maxLength={500}
+              />
             </Form.Item>
           </Col>
         </Row>
