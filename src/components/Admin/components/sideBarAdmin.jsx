@@ -100,7 +100,7 @@ const items2 = [
       },
       {
         key: "cashrequest",
-        label: <Link to="/admin/wallet">Cashout Requests</Link>,
+        label: <Link to="/admin/cashout-requests">Cashout Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
       {

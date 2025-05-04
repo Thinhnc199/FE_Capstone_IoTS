@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -8,15 +8,16 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import {
-  Avatar,
-  Tabs,
   Button,
   Card,
   Col,
   Row,
   message,
   Spin,
+  Tabs,
+  Skeleton,
   Modal,
+  Avatar,
 } from "antd";
 import {
   fetchRequestDetails,
@@ -27,7 +28,9 @@ import {
   getStoreDetails,
   getBusinessLicenseDetails,
 } from "../../redux/slices/storeRegistrationSlice.js";
+import { getTrainerBusinessLicenseDetails } from "../../redux/slices/trainerSlice.js";
 import ConfirmModal from "./components/ConfirmModal.jsx";
+import { debounce } from "lodash";
 
 const DetailUserRequest = () => {
   const { id } = useParams();
@@ -50,57 +53,72 @@ const DetailUserRequest = () => {
     2: false,
     3: false,
   });
-  const [showIdCard, setShowIdCard] = useState(false); // Trạng thái hiển thị ID Card
-  const [previewVisible, setPreviewVisible] = useState(false); // Trạng thái Modal preview
-  const [previewImage, setPreviewImage] = useState(""); // Hình ảnh được preview
+  const [showIdCard, setShowIdCard] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
 
   useEffect(() => {
     if (id) {
-      setTabLoading((prev) => ({ ...prev, 1: true }));
+      setTabLoading({ 1: true });
       dispatch(fetchRequestDetails({ id })).finally(() =>
-        setTabLoading((prev) => ({ ...prev, 1: false }))
+        setTabLoading({ 1: false })
       );
-
-      const userId = userRequestDetail.data?.userDetails?.id || id;
-      setTabLoading((prev) => ({ ...prev, 2: true }));
-      dispatch(getStoreDetails(userId)).then((response) => {
-        if (response.payload && response.payload.data) {
-          setStoreDetails(response.payload.data);
-        }
-        setTabLoading((prev) => ({ ...prev, 2: false }));
-      });
     }
   }, [dispatch, id, confirmUserRequest.isSuccess]);
 
-  const handleTabChange = (key) => {
-    setActiveTab(key);
-    const userId = userRequestDetail.data?.userDetails?.id;
+  const handlePreview = useCallback((imageUrl) => {
+    setPreviewImage(imageUrl);
+    setPreviewVisible(true);
+  }, []);
 
-    if (key === "2" && userId && !storeDetails) {
-      setTabLoading((prev) => ({ ...prev, 2: true }));
-      dispatch(getStoreDetails(userId)).then((response) => {
-        if (response.payload && response.payload.data) {
-          setStoreDetails(response.payload.data);
-        }
-        setTabLoading((prev) => ({ ...prev, 2: false }));
-      });
-    } else if (key === "3" && storeDetails?.id && !businessLicense) {
-      setTabLoading((prev) => ({ ...prev, 3: true }));
-      dispatch(getBusinessLicenseDetails(storeDetails.id)).then((response) => {
-        if (response.payload) {
-          setBusinessLicense(response.payload);
-        }
-        setTabLoading((prev) => ({ ...prev, 3: false }));
-      });
-    }
-  };
+  const debouncedHandleTabChange = useCallback(
+    debounce((key) => {
+      setActiveTab(key);
+      const userId = userRequestDetail.data?.userDetails?.id;
+      const role = userRequestDetail.data?.userRequestInfo?.role?.label;
 
-  const showModal = (type) => {
+      if (key === "2" && userId && !storeDetails && role !== "Trainer") {
+        setTabLoading((prev) => ({ ...prev, 2: true }));
+        dispatch(getStoreDetails(userId)).then((response) => {
+          if (response.payload && response.payload.data) {
+            setStoreDetails(response.payload.data);
+          }
+          setTabLoading((prev) => ({ ...prev, 2: false }));
+        });
+      } else if (key === "3" && userId) {
+        setTabLoading((prev) => ({ ...prev, 3: true }));
+        if (role === "Trainer") {
+          dispatch(getTrainerBusinessLicenseDetails(userId)).then(
+            (response) => {
+              if (response.payload) {
+                setBusinessLicense(response.payload);
+              }
+              setTabLoading((prev) => ({ ...prev, 3: false }));
+            }
+          );
+        } else if (storeDetails?.id) {
+          dispatch(getBusinessLicenseDetails(storeDetails.id)).then(
+            (response) => {
+              if (response.payload) {
+                setBusinessLicense(response.payload);
+              }
+              setTabLoading((prev) => ({ ...prev, 3: false }));
+            }
+          );
+        } else {
+          setTabLoading((prev) => ({ ...prev, 3: false }));
+        }
+      }
+    }, 300),
+    [dispatch, userRequestDetail.data, storeDetails]
+  );
+
+  const showModal = useCallback((type) => {
     setActionType(type);
     setOpen(true);
-  };
+  }, []);
 
-  const handleOk = async () => {
+  const handleOk = useCallback(async () => {
     try {
       if (actionType === "approve") {
         await dispatch(
@@ -124,61 +142,71 @@ const DetailUserRequest = () => {
     } catch (error) {
       messageApi.error(`Error: ${error}`);
     }
-  };
+  }, [actionType, dispatch, remark, messageApi, userRequestDetail.data]);
 
-  const handlePreview = (imageUrl) => {
-    setPreviewImage(imageUrl);
-    setPreviewVisible(true);
-  };
+  const isTrainer = useMemo(
+    () => userRequestDetail.data?.userRequestInfo?.role?.label === "Trainer",
+    [userRequestDetail.data]
+  );
 
-  if (userRequestDetail.loading || storeLoading)
-    return <Spin tip="Loading..." />;
-  if (userRequestDetail.error) return <p>Error: {userRequestDetail.error}</p>;
-  if (!userRequestDetail.data) return <p>No data available.</p>;
+  const fullAddress = useMemo(
+    () =>
+      storeDetails
+        ? `${storeDetails.addressName}, ${storeDetails.wardName}, ${storeDetails.districtName}, ${storeDetails.provinceName}`
+        : userRequestDetail.data?.userDetails?.address || "",
+    [storeDetails, userRequestDetail.data]
+  );
+
+  if (userRequestDetail.loading || storeLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" tip="Loading data..." />
+      </div>
+    );
+  }
+
+  if (userRequestDetail.error) {
+    return (
+      <div className="text-center text-red-600 p-4">
+        Error: {userRequestDetail.error}
+      </div>
+    );
+  }
+
+  if (!userRequestDetail.data) {
+    return <div className="text-center p-4">No data available.</div>;
+  }
 
   const { userRequestInfo, userDetails } = userRequestDetail.data;
-  const fullAddress = storeDetails
-    ? `${storeDetails.addressName}, ${storeDetails.wardName}, ${storeDetails.districtName}, ${storeDetails.provinceName}`
-    : "";
 
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-md border overflow-hidden">
+    <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6">
       {contextHolder}
-      {/* Avatar & User Info */}
-      <div className="relative">
-        <img
-          src={
-            storeDetails?.imageUrl ||
-            "https://i.pinimg.com/736x/76/f3/f3/76f3f3007969fd3b6db21c744e1ef289.jpg"
-          }
-          alt="Background"
-          className="w-full h-72 object-cover"
-        />
-      </div>
+      {/* User Info */}
       {userDetails && (
-        <div className="relative flex gap-2 items-end -mt-16 pb-4 border-b pl-4">
-          <Avatar
-            size={150}
-            src={
-              storeDetails?.imageUrl ||
-              "https://i.pinimg.com/736x/76/f3/f3/76f3f3007969fd3b6db21c744e1ef289.jpg"
-            }
-            alt="avatar"
-            className="border-4 border-white shadow-lg rounded-full object-cover"
-          />
-          <div className="flex items-center w-full px-4 justify-between">
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6 border border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-semibold">{userDetails.fullname}</h2>
-              <h5 className="text-sm font-semibold text-gray-600">
-                {userDetails.username}
-              </h5>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {userDetails.fullname}
+              </h2>
+              <p className="text-sm text-gray-500">{userDetails.username}</p>
             </div>
-            <div className="space-x-2">
-              {userRequestInfo.userRequestStatus?.label ===
-              "Approved" ? null : (
+            <div className="flex space-x-3">
+              {userRequestInfo.userRequestStatus?.label === "Approved" ||
+              userRequestInfo.userRequestStatus?.label === "Rejected" ? null : (
                 <>
-                  <Button onClick={() => showModal("reject")}>Reject</Button>
-                  <Button type="primary" onClick={() => showModal("approve")}>
+                  <Button
+                    onClick={() => showModal("reject")}
+                    className="bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    type="primary"
+                    onClick={() => showModal("approve")}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
                     Approve
                   </Button>
                 </>
@@ -190,38 +218,37 @@ const DetailUserRequest = () => {
 
       <Tabs
         activeKey={activeTab}
-        onChange={handleTabChange}
-        className="p-4 font-semibold"
+        onChange={debouncedHandleTabChange}
+        className="font-semibold"
       >
         {/* Tab 1: Profile */}
         <Tabs.TabPane tab="Profile" key="1">
           {tabLoading[1] ? (
-            <div className="flex justify-center p-4">
-              <Spin tip="Loading Profile..." />
+            <div className="p-4">
+              <Skeleton active paragraph={{ rows: 4 }} />
             </div>
           ) : (
             userDetails && (
-              <Row gutter={16} className="p-4">
+              <Row gutter={[16, 16]} className="p-4">
                 <Col span={16}>
                   <Card
                     title="Information"
-                    bordered={false}
-                    className="border border-gray-200"
+                    className="border border-gray-200 rounded-lg shadow-sm"
                   >
-                    <p>
+                    <p className="text-gray-700">
                       <strong>ID:</strong> {userRequestInfo.id}
                     </p>
-                    <p>
+                    <p className="text-gray-700">
                       <strong>Email:</strong> {userRequestInfo.email}
                     </p>
-                    <p>
+                    <p className="text-gray-700">
                       <strong>Status:</strong>{" "}
                       {userRequestInfo.userRequestStatus?.label}
                     </p>
-                    <p>
+                    <p className="text-gray-700">
                       <strong>Role:</strong> {userRequestInfo.role?.label}
                     </p>
-                    <p>
+                    <p className="text-gray-700">
                       <strong>Created Date:</strong>{" "}
                       {userRequestInfo.createdDate}
                     </p>
@@ -230,10 +257,12 @@ const DetailUserRequest = () => {
                 <Col span={8}>
                   <Card
                     title="Location"
-                    bordered={true}
-                    className="border border-gray-200"
+                    className="border border-gray-200 rounded-lg shadow-sm"
                   >
-                    <EnvironmentOutlined /> {userDetails.address}
+                    <p className="text-gray-700">
+                      <EnvironmentOutlined className="mr-2" />
+                      {userDetails.address}
+                    </p>
                   </Card>
                 </Col>
               </Row>
@@ -241,108 +270,131 @@ const DetailUserRequest = () => {
           )}
         </Tabs.TabPane>
 
-        {/* Tab 2: Store */}
-        <Tabs.TabPane tab="Store" key="2">
-          {tabLoading[2] ? (
-            <div className="flex justify-center p-4">
-              <Spin tip="Loading Store Details..." />
-            </div>
-          ) : storeDetails ? (
-            <Row gutter={16} className="p-4">
-              <Col span={16}>
-                <Card title="Summary" className="border border-gray-200">
-                  <div className="text-gray-500">{storeDetails.summary}</div>
-                </Card>
-                <Card
-                  title="Description"
-                  className="border border-gray-200 mt-5"
-                >
-                  <div className="text-gray-500">
-                    {storeDetails.description}
-                  </div>
-                </Card>
-                <Card
-                  title="Store Attachments"
-                  className="border border-gray-200 mt-5"
-                >
-                  <div className="flex flex-wrap gap-4 mt-2">
-                    {storeDetails.storeAttachments?.length > 0 ? (
-                      storeDetails.storeAttachments.map((attachment) => (
-                        <div key={attachment.id} className="relative">
-                          <img
-                            src={attachment.imageUrl}
-                            alt="Attachment"
-                            className="w-32 h-32 object-cover rounded-lg shadow cursor-pointer"
-                            onClick={() => handlePreview(attachment.imageUrl)}
-                          />
-                          <Button
-                            type="link"
-                            icon={<EyeOutlined />}
-                            className="absolute top-1 right-1"
-                            onClick={() => handlePreview(attachment.imageUrl)}
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      <p>No attachments available.</p>
-                    )}
-                  </div>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card title="Information" className="border border-gray-200">
-                  <div className="flex flex-col gap-4 text-gray-800">
-                    <span>
-                      <UserOutlined className="mr-2" /> {storeDetails.name}
-                    </span>
-                    <span>
-                      <EnvironmentOutlined className="mr-2" /> {fullAddress}
-                    </span>
-                    <span>
-                      <PhoneOutlined className="mr-2" />{" "}
-                      {storeDetails.contactNumber}
-                    </span>
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-          ) : (
-            <p>No store details available.</p>
-          )}
-        </Tabs.TabPane>
+        {/* Tab 2: Store (only for non-Trainer roles) */}
+        {!isTrainer && (
+          <Tabs.TabPane tab="Store" key="2">
+            {tabLoading[2] ? (
+              <div className="p-4">
+                <Skeleton active paragraph={{ rows: 6 }} />
+              </div>
+            ) : storeDetails ? (
+              <Row gutter={[16, 16]} className="p-4">
+                <Col span={16}>
+                  <Card
+                    title="Summary"
+                    className="border border-gray-200 rounded-lg shadow-sm"
+                  >
+                    <div className="text-gray-600">{storeDetails.summary}</div>
+                  </Card>
+                  <Card
+                    title="Description"
+                    className="border border-gray-200 rounded-lg shadow-sm mt-4"
+                  >
+                    <div className="text-gray-600">
+                      {storeDetails.description}
+                    </div>
+                  </Card>
+                  <Card
+                    title="Store Attachments"
+                    className="border border-gray-200 rounded-lg shadow-sm mt-4"
+                  >
+                    <div className="flex flex-wrap gap-4 mt-2">
+                      {storeDetails.storeAttachments?.length > 0 ? (
+                        storeDetails.storeAttachments.map((attachment) => (
+                          <div key={attachment.id} className="relative">
+                            <img
+                              src={attachment.imageUrl}
+                              alt="Attachment"
+                              className="w-32 h-32 object-cover rounded-lg shadow-sm cursor-pointer"
+                              onClick={() => handlePreview(attachment.imageUrl)}
+                            />
+                            <Button
+                              type="link"
+                              icon={<EyeOutlined />}
+                              className="absolute top-1 right-1"
+                              onClick={() => handlePreview(attachment.imageUrl)}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-600">
+                          No attachments available.
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+                </Col>
+                <Col span={8}>
+                  <Card
+                    title="Information"
+                    className="border border-gray-200 rounded-lg shadow-sm"
+                  >
+                    <Avatar
+                      size={250}
+                      src={
+                        storeDetails?.imageUrl ||
+                        userDetails.imageUrl ||
+                        "https://i.pinimg.com/736x/76/f3/f3/76f3f3007969fd3b6db21c744e1ef289.jpg"
+                      }
+                      alt="avatar"
+                      className="border-4 border-white shadow-lg rounded-full object-cover mb-6"
+                    />
+                    <div className="flex flex-col gap-4 text-gray-700">
+                      <span>
+                        <UserOutlined className="mr-2" /> {storeDetails.name}
+                      </span>
+                      <span>
+                        <EnvironmentOutlined className="mr-2" /> {fullAddress}
+                      </span>
+                      <span>
+                        <PhoneOutlined className="mr-2" />{" "}
+                        {storeDetails.contactNumber}
+                      </span>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+            ) : (
+              <p className="p-4 text-gray-600">No store details available.</p>
+            )}
+          </Tabs.TabPane>
+        )}
 
         {/* Tab 3: Business License */}
         <Tabs.TabPane tab="Business License" key="3">
           {tabLoading[3] ? (
-            <div className="flex justify-center p-4">
-              <Spin tip="Loading Business License..." />
+            <div className="p-4">
+              <Skeleton active paragraph={{ rows: 6 }} />
             </div>
           ) : businessLicense ? (
-            <Row gutter={16} className="p-4">
+            <Row gutter={[16, 16]} className="p-4">
               <Col span={16}>
                 <Card
                   title="Business License Details"
-                  className="border border-gray-200"
+                  className="border border-gray-200 rounded-lg shadow-sm"
                 >
-                  <p>
-                    <strong>Tax Number:</strong>{" "}
-                    {businessLicense.data?.liscenseNumber}
+                  <p className="text-gray-700">
+                    <strong>
+                      {isTrainer ? "License Number" : "Tax Number"}:
+                    </strong>{" "}
+                    {businessLicense.data?.liscenseNumber ||
+                      businessLicense.data?.licenseNumber}
                   </p>
-                  <p>
+                  <p className="text-gray-700">
                     <strong>Issued By:</strong> {businessLicense.data?.issueBy}
                   </p>
-                  <p>
+                  <p className="text-gray-700">
                     <strong>Issue Date:</strong>{" "}
                     {businessLicense.data?.issueDate?.split("T")[0]}
                   </p>
-                  <p>
+                  <p className="text-gray-700">
                     <strong>Expired Date:</strong>{" "}
                     {businessLicense.data?.expiredDate?.split("T")[0]}
                   </p>
                 </Card>
                 <Card
                   title="Identification Card"
-                  className="border border-gray-200 mt-5"
+                  className="border border-gray-200 rounded-lg shadow-sm mt-4"
                   extra={
                     <Button
                       type="link"
@@ -359,7 +411,7 @@ const DetailUserRequest = () => {
                           <img
                             src={businessLicense.data.frontIdentification}
                             alt="Front Identification"
-                            className="w-32 h-32 object-cover rounded-lg shadow cursor-pointer"
+                            className="w-32 h-32 object-cover rounded-lg shadow-sm cursor-pointer"
                             onClick={() =>
                               handlePreview(
                                 businessLicense.data.frontIdentification
@@ -386,7 +438,7 @@ const DetailUserRequest = () => {
                           <img
                             src={businessLicense.data.backIdentification}
                             alt="Back Identification"
-                            className="w-32 h-32 object-cover rounded-lg shadow cursor-pointer"
+                            className="w-32 h-32 object-cover rounded-lg shadow-sm cursor-pointer"
                             onClick={() =>
                               handlePreview(
                                 businessLicense.data.backIdentification
@@ -413,7 +465,7 @@ const DetailUserRequest = () => {
                 </Card>
                 <Card
                   title="Business License Document"
-                  className="border border-gray-200 mt-5"
+                  className="border border-gray-200 rounded-lg shadow-sm mt-4"
                 >
                   <div className="flex flex-wrap gap-4 mt-2">
                     {businessLicense.data?.businessLicences && (
@@ -421,7 +473,7 @@ const DetailUserRequest = () => {
                         <img
                           src={businessLicense.data.businessLicences}
                           alt="Business License"
-                          className="w-32 h-32 object-cover rounded-lg shadow cursor-pointer"
+                          className="w-32 h-32 object-cover rounded-lg shadow-sm cursor-pointer"
                           onClick={() =>
                             handlePreview(businessLicense.data.businessLicences)
                           }
@@ -443,22 +495,31 @@ const DetailUserRequest = () => {
                 </Card>
               </Col>
               <Col span={8}>
-                <Card title="Store Info" className="border border-gray-200">
-                  <div className="flex flex-col gap-4 text-gray-800">
+                <Card
+                  title={isTrainer ? "Trainer Info" : "Store Info"}
+                  className="border border-gray-200 rounded-lg shadow-sm"
+                >
+                  <div className="flex flex-col gap-4 text-gray-700">
                     <span>
-                      <UserOutlined className="mr-2" /> {storeDetails?.name}
+                      <UserOutlined className="mr-2" />{" "}
+                      {isTrainer ? userDetails.fullname : storeDetails?.name}
                     </span>
                     <span>
                       <EnvironmentOutlined className="mr-2" /> {fullAddress}
                     </span>
+                    {isTrainer && (
+                      <span>
+                        <PhoneOutlined className="mr-2" /> {userDetails.phone}
+                      </span>
+                    )}
                   </div>
                 </Card>
               </Col>
             </Row>
           ) : (
-            <p>
-              No business license details available. Please load store details
-              first.
+            <p className="p-4 text-gray-600">
+              No business license details available.{" "}
+              {!isTrainer && "Please load store details first."}
             </p>
           )}
         </Tabs.TabPane>
@@ -466,7 +527,7 @@ const DetailUserRequest = () => {
 
       {/* Modal để preview ảnh */}
       <Modal
-        visible={previewVisible}
+        open={previewVisible}
         footer={null}
         onCancel={() => setPreviewVisible(false)}
         centered

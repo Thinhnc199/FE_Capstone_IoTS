@@ -153,7 +153,7 @@ const AdminWalletManagement = () => {
         })
         .catch((error) => {
           console.error("Approve error:", error);
-          message.error("Failed to approve cashout request:", error);
+          message.error(error);
         });
     } else if (actionType === "reject") {
       dispatch(
