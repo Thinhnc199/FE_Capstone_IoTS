@@ -39,7 +39,7 @@ const items2 = [
   {
     key: "sub9",
     icon: <SwapOutlined />,
-    label: <Link to="/trainer/transaction-history">Transaction History</Link>,
+    label: <Link to="/trainer/cashout-management">Cashout management</Link>,
   },
 ];
 

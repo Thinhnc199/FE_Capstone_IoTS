@@ -6,9 +6,12 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { Modal, Button, Table, Dropdown, message, Tag } from "antd";
-import { activeCombos, deactiveCombos } from "./../../../redux/slices/comboSlice";
+import {
+  activeCombos,
+  deactiveCombos,
+} from "./../../../redux/slices/comboSlice";
 
 const CombosTables = ({
   items,

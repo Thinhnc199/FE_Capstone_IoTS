@@ -81,7 +81,7 @@ const items2 = [
   {
     key: "sub9",
     icon: <SwapOutlined />,
-    label: <Link to="/store/transaction-history">Transaction History</Link>,
+    label: <Link to="/store/cashout-management">Cashout Management</Link>,
   },
   // {
   //   key: "sub3",

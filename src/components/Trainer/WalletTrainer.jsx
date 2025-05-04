@@ -68,11 +68,11 @@ const WalletTrainer = () => {
       dataIndex: "bankName",
       key: "bankName",
     },
-    {
-      title: "Created By",
-      dataIndex: "createdByNavigationFullname",
-      key: "createdBy",
-    },
+    // {
+    //   title: "Created By",
+    //   dataIndex: "createdByNavigationFullname",
+    //   key: "createdBy",
+    // },
     {
       title: "Status",
       dataIndex: "status",
@@ -128,7 +128,7 @@ const WalletTrainer = () => {
       })
       .catch((error) => {
         console.error("Cashout error:", error);
-        message.error("Failed to submit withdrawal request:", error);
+        message.error(error);
       });
   };
 
@@ -139,7 +139,7 @@ const WalletTrainer = () => {
           items={[
             { label: "Home", path: "/" },
             { label: "trainer", path: "/trainer" },
-            { label: "wallet" },
+            { label: "cashout management" },
           ]}
         />
       </div>
@@ -151,7 +151,7 @@ const WalletTrainer = () => {
             Cashout Management
           </h1>
           {/* Balance and Cashout Button */}
-          <div className="flex  justify-between  items-center mb-6 bg-white p-4 rounded-lg shadow">
+          {/* <div className="flex  justify-between  items-center mb-6 bg-white p-4 rounded-lg shadow">
             <div className="flex space-x-2">
               <h2 className="text-xl font-bold font-Mainfont ">
                 Current Balance:
@@ -168,7 +168,7 @@ const WalletTrainer = () => {
             >
               Withdraw
             </Button>
-          </div>
+          </div> */}
           <Tabs defaultActiveKey="0" onChange={handleTabChange}>
             {statusTabs.map((tab) => (
               <TabPane tab={tab.title} key={tab.key}>
