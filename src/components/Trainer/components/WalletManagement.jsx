@@ -262,7 +262,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Table,
   Tag,
-  Typography,
   Button,
   Form,
   Input,
@@ -294,7 +293,7 @@ const WalletManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { wallet } = useSelector((state) => state.payment);
 
-  const { Title } = Typography;
+  // const { Title } = Typography;
 
   useEffect(() => {
     dispatch(getTransactions({ pageIndex: 0, pageSize: 20 }));
@@ -314,7 +313,7 @@ const WalletManagement = () => {
     const cashoutData = {
       ...values,
       amount: parseFloat(values.amount),
-      bankName: values.bankName, // bankName is shortName from selected bank
+      bankName: values.bankName,
     };
     dispatch(createCashoutRequest(cashoutData))
       .unwrap()
@@ -396,11 +395,11 @@ const WalletManagement = () => {
         />
       </div>
       <div className="bg-white rounded-sm shadow-lg mx-auto p-4 my-4 container">
-        <div className="border-b mb-4 bg-white border-gray-200">
+        {/* <div className="border-b mb-4 bg-white border-gray-200">
           <Title level={3} className="mb-0 text-gray-800">
             Transaction History
           </Title>
-        </div>
+        </div> */}
 
         {/* Balance and Cashout Button */}
         <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg">

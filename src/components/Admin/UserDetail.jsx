@@ -4,10 +4,9 @@ import { useParams } from "react-router-dom";
 import {
   EnvironmentOutlined,
   PhoneOutlined,
-  UserOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { Avatar, Tabs, Button, Spin, Table, message, Modal } from "antd";
+import { Card, Tabs, Button, Spin, Table, message, Modal } from "antd";
 import { fetchUserById } from "./../../redux/slices/accountSlice.js";
 import {
   getStoreDetails,
@@ -210,60 +209,89 @@ const UserDetail = () => {
           {/* Store Information */}
           {userRole === Roles.STORE && (
             <section className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-gray-200">
                 Store Information
               </h2>
               {tabLoading[2] ? (
-                <Spin tip="Loading Store Details..." />
+                <div className="flex justify-center py-6">
+                  <Spin size="large" tip="Loading Store Details..." />
+                </div>
               ) : storeDetails ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <p className="text-gray-700">
-                      <strong className="text-gray-900">Name:</strong>{" "}
-                      <UserOutlined className="text-blue-500 mr-1" />{" "}
-                      {storeDetails.name}
-                    </p>
-                    <p className="text-gray-700">
-                      <strong className="text-gray-900">Address:</strong>{" "}
-                      <EnvironmentOutlined className="text-blue-500 mr-1" />{" "}
-                      {fullAddress}
-                    </p>
-                    <p className="text-gray-700">
-                      <strong className="text-gray-900">Contact Number:</strong>{" "}
-                      <PhoneOutlined className="text-blue-500 mr-1" />{" "}
-                      {storeDetails.contactNumber}
-                    </p>
-                  </div>
-                  <div className="space-y-3">
-                    <div>
-                      <strong className="text-gray-900">Summary:</strong>
-                      <p className="text-gray-600 mt-1">
-                        {storeDetails.summary}
-                      </p>
+                <div className="space-y-6">
+                  {/* Store Details Card */}
+                  <Card className="border border-gray-200 rounded-lg shadow-sm p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex flex-col space-y-4">
+                        <div className="flex items-center space-x-4">
+                          <img
+                            src={
+                              storeDetails?.imageUrl ||
+                              detailUser.imageUrl ||
+                              "https://clever.webpixels.io/img/people/img-profile.jpg"
+                            }
+                            alt="Store"
+                            className="w-20 h-20 rounded-full object-cover border-2 border-gray-100 shadow-sm"
+                            onClick={() =>
+                              handlePreview(storeDetails?.imageUrl)
+                            }
+                          />
+                          <div>
+                            <p className="text-lg font-semibold text-gray-800">
+                              {storeDetails.name}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Store Profile
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 flex items-center">
+                          <EnvironmentOutlined className="text-blue-500 mr-2" />
+                          <span>{fullAddress}</span>
+                        </p>
+                        <p className="text-gray-700 flex items-center">
+                          <PhoneOutlined className="text-blue-500 mr-2" />
+                          <span>{storeDetails.contactNumber}</span>
+                        </p>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <strong className="text-gray-900 font-medium">
+                            Summary
+                          </strong>
+                          <p className="text-gray-600 mt-1 leading-relaxed">
+                            {storeDetails.summary}
+                          </p>
+                        </div>
+                        <div>
+                          <strong className="text-gray-900 font-medium">
+                            Description
+                          </strong>
+                          <p className="text-gray-600 mt-1 leading-relaxed">
+                            {storeDetails.description}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <strong className="text-gray-900">Description:</strong>
-                      <p className="text-gray-600 mt-1">
-                        {storeDetails.description}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-span-full">
-                    <strong className="text-gray-900">Attachments:</strong>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-2">
+                  </Card>
+                  {/* Attachments Card */}
+                  <Card className="border border-gray-200 rounded-lg shadow-sm p-6">
+                    <strong className="text-gray-900 font-medium mb-4 block">
+                      Attachments
+                    </strong>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                       {storeDetails.storeAttachments?.length > 0 ? (
                         storeDetails.storeAttachments.map((attachment) => (
                           <div key={attachment.id} className="relative group">
                             <img
                               src={attachment.imageUrl}
                               alt="Attachment"
-                              className="w-full h-32 object-cover rounded-md shadow-sm transition-transform group-hover:scale-105 cursor-pointer"
+                              className="w-full h-32 object-cover rounded-md shadow-sm transition-transform duration-200 group-hover:scale-105 cursor-pointer"
                               onClick={() => handlePreview(attachment.imageUrl)}
                             />
                             <Button
                               type="link"
                               icon={<EyeOutlined />}
-                              className="absolute top-2 right-2 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                               onClick={() => handlePreview(attachment.imageUrl)}
                             />
                           </div>
@@ -274,10 +302,12 @@ const UserDetail = () => {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </Card>
                 </div>
               ) : (
-                <p className="text-gray-500">No store details available.</p>
+                <p className="text-gray-500 text-center py-4">
+                  No store details available.
+                </p>
               )}
             </section>
           )}
@@ -422,7 +452,7 @@ const UserDetail = () => {
                                   : businessLicenseTrainer?.businessLicences
                               }
                               alt="Business License"
-                              className="w-32 h-32 object-cover rounded-md shadow-sm transition-transform group-hover:scale-105 cursor-pointer"
+                              className="w-50 h-50 object-cover rounded-md shadow-sm transition-transform group-hover:scale-105 cursor-pointer"
                               onClick={() =>
                                 handlePreview(
                                   userRole === Roles.STORE
@@ -433,7 +463,7 @@ const UserDetail = () => {
                             />
                             <Button
                               type="link"
-                              icon={<EyeOutlined />}
+                              // icon={<EyeOutlined />}
                               className="absolute top-2 right-2 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                               onClick={() =>
                                 handlePreview(
@@ -492,7 +522,7 @@ const UserDetail = () => {
 
       {/* Header Section */}
       <div className="bg-headerBg text-white p-6 flex items-center">
-        <Avatar
+        {/* <Avatar
           size={120}
           src={
             detailUser.imageUrl ||
@@ -500,7 +530,7 @@ const UserDetail = () => {
             "https://clever.webpixels.io/img/people/img-profile.jpg"
           }
           className="border-4 border-white"
-        />
+        /> */}
         <div className="ml-6">
           <h1 className="text-3xl font-bold">{detailUser.fullname}</h1>
           <p className="text-lg">{detailUser.username}</p>

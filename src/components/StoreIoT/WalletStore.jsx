@@ -67,11 +67,11 @@ const WalletStore = () => {
       dataIndex: "bankName",
       key: "bankName",
     },
-    {
-      title: "Created By",
-      dataIndex: "createdByNavigationFullname",
-      key: "createdBy",
-    },
+    // {
+    //   title: "Created By",
+    //   dataIndex: "createdByNavigationFullname",
+    //   key: "createdBy",
+    // },
     {
       title: "Status",
       dataIndex: "status",
@@ -127,7 +127,7 @@ const WalletStore = () => {
       })
       .catch((error) => {
         console.error("Cashout error:", error);
-        message.error("Failed to submit withdrawal request:", error);
+        message.error(error);
       });
   };
 

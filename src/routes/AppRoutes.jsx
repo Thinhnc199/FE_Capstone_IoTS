@@ -351,7 +351,7 @@ const privateRoute = [
     allowedRoles: [Roles.ADMIN],
   },
   {
-    path: "/admin/wallet",
+    path: "/admin/cashout-requests",
     component: AdminWalletManagement,
     layout: AdminLayout,
     allowedRoles: [Roles.ADMIN],
@@ -613,13 +613,13 @@ const privateRoute = [
 
   {
     path: "/trainer/wallet",
-    component: WalletTrainer,
+    component: WalletManagement,
     layout: TrainerIotLayout,
     allowedRoles: [Roles.TRAINER],
   },
   {
-    path: "/trainer/transaction-history",
-    component: WalletManagement,
+    path: "/trainer/cashout-management",
+    component: WalletTrainer,
     layout: TrainerIotLayout,
     allowedRoles: [Roles.TRAINER],
   },

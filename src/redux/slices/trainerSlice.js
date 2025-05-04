@@ -40,7 +40,7 @@ export const getTrainerBusinessLicenseDetails = createAsyncThunk(
       return response;
     } catch (error) {
       console.error("Error fetching trainer business license:", error);
-      return rejectWithValue(error.message || "Failed to fetch trainer business license");
+      return rejectWithValue(error || "Failed to fetch trainer business license");
     }
   }
 );
