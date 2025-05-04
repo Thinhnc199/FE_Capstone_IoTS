@@ -31,10 +31,12 @@ export default function CreateProductPage() {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [mainImageUploading, setMainImageUploading] = useState(false);
+  const [additionalImagesUploading, setAdditionalImagesUploading] =
+    useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
 
   const { paginatedData, loading } = useSelector(
@@ -61,8 +63,35 @@ export default function CreateProductPage() {
     setPreviewOpen(true);
   };
 
+  // const handleUpload = async ({ file, onSuccess, onError, isMainImage }) => {
+  //   setUploading(true);
+  //   try {
+  //     const url = await dispatch(getUrlImg(file)).unwrap();
+  //     if (isMainImage) {
+  //       setImageUrl(url);
+  //     } else {
+  //       setFileList((prev) => [
+  //         ...prev,
+  //         { url, name: file.name, uid: file.uid, thumbUrl: url },
+  //       ]);
+  //     }
+  //     message.success("upload img success!");
+  //     onSuccess();
+  //   } catch (err) {
+  //     message.error("upload img fail!");
+  //     onError(err);
+  //   } finally {
+  //     setUploading(false);
+  //     setIsUploading(false);
+  //   }
+  // };
   const handleUpload = async ({ file, onSuccess, onError, isMainImage }) => {
-    setUploading(true);
+    if (isMainImage) {
+      setMainImageUploading(true);
+    } else {
+      setAdditionalImagesUploading(true);
+    }
+
     try {
       const url = await dispatch(getUrlImg(file)).unwrap();
       if (isMainImage) {
@@ -79,30 +108,84 @@ export default function CreateProductPage() {
       message.error("upload img fail!");
       onError(err);
     } finally {
-      // setUploading(false);
-      setIsUploading(false);
+      if (isMainImage) {
+        setMainImageUploading(false);
+      } else {
+        setAdditionalImagesUploading(false);
+      }
     }
   };
 
+  // const handleSubmit = async (values) => {
+  //   // Kiểm tra ảnh chính
+  //   if (!imageUrl) {
+  //     message.error("Please upload main image");
+  //     return;
+  //   }
+
+  //   // Kiểm tra đang upload
+  //   if (isUploading) {
+  //     message.warning("Please wait for images to finish uploading");
+  //     return;
+  //   }
+
+  //   console.log("Form values:", values);
+  //   const attachments = fileList.map((file, index) => ({
+  //     id: index,
+  //     imageUrl: file.thumbUrl || file.url,
+  //     metaData: file.name,
+  //   }));
+  //   const deviceSpecificationsList =
+  //     values.deviceSpecificationsList?.map((spec) => ({
+  //       name: spec.name,
+  //       deviceSpecificationItemsList:
+  //         spec.deviceSpecificationItemsList?.map((item) => ({
+  //           specificationProperty: item.specificationProperty,
+  //           specificationValue: item.specificationValue,
+  //         })) || [],
+  //     })) || [];
+
+  //   const productData = {
+  //     deviceType: 1,
+  //     ...values,
+  //     storeId: parseInt(localStorage.getItem("userId")),
+  //     attachments,
+  //     imageUrl: imageUrl || "string",
+  //     deviceSpecificationsList,
+  //   };
+  //   console.log("productData", productData);
+
+  //   await dispatch(createProducts(productData))
+  //     .unwrap()
+  //     .then(() => {
+  //       message.success("create product success!");
+  //       form.resetFields();
+  //       setFileList([]);
+  //       setUploading(false);
+  //       setImageUrl("");
+  //     })
+  //     .catch((error) => {
+  //       message.error(error);
+  //     });
+  // };
   const handleSubmit = async (values) => {
-    // Kiểm tra ảnh chính
     if (!imageUrl) {
       message.error("Please upload main image");
       return;
     }
 
-    // Kiểm tra đang upload
-    if (isUploading) {
+    if (mainImageUploading || additionalImagesUploading) {
       message.warning("Please wait for images to finish uploading");
       return;
     }
 
-    console.log("Form values:", values);
-    const attachments = fileList.map((file, index) => ({
-      id: index,
+    setIsSubmitting(true);
+
+    const attachments = fileList.map((file) => ({
       imageUrl: file.thumbUrl || file.url,
       metaData: file.name,
     }));
+
     const deviceSpecificationsList =
       values.deviceSpecificationsList?.map((spec) => ({
         name: spec.name,
@@ -121,21 +204,19 @@ export default function CreateProductPage() {
       imageUrl: imageUrl || "string",
       deviceSpecificationsList,
     };
-    console.log("productData", productData);
 
-    await dispatch(createProducts(productData))
-      .unwrap()
-      .then(() => {
-        message.success("create product success!");
-        form.resetFields();
-        setFileList([]);
-        setImageUrl("");
-      })
-      .catch((error) => {
-        message.error(error);
-      });
+    try {
+      await dispatch(createProducts(productData)).unwrap();
+      message.success("create product success!");
+      form.resetFields();
+      setFileList([]);
+      setImageUrl("");
+    } catch (error) {
+      message.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
   return (
     <div className="container mx-auto ">
       <div className=" max-w-6xl mb-4 ">
@@ -166,6 +247,14 @@ export default function CreateProductPage() {
                   label="Product Name"
                   rules={[
                     { required: true, message: "Please enter product name" },
+                    {
+                      min: 5,
+                      message: "Product name must be at least 5 characters",
+                    },
+                    {
+                      max: 255,
+                      message: "Product name cannot exceed 255 characters",
+                    },
                   ]}
                 >
                   <Input placeholder="Enter product name" />
@@ -239,6 +328,10 @@ export default function CreateProductPage() {
                   label="Manufacturer"
                   rules={[
                     { required: true, message: "Please enter manufacturer" },
+                    {
+                      max: 255,
+                      message: "Manufacturer cannot exceed 255 characters",
+                    },
                   ]}
                 >
                   <Input placeholder="Enter manufacturer" />
@@ -248,7 +341,13 @@ export default function CreateProductPage() {
                 <Form.Item
                   name="model"
                   label="Model"
-                  rules={[{ required: true, message: "Please enter model" }]}
+                  rules={[
+                    { required: true, message: "Please enter model" },
+                    {
+                      max: 255,
+                      message: "Model cannot exceed 255 characters",
+                    },
+                  ]}
                 >
                   <Input placeholder="Enter model" />
                 </Form.Item>
@@ -262,6 +361,10 @@ export default function CreateProductPage() {
                   label="Serial Number"
                   rules={[
                     { required: true, message: "Please enter serial number" },
+                    {
+                      max: 255,
+                      message: "Serial Number cannot exceed 255 characters",
+                    },
                   ]}
                 >
                   <Input placeholder="Enter serial number" />
@@ -273,6 +376,12 @@ export default function CreateProductPage() {
                   label="Warranty (months)"
                   rules={[
                     { required: true, message: "Please enter warranty month" },
+                    {
+                      type: "number",
+                      min: 0,
+                      max: 100,
+                      message: "Warranty must be between 0 and 100 months",
+                    },
                   ]}
                 >
                   <InputNumber
@@ -315,7 +424,15 @@ export default function CreateProductPage() {
                 <Form.Item
                   name="quantity"
                   label="Quantity"
-                  rules={[{ required: true, message: "Please enter quantity" }]}
+                  rules={[
+                    { required: true, message: "Please enter quantity" },
+                    {
+                      type: "number",
+                      min: 0,
+                      max: 9999,
+                      message: "quantity must be between 0 and 9999 items",
+                    },
+                  ]}
                 >
                   <InputNumber
                     min={0}
@@ -335,9 +452,25 @@ export default function CreateProductPage() {
                 <Form.Item
                   name="summary"
                   label="Summary"
-                  rules={[{ required: true, message: "Please enter summary" }]}
+                  rules={[
+                    { required: true, message: "Please enter summary" },
+                    {
+                      min: 5,
+                      message: "Summary must be at least 5 characters",
+                    },
+                    {
+                      max: 500,
+                      message: "Summary cannot exceed 500 characters",
+                    },
+                  ]}
                 >
-                  <TextArea rows={2} placeholder="Enter summary" />
+                  {/* <TextArea rows={2} placeholder="Enter summary" /> */}
+                  <TextArea
+                    rows={2}
+                    placeholder="Enter summary"
+                    showCount
+                    maxLength={500}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -349,9 +482,23 @@ export default function CreateProductPage() {
                   label="Description"
                   rules={[
                     { required: true, message: "Please enter description" },
+                    {
+                      min: 5,
+                      message: "Description must be at least 5 characters",
+                    },
+                    {
+                      max: 1000,
+                      message: "Description cannot exceed 1000 characters",
+                    },
                   ]}
                 >
-                  <TextArea rows={4} placeholder="Enter description" />
+                  {/* <TextArea rows={4} placeholder="Enter description" /> */}
+                  <TextArea
+                    rows={4}
+                    placeholder="Enter description"
+                    showCount
+                    maxLength={1000}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -363,9 +510,22 @@ export default function CreateProductPage() {
                   label="Specifications"
                   rules={[
                     { required: true, message: "Please enter specifications" },
+                    {
+                      min: 5,
+                      message: "Specifications must be at least 5 characters",
+                    },
+                    {
+                      max: 500,
+                      message: "Specifications cannot exceed 500 characters",
+                    },
                   ]}
                 >
-                  <TextArea rows={4} placeholder="Enter specifications" />
+                  <TextArea
+                    rows={4}
+                    placeholder="Enter specifications"
+                    showCount
+                    maxLength={500}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -375,9 +535,17 @@ export default function CreateProductPage() {
                 <Form.Item
                   name="notes"
                   label="Notes"
-                  rules={[{ required: true, message: "Please enter notes" }]}
+                  rules={[
+                    { required: true, message: "Please enter notes" },
+                    { max: 500, message: "Notes cannot exceed 500 characters" },
+                  ]}
                 >
-                  <TextArea rows={2} placeholder="Enter notes" />
+                  <TextArea
+                    rows={2}
+                    placeholder="Enter notes"
+                    showCount
+                    maxLength={500}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -537,7 +705,7 @@ export default function CreateProductPage() {
                       />
                     ) : (
                       <div>
-                        {uploading ? <Spin /> : <PlusOutlined />}
+                        {mainImageUploading ? <Spin /> : <PlusOutlined />}
                         <div style={{ marginTop: 8 }}>Upload</div>
                       </div>
                     )}
@@ -580,7 +748,11 @@ export default function CreateProductPage() {
                   >
                     {fileList.length >= 8 ? null : (
                       <div>
-                        {uploading ? <Spin /> : <PlusOutlined />}
+                        {additionalImagesUploading ? (
+                          <Spin />
+                        ) : (
+                          <PlusOutlined />
+                        )}
                         <div style={{ marginTop: 8 }}>Upload</div>
                       </div>
                     )}
@@ -601,8 +773,7 @@ export default function CreateProductPage() {
                 Cancel
               </Button>
             </Link>
-
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
               Submit
             </Button>
           </div>
