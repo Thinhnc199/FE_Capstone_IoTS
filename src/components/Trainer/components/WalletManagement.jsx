@@ -216,9 +216,16 @@ const WalletManagement = () => {
           <Form.Item
             name="contactNumber"
             label="Contact Number"
+            // rules={[
+            //   { required: true, message: "Please enter contact number" },
+            //   { pattern: /^[0-9]+$/, message: "Please enter valid number" },
+            // ]}
             rules={[
               { required: true, message: "Please enter contact number" },
-              { pattern: /^[0-9]+$/, message: "Please enter valid number" },
+              {
+                pattern: /^0[0-9]{9}$/,
+                message: "Please enter a valid phone number",
+              },
             ]}
           >
             <Input className="w-full" />
