@@ -28,7 +28,7 @@ const NewCreateLab = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-mainColer p-8">
+    <div className="min-h-screen bg-green-50 p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <Steps current={currentStep} className="mb-8">
           {steps.map((item) => (
