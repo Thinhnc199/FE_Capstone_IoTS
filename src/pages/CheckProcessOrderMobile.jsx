@@ -55,7 +55,7 @@ export default function CheckProcessOrderMobile() {
             <Button
               type="primary"
               icon={<HomeOutlined />}
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white"
               onClick={() => {
                 window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
               }}
@@ -143,7 +143,9 @@ export default function CheckProcessOrderMobile() {
               type="primary"
               icon={<HomeOutlined />}
               className="bg-green-500 hover:bg-green-600 text-white"
-              href="/"
+              onClick={() => {
+                window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
+              }}
             >
               Back Home
             </Button>
