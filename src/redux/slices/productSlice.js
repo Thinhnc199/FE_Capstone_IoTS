@@ -198,8 +198,8 @@ const productSlice = createSlice({
       state.ProductsDetail.error = null;
     });
     handleAsyncState(builder, createProducts, (state, action) => {
-      state.items.unshift(action.payload); // ✅ Thêm sản phẩm vào danh sách
-      state.totalCount += 1; // ✅ Cập nhật số lượng sản phẩm
+      state.items.unshift(action.payload); 
+      state.totalCount += 1; 
     });
 
     handleAsyncState(builder, activeProducts, (state, action) => {

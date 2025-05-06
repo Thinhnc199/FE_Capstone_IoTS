@@ -25,7 +25,7 @@ const items2 = [
     icon: <ProductOutlined />,
     label: "Products",
     children: [
-      { key: "lp", label: <Link to="/store/list-product">List products</Link> },
+      { key: "lp", label: <Link to="/store/list-product">Devices List</Link> },
     ],
   },
   {
@@ -47,7 +47,7 @@ const items2 = [
     children: [
       {
         key: "lm",
-        label: <Link to="/store/labs-management">Lab List</Link>,
+        label: <Link to="/store/labs-management">Labs List</Link>,
       },
 
       // {

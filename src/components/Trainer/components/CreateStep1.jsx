@@ -299,12 +299,16 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
               </Tooltip>
             </span>
           }
-          rules={[{ required: true, message: "Please enter a serial number" }]}
+          rules={[
+            { required: true, message: "Please enter a serial number" },
+            { max: 15, message: "Serial Number must not exceed 15 characters" },
+          ]}
         >
           <Input
             placeholder="Enter serial number"
             size="large"
             className="rounded-md border-gray-300"
+            maxLength={15}
           />
         </Form.Item>
       </div>
