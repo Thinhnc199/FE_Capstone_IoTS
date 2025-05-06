@@ -36,6 +36,7 @@
 //   const [loading, setLoading] = useState(true);
 
 //   const selectedCombo = useSelector((state) => state.combo.selectedCombo);
+
 //   const iotDevices = useSelector((state) => state.combo.iotDevices || []);
 
 //   useEffect(() => {
@@ -72,31 +73,39 @@
 //   }, [dispatch, comboId, navigate]);
 
 //   useEffect(() => {
-//     if (!selectedCombo || !selectedCombo.id) return;
-//     console.log("Updating form with fetched combo:", selectedCombo);
+//     if (!selectedCombo || !selectedCombo.data || !selectedCombo.data.id) return;
+//     console.log("Updating form with fetched combo:", selectedCombo.data);
 
 //     form.setFieldsValue({
-//       name: selectedCombo.name,
-//       summary: selectedCombo.summary,
-//       description: selectedCombo.description,
-//       specifications: selectedCombo.specifications,
-//       notes: selectedCombo.notes,
-//       serialNumber: selectedCombo.serialNumber,
-//       applicationSerialNumber: selectedCombo.applicationSerialNumber,
-//       price: selectedCombo.price,
-//       quantity: selectedCombo.quantity,
+//       name: selectedCombo.data.name,
+//       summary: selectedCombo.data.summary,
+//       description: selectedCombo.data.description,
+//       specifications: selectedCombo.data.specifications,
+//       notes: selectedCombo.data.notes,
+//       serialNumber: selectedCombo.data.serialNumber,
+//       applicationSerialNumber: selectedCombo.data.applicationSerialNumber,
+//       price: selectedCombo.data.price,
+//       quantity: selectedCombo.data.quantity,
 //     });
 
 //     setFileList([
-//       { id: selectedCombo.imageUrl, imageUrl: selectedCombo.imageUrl },
-//       ...(selectedCombo.attachmentsList || []).map((img) => ({
+//       ...(selectedCombo.data.imageUrl
+//         ? [
+//             {
+//               id: selectedCombo.data.imageUrl,
+//               imageUrl: selectedCombo.data.imageUrl,
+//             },
+//           ]
+//         : []),
+//       ...(selectedCombo.data.attachmentsList || []).map((img) => ({
 //         id: img.id,
 //         imageUrl: img.imageUrl,
 //       })),
 //     ]);
 
 //     setSelectedDevices(
-//       (selectedCombo.deviceComboList || []).map((device) => ({
+//       (selectedCombo.data.deviceComboList || []).map((device) => ({
+//         deviceComboId: device.deviceComboId,
 //         iotDeviceId: device.iotDeviceId,
 //         id: device.iotDeviceId,
 //         name: device.deviceName,
@@ -104,6 +113,39 @@
 //       }))
 //     );
 //   }, [selectedCombo, form]);
+//   // useEffect(() => {
+//   //   if (!selectedCombo || !selectedCombo.id) return;
+//   //   console.log("Updating form with fetched combo:", selectedCombo);
+
+//   //   form.setFieldsValue({
+//   //     name: selectedCombo.name,
+//   //     summary: selectedCombo.summary,
+//   //     description: selectedCombo.description,
+//   //     specifications: selectedCombo.specifications,
+//   //     notes: selectedCombo.notes,
+//   //     serialNumber: selectedCombo.serialNumber,
+//   //     applicationSerialNumber: selectedCombo.applicationSerialNumber,
+//   //     price: selectedCombo.price,
+//   //     quantity: selectedCombo.quantity,
+//   //   });
+
+//   //   setFileList([
+//   //     { id: selectedCombo.imageUrl, imageUrl: selectedCombo.imageUrl },
+//   //     ...(selectedCombo.attachmentsList || []).map((img) => ({
+//   //       id: img.id,
+//   //       imageUrl: img.imageUrl,
+//   //     })),
+//   //   ]);
+
+//   //   setSelectedDevices(
+//   //     (selectedCombo.deviceComboList || []).map((device) => ({
+//   //       iotDeviceId: device.iotDeviceId,
+//   //       id: device.iotDeviceId,
+//   //       name: device.deviceName,
+//   //       amount: device.amount,
+//   //     }))
+//   //   );
+//   // }, [selectedCombo, form]);
 
 //   const handleFileUpload = async ({ file }) => {
 //     try {
@@ -132,7 +174,9 @@
 
 //     let mainImageUrl =
 //       values.imageUrl?.trim() ||
-//       (fileList.length > 0 ? fileList[0].imageUrl : selectedCombo.imageUrl);
+//       (fileList.length > 0
+//         ? fileList[0].imageUrl
+//         : selectedCombo.data.imageUrl);
 
 //     if (!mainImageUrl) {
 //       notification.warning({
@@ -159,13 +203,15 @@
 //       }));
 
 //     // 🚀 Only update if devices were added or removed
-//     const existingDevices = selectedCombo.deviceComboList || [];
+//     const existingDevices = selectedCombo.data.deviceComboList || [];
 
 //     // Get the current list of devices (including new devices and those removed)
 //     const updatedDevicesMap = new Map();
 
 //     selectedDevices.forEach((device) => {
 //       updatedDevicesMap.set(device.iotDeviceId, {
+//         deviceComboId: device.deviceComboId,
+
 //         iotDeviceId: device.iotDeviceId,
 //         deviceName: device.name,
 //         deviceSummary: device.summary || "",
@@ -195,7 +241,7 @@
 
 //     const comboData = {
 //       ...values,
-//       comboId: selectedCombo.id,
+//       comboId: selectedCombo.data.id,
 //       imageUrl: mainImageUrl,
 //       attachmentsList: validAttachments,
 //       deviceComboList: updatedDevices,
@@ -203,7 +249,7 @@
 
 //     try {
 //       await dispatch(
-//         updateCombo({ comboId: selectedCombo.id, comboData })
+//         updateCombo({ comboId: selectedCombo.data.id, comboData })
 //       ).unwrap();
 //       notification.success({
 //         message: "Update Successful",
@@ -230,7 +276,7 @@
 //   return (
 //     <div className="p-6 bg-gray-100 min-h-screen">
 //       <Card className="max-w-4xl mx-auto shadow-lg rounded-lg">
-//         <div className="flex items-center mb-6">
+//         <div className="flex items-center justify-between mb-6">
 //           <Button
 //             icon={<ArrowLeftOutlined />}
 //             onClick={() => navigate("/store/combo-managerment")}
@@ -238,9 +284,10 @@
 //           >
 //             Back
 //           </Button>
-//           <Title level={2} className="text-gray-800">
-//             Update Combo
+//           <Title level={2} className="text-gray-800 ">
+//             Edit combo
 //           </Title>
+
 //         </div>
 
 //         <Form form={form} layout="vertical" onFinish={handleUpdateCombo}>
@@ -413,10 +460,7 @@
 //     </div>
 //   );
 // };
-
 // export default ComboUpdatePage;
-
-
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -441,7 +485,10 @@ import {
 } from "./../../../redux/slices/comboSlice";
 import { uploadFiles } from "./../../../api/apiConfig";
 import DeviceSelectionTable from "./DeviceSelectionTable";
-
+import {
+  validateSummary,
+  validateDescription,
+} from "./../../../pages/validators";
 const { Title } = Typography;
 
 const ComboUpdatePage = () => {
@@ -481,8 +528,9 @@ const ComboUpdatePage = () => {
       } catch (error) {
         notification.error({
           message: "Error",
-          description: error.message || "Failed to load combo details.",
+          description: error || "Failed to load combo details.",
         });
+
         navigate("/store/combo-managerment");
       } finally {
         setLoading(false);
@@ -533,39 +581,6 @@ const ComboUpdatePage = () => {
       }))
     );
   }, [selectedCombo, form]);
-  // useEffect(() => {
-  //   if (!selectedCombo || !selectedCombo.id) return;
-  //   console.log("Updating form with fetched combo:", selectedCombo);
-
-  //   form.setFieldsValue({
-  //     name: selectedCombo.name,
-  //     summary: selectedCombo.summary,
-  //     description: selectedCombo.description,
-  //     specifications: selectedCombo.specifications,
-  //     notes: selectedCombo.notes,
-  //     serialNumber: selectedCombo.serialNumber,
-  //     applicationSerialNumber: selectedCombo.applicationSerialNumber,
-  //     price: selectedCombo.price,
-  //     quantity: selectedCombo.quantity,
-  //   });
-
-  //   setFileList([
-  //     { id: selectedCombo.imageUrl, imageUrl: selectedCombo.imageUrl },
-  //     ...(selectedCombo.attachmentsList || []).map((img) => ({
-  //       id: img.id,
-  //       imageUrl: img.imageUrl,
-  //     })),
-  //   ]);
-
-  //   setSelectedDevices(
-  //     (selectedCombo.deviceComboList || []).map((device) => ({
-  //       iotDeviceId: device.iotDeviceId,
-  //       id: device.iotDeviceId,
-  //       name: device.deviceName,
-  //       amount: device.amount,
-  //     }))
-  //   );
-  // }, [selectedCombo, form]);
 
   const handleFileUpload = async ({ file }) => {
     try {
@@ -622,16 +637,12 @@ const ComboUpdatePage = () => {
         metaData: file.metaData || "",
       }));
 
-    // 🚀 Only update if devices were added or removed
-    const existingDevices = selectedCombo.data.deviceComboList || [];
-
-    // Get the current list of devices (including new devices and those removed)
+    // 🚀 Prepare devices for update
     const updatedDevicesMap = new Map();
 
     selectedDevices.forEach((device) => {
       updatedDevicesMap.set(device.iotDeviceId, {
         deviceComboId: device.deviceComboId,
-
         iotDeviceId: device.iotDeviceId,
         deviceName: device.name,
         deviceSummary: device.summary || "",
@@ -641,23 +652,7 @@ const ComboUpdatePage = () => {
       });
     });
 
-    // Filter out any devices that the user has deleted (if any)
     const updatedDevices = Array.from(updatedDevicesMap.values());
-
-    // If no devices were changed (added or deleted), return early to avoid duplication
-    if (
-      updatedDevices.length === existingDevices.length &&
-      updatedDevices.every(
-        (dev, index) => dev.iotDeviceId === existingDevices[index].iotDeviceId
-      )
-    ) {
-      notification.info({
-        message: "No Changes",
-        description:
-          "No devices were added or removed, so no update is necessary.",
-      });
-      return;
-    }
 
     const comboData = {
       ...values,
@@ -677,10 +672,10 @@ const ComboUpdatePage = () => {
       });
       navigate("/store/combo-managerment");
     } catch (error) {
-      notification.error("❌ Update Combo Error:", error);
+      console.error("❌ Update Combo Error:", error);
       notification.error({
         message: "Update Failed",
-        description: error,
+        description: error || "Failed to update combo.",
       });
     }
   };
@@ -707,7 +702,6 @@ const ComboUpdatePage = () => {
           <Title level={2} className="text-gray-800 ">
             Edit combo
           </Title>
-         
         </div>
 
         <Form form={form} layout="vertical" onFinish={handleUpdateCombo}>
@@ -750,7 +744,7 @@ const ComboUpdatePage = () => {
                 <Input placeholder="Enter combo name..." />
               </Form.Item>
 
-              <Form.Item
+              {/* <Form.Item
                 name="serialNumber"
                 label="Serial Number"
                 rules={[
@@ -758,12 +752,25 @@ const ComboUpdatePage = () => {
                 ]}
               >
                 <Input placeholder="Enter serial number..." />
+              </Form.Item> */}
+              <Form.Item
+                name="serialNumber"
+                label="Serial Number"
+                rules={[
+                  { required: true, message: "'Serial Number' is required" },
+                  {
+                    max: 15,
+                    message: "Serial Number must not exceed 15 characters",
+                  },
+                ]}
+              >
+                <Input placeholder="Enter serial number..." maxLength={15} />
               </Form.Item>
 
               <Form.Item
                 name="summary"
                 label="Summary"
-                rules={[{ required: true, message: "'Summary' is required" }]}
+                rules={[{ required: true, validator: validateSummary }]}
               >
                 <Input.TextArea
                   rows={3}
@@ -774,9 +781,7 @@ const ComboUpdatePage = () => {
               <Form.Item
                 name="description"
                 label="Description"
-                rules={[
-                  { required: true, message: "'Description' is required" },
-                ]}
+                rules={[{ required: true, validator: validateDescription }]}
               >
                 <Input.TextArea
                   rows={4}
@@ -806,10 +811,19 @@ const ComboUpdatePage = () => {
                   label="Price"
                   rules={[{ required: true, message: "'Price' is required" }]}
                 >
-                  <InputNumber
+                  {/* <InputNumber
                     min={0}
                     className="w-full"
                     placeholder="Enter price..."
+                  /> */}
+                  <InputNumber
+                    min={0}
+                    formatter={(value) =>
+                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    placeholder="Enter price in VND"
+                    style={{ width: "100%" }}
                   />
                 </Form.Item>
 
@@ -880,5 +894,4 @@ const ComboUpdatePage = () => {
     </div>
   );
 };
-
 export default ComboUpdatePage;

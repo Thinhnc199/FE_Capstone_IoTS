@@ -756,8 +756,12 @@ import { getStoreDetails } from "./../../../redux/slices/storeRegistrationSlice"
 import { uploadFiles } from "./../../../api/apiConfig";
 import DeviceSelectionTable from "./DeviceSelectionTable";
 import { useNavigate } from "react-router-dom";
-import debounce from "lodash/debounce"; // Install lodash if not already: npm install lodash
+import debounce from "lodash/debounce";
 import BreadcrumbNav from "../../common/BreadcrumbNav";
+import {
+  validateSummary,
+  validateDescription,
+} from "./../../../pages/validators";
 const ComboTable = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -1135,14 +1139,18 @@ const ComboTable = () => {
                   label="Serial Number"
                   rules={[
                     { required: true, message: "'Serial Number' is required" },
+                    {
+                      max: 15,
+                      message: "Serial Number must not exceed 15 characters",
+                    },
                   ]}
                 >
-                  <Input placeholder="Enter serial number..." />
+                  <Input placeholder="Enter serial number..." maxLength={15} />
                 </Form.Item>
                 <Form.Item
                   name="summary"
                   label="Summary"
-                  rules={[{ required: true, message: "'Summary' is required" }]}
+                  rules={[{ required: true, validator: validateSummary }]}
                 >
                   <Input.TextArea
                     rows={3}
@@ -1152,9 +1160,7 @@ const ComboTable = () => {
                 <Form.Item
                   name="description"
                   label="Description"
-                  rules={[
-                    { required: true, message: "'Description' is required" },
-                  ]}
+                  rules={[{ required: true, validator: validateDescription }]}
                 >
                   <Input.TextArea
                     rows={4}
@@ -1181,10 +1187,19 @@ const ComboTable = () => {
                     label="Price"
                     rules={[{ required: true, message: "'Price' is required" }]}
                   >
-                    <InputNumber
+                    {/* <InputNumber
                       min={0}
                       className="w-full"
                       placeholder="Enter price..."
+                    /> */}
+                    <InputNumber
+                      min={0}
+                      formatter={(value) =>
+                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                      }
+                      parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                      placeholder="Enter price in VND"
+                      style={{ width: "100%" }}
                     />
                   </Form.Item>
                   <Form.Item
