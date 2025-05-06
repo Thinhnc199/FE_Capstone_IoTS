@@ -4,7 +4,6 @@ import { checkSuccessOrderMobile } from "../redux/slices/orderSlice";
 import { Spin, Alert, Card, Button } from "antd";
 import {
   CheckCircleOutlined,
-  HistoryOutlined,
   HomeOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
@@ -15,8 +14,8 @@ export default function CheckProcessOrderMobile() {
   const { dataCheckOrderMobile, loading, error } = useSelector(
     (state) => state.orders
   );
-  const [confettiActive, setConfettiActive] = useState(false); // Trạng thái pháo hoa
-  // const [messageError, setMessageError] = useState(null);
+  const [confettiActive, setConfettiActive] = useState(false);
+
   useEffect(() => {
     const currentUrl = window.location.href;
     dispatch(checkSuccessOrderMobile({ urlResponse: currentUrl }));
@@ -56,8 +55,10 @@ export default function CheckProcessOrderMobile() {
             <Button
               type="primary"
               icon={<HomeOutlined />}
-              className="bg-red-500 hover:bg-red-600 text-white"
-              href="/"
+              className="bg-green-500 hover:bg-green-600 text-white"
+              onClick={() => {
+                window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
+              }}
             >
               Back Home
             </Button>
@@ -69,7 +70,7 @@ export default function CheckProcessOrderMobile() {
 
   if (dataCheckOrderMobile?.isSuccess) {
     return (
-      <div className="bg-gray-100 min-h-screen container mx-auto p-8 max-w-3xl">
+      <div className="bg-gray-100 min-h-screen container mx-auto p-2 max-w-3xl">
         {confettiActive && (
           <Confetti width={window.innerWidth} height={window.innerHeight} />
         )}
@@ -138,14 +139,6 @@ export default function CheckProcessOrderMobile() {
           </div>
 
           <div className="mt-6 flex justify-between gap-3">
-            <Button
-              type="default"
-              icon={<HistoryOutlined />}
-              className="text-green-600 border-green-500 hover:bg-green-50"
-              href="/history-order"
-            >
-              Order History
-            </Button>
             <Button
               type="primary"
               icon={<HomeOutlined />}
