@@ -16,6 +16,13 @@ export default function FloatingInput({
     if (type === "tel") {
       value = value.replace(/\D/g, ""); // Loại bỏ mọi ký tự không phải số
     }
+    if (label.toLowerCase() === "address") {
+      value = value.slice(0, 30); // cắt tối đa 30 ký tự
+    }
+    if (label.toLowerCase() === "note") {
+      value = value.slice(0, 30); // cắt tối đa 30 ký tự
+      setError("note.");
+    }
 
     if (required && !value) {
       setError("This field is required.");
