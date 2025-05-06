@@ -69,7 +69,7 @@ export default function CheckProcessOrder() {
 
   if (dataCheckOrder?.isSuccess) {
     return (
-      <div className="bg-gray-100 min-h-screen">
+      <div className="bg-gray-100 min-h-screen container mx-auto p-8 max-w-3xl">
         {confettiActive && (
           <Confetti width={window.innerWidth} height={window.innerHeight} />
         )}
