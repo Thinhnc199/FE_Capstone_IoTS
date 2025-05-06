@@ -158,6 +158,7 @@ export const updateCombo = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      // console.error("❌ Error updating combo:", error);
       return rejectWithValue(error);
     }
   }

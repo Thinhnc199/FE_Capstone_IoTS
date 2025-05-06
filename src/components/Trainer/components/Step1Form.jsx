@@ -10,6 +10,7 @@ import {
   Image,
   notification,
   Input as SearchInput,
+  InputNumber,
   Tooltip,
 } from "antd";
 import {
@@ -19,6 +20,7 @@ import {
   InfoCircleOutlined,
   LoadingOutlined,
   RightCircleOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import {
   getLabInformation,
@@ -28,7 +30,10 @@ import {
 import { fetchCombos } from "./../../../redux/slices/comboSlice";
 import { uploadFiles } from "./../../../api/apiConfig";
 import PropTypes from "prop-types";
-
+import {
+  validateSummary,
+  validateDescription,
+} from "./../../../pages/validators";
 const { TextArea } = Input;
 
 const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
@@ -75,6 +80,7 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
         title: labInfo.title,
         summary: labInfo.summary,
         comboId: labInfo.comboId,
+        serialNumber: labInfo.serialNumber,
         description: labInfo.description,
         price: labInfo.price,
       });
@@ -119,10 +125,9 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
     const labData = {
       title: values.title,
       summary: values.summary,
+      serialNumber: values.serialNumber,
       comboId: selectedCombo,
       description: values.description,
-      serialNumber:
-        initialData?.serialNumber || `LAB${Math.floor(Math.random() * 1000)}`,
       imageUrl,
       previewVideoUrl: videoUrl,
       price: parseFloat(values.price),
@@ -279,21 +284,40 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
           <Input placeholder="Enter lab title" size="large" />
         </Form.Item>
         <Form.Item
-          name="summary"
+          name="serialNumber"
           label={
             <span>
-              Summary{" "}
-              <Tooltip title="Provide a brief summary of the lab">
+              Serial Number{" "}
+              <Tooltip title="Enter a unique serial number for the lab">
                 <InfoCircleOutlined />
               </Tooltip>
             </span>
           }
-          rules={[{ required: true, message: "Please enter a summary" }]}
-          className="mb-4"
+          rules={[{ required: true, message: "Please enter a serial number" }, { max: 15, message: "Serial Number must not exceed 15 characters" },]}
         >
-          <Input placeholder="Enter lab summary" size="large" />
+          <Input
+            placeholder="Enter serial number"
+            size="large"
+            className="rounded-md border-gray-300"
+            maxLength={15}
+          />
         </Form.Item>
       </div>
+      <Form.Item
+        name="summary"
+        label={
+          <span>
+            Summary{" "}
+            <Tooltip title="Provide a brief summary of the lab">
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        }
+        rules={[{ required: true, validator: validateSummary }]}
+        className="mb-4"
+      >
+        <Input placeholder="Enter lab summary" size="large" />
+      </Form.Item>
       <Form.Item
         label={
           <span>
@@ -329,7 +353,7 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
             </Tooltip>
           </span>
         }
-        rules={[{ required: true, message: "Please enter a description" }]}
+        rules={[{ required: true, validator: validateDescription }]}
         className="mb-4"
       >
         <TextArea
@@ -452,7 +476,16 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
         rules={[{ required: true, message: "Please enter a price" }]}
         className="mb-4"
       >
-        <Input type="number" placeholder="Enter price" size="large" />
+        {/* <Input type="number" placeholder="Enter price" size="large" /> */}
+          <InputNumber
+                            min={0}
+                            formatter={(value) =>
+                              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
+                            parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                            placeholder="Enter price in VND"
+                            style={{ width: "100%" }}
+                          />
       </Form.Item>
       <div className="flex justify-end gap-4 mt-6">
         {initialData?.labId && !isEditMode ? (
@@ -461,16 +494,18 @@ const Step1Form = ({ onSubmit, initialData, goToStep2 }) => {
               onClick={goToStep2}
               disabled={labLoading || comboLoading}
               size="large"
-              className="bg-green-500 text-white hover:bg-green-600"
+              className="bg-white-500 text-blue"
             >
               <RightCircleOutlined />
             </Button>
             <Button
+              icon={<EditOutlined />}
               onClick={() => setIsEditMode(true)}
               disabled={labLoading || comboLoading}
               size="large"
-              className="bg-yellow-500 text-white hover:bg-yellow-600"
+              className="bg-yellow-500 text-blue "
             >
+              {" "}
               Edit
             </Button>
           </>

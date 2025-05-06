@@ -11,7 +11,7 @@ import {
   activeProducts,
   deactiveProducts,
 } from "../../../redux/slices/productSlice";
-
+import { useNavigate } from "react-router-dom";
 const ProductsTables = ({
   items,
   pageSize,
@@ -22,7 +22,7 @@ const ProductsTables = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
   const dispatch = useDispatch();
   const formatPrice = (price) => {
@@ -63,6 +63,14 @@ const ProductsTables = ({
       title: " Name",
       dataIndex: "name",
       key: "name",
+      render: (text, record) => (
+        <span
+          className="text-blue-500 hover:text-blue-700 cursor-pointer hover:underline"
+          onClick={() => navigate(`/admin/list-product/detail-product/${record.id}`)}
+        >
+          {text}
+        </span>
+      ),
     },
     {
       title: " Product",

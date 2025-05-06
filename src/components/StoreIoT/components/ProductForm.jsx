@@ -802,8 +802,8 @@ const ProductForm = ({
               rules={[
                 { required: true, message: "Please enter serial number" },
                 {
-                  max: 255,
-                  message: "Serial Number cannot exceed 255 characters",
+                  max: 15,
+                  message: "Serial Number cannot exceed 15 characters",
                 },
               ]}
             >

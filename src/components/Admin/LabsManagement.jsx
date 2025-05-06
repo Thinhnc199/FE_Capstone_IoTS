@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Input, Select, Image, Tag } from "antd";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getLabAdminPagination } from "./../../redux/slices/labSlice";
 import debounce from "lodash/debounce";
 
@@ -9,7 +9,7 @@ const { Option } = Select;
 
 const LabsTable = () => {
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const { labs, totalCount } = useSelector((state) => state.lab);
 
   const [pagination, setPagination] = useState({
@@ -84,9 +84,9 @@ const LabsTable = () => {
     }
   };
 
-  // const handleViewLabDetail = (labId) => {
-  //   navigate(`/admin/detail-lab/${labId}`);
-  // };
+  const handleViewLabDetail = (labId) => {
+    navigate(`/admin/detail-lab/${labId}`);
+  };
 
   const columns = [
     {
@@ -111,14 +111,14 @@ const LabsTable = () => {
       dataIndex: "title",
       key: "title",
       sorter: (a, b) => a.title.localeCompare(b.title),
-      // render: (text, record) => (
-      //   <span
-      //     className="cursor-pointer text-blue-500 hover:underline"
-      //     onClick={() => handleViewLabDetail(record.id)}
-      //   >
-      //     {text}
-      //   </span>
-      // ),
+      render: (text, record) => (
+        <span
+          className="cursor-pointer text-blue-500 hover:underline"
+          onClick={() => handleViewLabDetail(record.id)}
+        >
+          {text}
+        </span>
+      ),
     },
     {
       title: "Summary",

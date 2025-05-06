@@ -158,7 +158,7 @@ export const getMembershipOptions = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('/api/account-membership-package/get-all-membership-package-options');
-      console.log("🔍 API Response:", response.data); // Debug API response
+      console.log("🔍 API Response:", response.data); 
       return Array.isArray(response.data.data) ? response.data.data : []; 
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch membership options');

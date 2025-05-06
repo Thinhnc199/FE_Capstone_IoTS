@@ -5,8 +5,9 @@ import {
   EnvironmentOutlined,
   PhoneOutlined,
   EyeOutlined,
+  // SearchOutlined, ReloadOutlined,
 } from "@ant-design/icons";
-import { Card, Tabs, Button, Spin, Table, message, Modal } from "antd";
+import { Card, Tabs, Button, Spin, Table, message, Modal, Alert } from "antd";
 import { fetchUserById } from "./../../redux/slices/accountSlice.js";
 import {
   getStoreDetails,
@@ -15,7 +16,7 @@ import {
 import { getTrainerBusinessLicenseDetails } from "./../../redux/slices/trainerSlice.js";
 import { fetchActivityLog } from "./../../redux/slices/feedbackSlice.js";
 import { Roles } from "./../../redux/constants.js";
-
+import moment from "moment";
 const UserDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -25,7 +26,13 @@ const UserDetail = () => {
   );
   const { activityLog } = useSelector((state) => state.feedback);
   const [messageApi, contextHolder] = message.useMessage();
-
+  // const [searchKeyword, setSearchKeyword] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [activityError, setActivityError] = useState(null);
   const [activeTab, setActiveTab] = useState("1");
   const [tabLoading, setTabLoading] = useState({
     1: false,
@@ -103,27 +110,78 @@ const UserDetail = () => {
     }
   }, [dispatch, detailUser, id, messageApi]);
 
+  // const handleTabChange = (key) => {
+  //   setActiveTab(key);
+  //   if (!detailUser) return;
+
+  //   const userId = detailUser.id;
+
+  //   if (key === "2" && isAdmin && !activityLog.length) {
+  //     setTabLoading((prev) => ({ ...prev, 4: true }));
+  //     dispatch(
+  //       fetchActivityLog({
+  //         userId,
+  //         payload: { pageIndex: 0, pageSize: 20, searchKeyword: "" },
+  //       })
+  //     )
+  //       .unwrap()
+  //       .catch((err) =>
+  //         messageApi.error(`Failed to fetch activity log: ${err}`)
+  //       )
+  //       .finally(() => setTabLoading((prev) => ({ ...prev, 4: false })));
+  //   }
+  // };
   const handleTabChange = (key) => {
     setActiveTab(key);
     if (!detailUser) return;
 
     const userId = detailUser.id;
 
-    if (key === "2" && isAdmin && !activityLog.length) {
+    if (key === "2" && isAdmin) {
       setTabLoading((prev) => ({ ...prev, 4: true }));
+      setActivityError(null);
       dispatch(
         fetchActivityLog({
           userId,
-          payload: { pageIndex: 0, pageSize: 20, searchKeyword: "" },
+          payload: {
+            pageIndex: pagination.current - 1,
+            pageSize: pagination.pageSize,
+            // searchKeyword,
+          },
         })
       )
         .unwrap()
-        .catch((err) =>
-          messageApi.error(`Failed to fetch activity log: ${err}`)
-        )
+        .then((response) => {
+          setPagination((prev) => ({
+            ...prev,
+            total: response.data.totalCount,
+          }));
+        })
+        .catch((err) => {
+          setActivityError(
+            `Failed to fetch activity log: ${err.message || err}`
+          );
+          messageApi.error(
+            `Failed to fetch activity log: ${err.message || err}`
+          );
+        })
         .finally(() => setTabLoading((prev) => ({ ...prev, 4: false })));
     }
   };
+
+  // // Add function to handle search
+  // const handleSearch = (value) => {
+  //   setSearchKeyword(value);
+  //   setPagination((prev) => ({ ...prev, current: 1 }));
+  //   handleTabChange("2");
+  // };
+
+  // // Add function to handle refresh
+  // const handleRefresh = () => {
+  //   setSearchKeyword("");
+  //   setPagination((prev) => ({ ...prev, current: 1 }));
+  //   handleTabChange("2");
+  // };
 
   const handlePreview = (imageUrl) => {
     setPreviewImage(imageUrl);
@@ -151,7 +209,12 @@ const UserDetail = () => {
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Title", dataIndex: "title", key: "title" },
     { title: "Content", dataIndex: "content", key: "content" },
-    { title: "Created Date", dataIndex: "createdDate", key: "createdDate" },
+    {
+      title: "Created Date",
+      dataIndex: "createdDate",
+      key: "createdDate",
+      render: (text) => moment(text).format("YYYY-MM-DD HH:mm:ss"),
+    },
   ];
 
   const tabs = [
@@ -496,9 +559,32 @@ const UserDetail = () => {
             label: "Activity Log",
             children: (
               <div className="p-6 bg-white rounded-lg shadow-sm">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
-                  Activity Log
-                </h2>
+                {/* <div className="flex gap-4 mb-4">
+                <Input
+                  placeholder="Search by title or content"
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  onPressEnter={() => handleSearch(searchKeyword)}
+                  prefix={<SearchOutlined />}
+                  style={{ width: 300 }}
+                />
+                <Button
+                  icon={<ReloadOutlined />}
+                  onClick={handleRefresh}
+                  type="primary"
+                >
+                  Refresh
+                </Button>
+              </div> */}
+                {activityError && (
+                  <Alert
+                    message="Error"
+                    description={activityError}
+                    type="error"
+                    showIcon
+                    className="mb-4"
+                  />
+                )}
                 {tabLoading[4] ? (
                   <Spin tip="Loading Activity Log..." />
                 ) : (
@@ -506,7 +592,19 @@ const UserDetail = () => {
                     columns={activityColumns}
                     dataSource={activityLog}
                     rowKey="id"
-                    pagination={{ pageSize: 20 }}
+                    pagination={{
+                      current: pagination.current,
+                      pageSize: pagination.pageSize,
+                      total: pagination.total,
+                      onChange: (page, pageSize) => {
+                        setPagination((prev) => ({
+                          ...prev,
+                          current: page,
+                          pageSize,
+                        }));
+                        handleTabChange("2");
+                      },
+                    }}
                   />
                 )}
               </div>

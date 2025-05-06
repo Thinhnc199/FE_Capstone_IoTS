@@ -16,7 +16,7 @@ const items2 = [
   //   icon: <ProductOutlined />,
   //   label: "Products",
   //   children: [
-  //     { key: "lp", label: <Link to="/staff/list-product">List products</Link> },
+  //     { key: "lp", label: <Link to="/staff/list-product">Devices Management</Link> },
   //     {
   //       key: "cm",
   //       label: (
