@@ -97,6 +97,7 @@ import DashBoardStaff from "../components/Staff/DashBoardStaff";
 import ChatStore from "../components/StoreIoT/ChatStore";
 import { Roles } from "../redux/constants";
 import DeviceDetail from "../components/StoreIoT/DeviceDetail";
+import CheckProcessOrderMobile from "../pages/CheckProcessOrderMobile";
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
@@ -116,6 +117,11 @@ const publicRoute = [
   {
     path: "/checkout-process-order",
     component: CheckProcessOrder,
+    layout: null,
+  },
+  {
+    path: "/checkout-process-order-by-mobile",
+    component: CheckProcessOrderMobile,
     layout: null,
   },
   {
