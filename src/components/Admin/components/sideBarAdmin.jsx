@@ -65,7 +65,10 @@ const items2 = [
     icon: <ProductOutlined />,
     label: "Products",
     children: [
-      { key: "lp", label: <Link to="/admin/list-product">Devices Management</Link> },
+      {
+        key: "lp",
+        label: <Link to="/admin/list-product">Devices Management</Link>,
+      },
       {
         key: "cm",
         label: (
@@ -106,6 +109,11 @@ const items2 = [
       {
         key: "report",
         label: <Link to="/admin/report-request">Report Requests</Link>,
+        icon: <UnorderedListOutlined />,
+      },
+      {
+        key: "refund",
+        label: <Link to="/admin/refund-requests">Refund Requests</Link>,
         icon: <UnorderedListOutlined />,
       },
     ],
