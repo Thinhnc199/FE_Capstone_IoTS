@@ -271,7 +271,7 @@ const initialState = {
   combos: [],
   totalCount: 0,
   pageIndex: 1,
-  pageSize: 10,
+  pageSize: 90,
   error: null,
   searchKeyword: "",
   selectedCombo: null,

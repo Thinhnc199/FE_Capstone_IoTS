@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Input, Select, Image, Tag } from "antd";
+import { Table, Input, Image, Tag } from "antd";
 import { useNavigate } from "react-router-dom";
 import { getLabAdminPagination } from "./../../redux/slices/labSlice";
 import debounce from "lodash/debounce";
 
-const { Option } = Select;
 
 const LabsTable = () => {
   const dispatch = useDispatch();
@@ -18,19 +17,14 @@ const LabsTable = () => {
     totalCount: 0,
   });
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [labStatus, setLabStatus] = useState(null);
 
   useEffect(() => {
     const fetchLabs = () => {
       const params = {
-        paginationRequest: {
+
           pageIndex: pagination.pageIndex,
           pageSize: pagination.pageSize,
           searchKeyword,
-        },
-        advancedFilter: {
-          labStatus: labStatus !== null ? labStatus : undefined,
-        },
       };
 
       dispatch(getLabAdminPagination(params));
@@ -41,7 +35,6 @@ const LabsTable = () => {
     pagination.pageIndex,
     pagination.pageSize,
     searchKeyword,
-    labStatus,
     dispatch,
   ]);
 
@@ -66,10 +59,6 @@ const LabsTable = () => {
     setPagination({ ...pagination, pageIndex: 1 });
   }, 300);
 
-  const handleFilterChange = (value) => {
-    setLabStatus(value);
-    setPagination({ ...pagination, pageIndex: 1 });
-  };
 
   const getStatusTag = (status) => {
     switch (status) {
@@ -171,17 +160,7 @@ const LabsTable = () => {
           allowClear
           className="w-1/3"
         />
-        <Select
-          placeholder="Filter by Status"
-          allowClear
-          onChange={handleFilterChange}
-          className="w-1/4"
-        >
-          <Option value={1}>Active</Option>
-          <Option value={2}>Pending</Option>
-          <Option value={3}>Rejected</Option>
-          <Option value={4}>Draft</Option>
-        </Select>
+    
       </div>
 
       {/* Table */}

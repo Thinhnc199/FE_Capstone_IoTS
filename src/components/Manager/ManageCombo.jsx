@@ -62,7 +62,7 @@ export default function ComboManagement() {
                 value={searchKeyword}
                 onChange={handleSearch}
                 style={{ width: 200 }}
-                allowClear
+                allowClear // Thêm nút xóa nội dung
               />
             </div>
           </div>

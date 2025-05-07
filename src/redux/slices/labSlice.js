@@ -235,10 +235,14 @@ const initialState = {
   labs: [],
   playlist: [],
   labInfo: null,
+  totalCount: 0,
   videoUrl: null,
   videoFileName: null,
   loading: false,
   error: null,
+  pageIndex: 1, 
+  pageSize: 10, 
+  searchKeyword: "", 
 };
 
 // Slice
@@ -254,6 +258,16 @@ const labSlice = createSlice({
       // Reset trạng thái video
       state.videoUrl = null;
       state.videoFileName = null;
+    },
+    setPageIndex: (state, action) => {
+      state.pageIndex = action.payload;
+    },
+    setPageSize: (state, action) => {
+      state.pageSize = action.payload;
+      state.pageIndex = 1; 
+    },
+    setSearchKeyword: (state, action) => {
+      state.searchKeyword = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -316,7 +330,8 @@ const labSlice = createSlice({
       })
       .addCase(getLabAdminPagination.fulfilled, (state, action) => {
         state.loading = false;
-        state.labs = action.payload.data;
+        state.labs = action.payload.data || []; 
+        state.totalCount = action.payload.data.totalCount || 0;
       })
       .addCase(getLabAdminPagination.rejected, (state, action) => {
         state.loading = false;
@@ -448,5 +463,5 @@ const labSlice = createSlice({
   },
 });
 
-export const { clearError, resetVideoState } = labSlice.actions;
+export const { clearError, resetVideoState, setPageIndex, setPageSize, setSearchKeyword } = labSlice.actions;
 export default labSlice.reducer;

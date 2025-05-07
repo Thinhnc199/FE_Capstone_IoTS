@@ -166,7 +166,7 @@ const DeviceSelectionTable = ({ selectedDevices, setSelectedDevices }) => {
 
   useEffect(() => {
     dispatch(
-      fetchIotDevices({ pageIndex: 0, pageSize: 10, searchKeyword: "" })
+      fetchIotDevices({ pageIndex: 0, pageSize: 90, searchKeyword: "" })
     );
   }, [dispatch]);
 

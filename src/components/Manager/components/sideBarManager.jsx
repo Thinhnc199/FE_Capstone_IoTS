@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Logo from "../../../assets/icons/logo2";
 
-import { HomeOutlined } from "@ant-design/icons";
+import { HomeOutlined, ProductOutlined } from "@ant-design/icons";
 import { Menu } from "antd";
 
 const items2 = [
@@ -11,28 +11,28 @@ const items2 = [
     label: <Link to="/manager/dashboard">DashBoard</Link>,
   },
 
-  // {
-  //   key: "sub3",
-  //   icon: <ProductOutlined />,
-  //   label: "Products",
-  //   children: [
-  //     { key: "lp", label: <Link to="/staff/list-product">Devices Management</Link> },
-  //     {
-  //       key: "cm",
-  //       label: (
-  //         <Link to="/staff/category-management">Categories Management</Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "mcombo",
-  //       label: <Link to="/staff/combos-management">Combos Management</Link>,
-  //     },
-  //     {
-  //       key: "mlab",
-  //       label: <Link to="/staff/labs-management">Labs Management</Link>,
-  //     },
-  //   ],
-  // },
+  {
+    key: "sub3",
+    icon: <ProductOutlined />,
+    label: "Products",
+    children: [
+      { key: "lp", label: <Link to="/manager/list-product">Devices Management</Link> },
+      {
+        key: "cm",
+        label: (
+          <Link to="/manager/category-management">Categories Management</Link>
+        ),
+      },
+      {
+        key: "mcombo",
+        label: <Link to="/manager/combos-management">Combos Management</Link>,
+      },
+      {
+        key: "mlab",
+        label: <Link to="/manager/labs-management">Labs Management</Link>,
+      },
+    ],
+  },
 
   // {
   //   key: "sub4",

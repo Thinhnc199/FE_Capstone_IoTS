@@ -99,7 +99,11 @@ import { Roles } from "../redux/constants";
 import DeviceDetail from "../components/StoreIoT/DeviceDetail";
 import CheckProcessOrderMobile from "../pages/CheckProcessOrderMobile";
 import AdminRefundManagement from "../components/Admin/AdminRefundManagement";
-import CustomerRefundManagement from './../pages/CustomerRefundManagement';
+import CustomerRefundManagement from "./../pages/CustomerRefundManagement";
+import ListUserResquest from "../components/Staff/ListUserRequest";
+import LabManage from "../components/Manager/LabManage";
+import LabDetailManage from "../components/Manager/LabDetailManage";
+import ManageCombo from "../components/Manager/ManageCombo";
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
@@ -663,6 +667,51 @@ const privateRoute = [
     layout: ManagerLayout,
     allowedRoles: [Roles.MANAGER],
   },
+
+  {
+    path: "/manager/combos-management",
+    component: ManageCombo,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  {
+    path: "/manager/combo-detail/:comboId",
+    component: ComboDetailPage,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  {
+    path: "/manager/labs-management",
+    component: LabManage,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  {
+    path: "/manager/labs-detail/:labId",
+    component: LabDetailManage,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  {
+    path: "/manager/list-product",
+    component: ListProducts,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+  {
+    path: "/manager/list-product/detail-product/:id",
+    component: DeviceDetail,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+ {
+    path: "/manager/category-management",
+    component: CategoryManagement,
+    layout: ManagerLayout,
+    allowedRoles: [Roles.MANAGER],
+  },
+
+
   //Staff Staff
   {
     path: "/staff/list-account",
@@ -683,7 +732,6 @@ const privateRoute = [
     layout: StaffLayout,
     allowedRoles: [Roles.STAFF],
   },
-
   {
     path: "/staff/store-account",
     component: StoreAccountManage,
@@ -699,6 +747,24 @@ const privateRoute = [
   {
     path: "/staff/customer-account",
     component: CustomerAccountManage,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+  {
+    path: "/staff/user-request",
+    component: ListUserResquest,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+  {
+    path: "/staff/user-request/:id",
+    component: DetailUserRequest,
+    layout: StaffLayout,
+    allowedRoles: [Roles.STAFF],
+  },
+  {
+    path: "/staff/user-detail/:id",
+    component: UserDetail,
     layout: StaffLayout,
     allowedRoles: [Roles.STAFF],
   },
