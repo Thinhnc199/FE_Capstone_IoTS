@@ -98,6 +98,8 @@ import ChatStore from "../components/StoreIoT/ChatStore";
 import { Roles } from "../redux/constants";
 import DeviceDetail from "../components/StoreIoT/DeviceDetail";
 import CheckProcessOrderMobile from "../pages/CheckProcessOrderMobile";
+import AdminRefundManagement from "../components/Admin/AdminRefundManagement";
+import CustomerRefundManagement from './../pages/CustomerRefundManagement';
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
@@ -206,6 +208,12 @@ const privateRoute = [
   {
     path: "/warranty-detail/:id",
     component: WarrantyDetail,
+    layout: MainLayout,
+    allowedRoles: [Roles.CUSTOMER],
+  },
+  {
+    path: "/refunds",
+    component: CustomerRefundManagement,
     layout: MainLayout,
     allowedRoles: [Roles.CUSTOMER],
   },
@@ -366,6 +374,12 @@ const privateRoute = [
   {
     path: "/admin/cashout-requests",
     component: AdminWalletManagement,
+    layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
+  },
+  {
+    path: "/admin/refund-requests",
+    component: AdminRefundManagement,
     layout: AdminLayout,
     allowedRoles: [Roles.ADMIN],
   },

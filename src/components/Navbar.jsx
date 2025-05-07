@@ -30,6 +30,7 @@ import {
   HomeOutlined,
   BellOutlined,
   IssuesCloseOutlined,
+  ReloadOutlined ,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -192,10 +193,15 @@ const Navbar = () => {
     },
     {
       key: "6",
-      label: <Link to="/warranties">Warranty Request</Link>,
+      label: <Link to="/warranties">Warranty request</Link>,
       icon: <IssuesCloseOutlined />,
     },
-    { key: "7", label: "Logout", icon: <LogoutOutlined />, onClick: showModal },
+    {
+      key: "7",
+      label: <Link to="/refunds">Refunds request</Link>,
+      icon: <ReloadOutlined />,
+    },
+    { key: "8", label: "Logout", icon: <LogoutOutlined />, onClick: showModal },
   ];
 
   const menuCart =
