@@ -164,6 +164,8 @@ export const fetchDistricts = createAsyncThunk(
       const response = await api.get("/api/location/districts", {
         params: { provinceId },
       });
+      console.log("API Response for provinceId", provinceId);
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -178,6 +180,7 @@ export const fetchWards = createAsyncThunk(
       const response = await api.get("/api/location/wards", {
         params: { prodistrictId },
       });
+      console.log("API Response for prodistrictId", prodistrictId);
       return response.data;
     } catch (error) {
       return rejectWithValue(error);

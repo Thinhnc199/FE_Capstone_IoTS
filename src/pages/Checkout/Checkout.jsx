@@ -58,7 +58,8 @@ export default function Checkout() {
   const { fee } = useSelector((state) => state.orders);
   const token = localStorage.getItem("token");
   const isValidPhone = (value) => /^\d{10,11}$/.test(value);
-
+  const isValidAddress = (value) => value.length <= 30;
+  const isValidNote = (value) => value.length <= 30;
   useEffect(() => {
     if (token) {
       // dispatch(fetchCarts({ pageIndex, pageSize }));
@@ -70,7 +71,7 @@ export default function Checkout() {
   }, [token, dispatch]);
 
   useEffect(() => {
-    if (setSelectedAddressId) {
+    if (selectedAddressId) {
       setLoadingFee(true);
       dispatch(
         getfeeShip({
@@ -255,6 +256,10 @@ export default function Checkout() {
               isTextarea={true}
               label="Address"
               value={address}
+              validateFunc={isValidAddress}
+              type="address"
+              maxLength={30}
+              errorMessage="Address must be 30 characters or less."
               required
               onChange={(e) => setAddress(e.target.value)}
               error={formErrors.address}
@@ -292,7 +297,11 @@ export default function Checkout() {
             <FloatingInput
               isTextarea={true}
               label="Note"
+              type="note"
               value={notes}
+              validateFunc={isValidNote}
+              maxLength={30}
+              errorMessage="Note must be 30 characters or less."
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>

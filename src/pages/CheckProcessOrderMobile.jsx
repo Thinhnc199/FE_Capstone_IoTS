@@ -1,33 +1,32 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkSuccessOrder } from "../redux/slices/orderSlice";
+import { checkSuccessOrderMobile } from "../redux/slices/orderSlice";
 import { Spin, Alert, Card, Button } from "antd";
 import {
   CheckCircleOutlined,
-  HistoryOutlined,
   HomeOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import Confetti from "react-confetti"; // Import thư viện pháo hoa
 
-export default function CheckProcessOrder() {
+export default function CheckProcessOrderMobile() {
   const dispatch = useDispatch();
-  const { dataCheckOrder, loading, error } = useSelector(
+  const { dataCheckOrderMobile, loading, error } = useSelector(
     (state) => state.orders
   );
-  const [confettiActive, setConfettiActive] = useState(false); // Trạng thái pháo hoa
-  // const [messageError, setMessageError] = useState(null);
+  const [confettiActive, setConfettiActive] = useState(false);
+
   useEffect(() => {
     const currentUrl = window.location.href;
-    dispatch(checkSuccessOrder({ urlResponse: currentUrl }));
+    dispatch(checkSuccessOrderMobile({ urlResponse: currentUrl }));
   }, [dispatch]);
 
   useEffect(() => {
-    if (dataCheckOrder?.isSuccess) {
+    if (dataCheckOrderMobile?.isSuccess) {
       setConfettiActive(true);
       setTimeout(() => setConfettiActive(false), 5000);
     }
-  }, [dataCheckOrder]);
+  }, [dataCheckOrderMobile]);
 
   if (loading) {
     return (
@@ -57,7 +56,10 @@ export default function CheckProcessOrder() {
               type="primary"
               icon={<HomeOutlined />}
               className="bg-red-500 hover:bg-red-600 text-white"
-              href="/"
+              onClick={() => {
+                window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
+                // window.location.href = "exp://192.168.11.180:19000";
+              }}
             >
               Back Home
             </Button>
@@ -67,9 +69,9 @@ export default function CheckProcessOrder() {
     );
   }
 
-  if (dataCheckOrder?.isSuccess) {
+  if (dataCheckOrderMobile?.isSuccess) {
     return (
-      <div className="bg-gray-100 min-h-screen container mx-auto p-8 max-w-3xl">
+      <div className="bg-gray-100 min-h-screen container mx-auto p-2 max-w-3xl">
         {confettiActive && (
           <Confetti width={window.innerWidth} height={window.innerHeight} />
         )}
@@ -86,8 +88,8 @@ export default function CheckProcessOrder() {
               </div>
               <div className="text-center py-4">
                 <p className="text-gray-600 text-3xl font-bold font-Mainfont">
-                  {dataCheckOrder.data.totalPrice
-                    ? dataCheckOrder.data.totalPrice.toLocaleString()
+                  {dataCheckOrderMobile.data.totalPrice
+                    ? dataCheckOrderMobile.data.totalPrice.toLocaleString()
                     : "N/A"}{" "}
                   VND
                 </p>
@@ -102,14 +104,14 @@ export default function CheckProcessOrder() {
             <div className="flex justify-between">
               <strong className="text-gray-600">Order ID:</strong>
               <span className="font-semibold text-gray-800">
-                {dataCheckOrder.data.applicationSerialNumber}
+                {dataCheckOrderMobile.data.applicationSerialNumber}
               </span>
             </div>
             <div className="flex justify-between">
               <strong className="text-gray-600">Total Amount:</strong>
               <span className="font-semibold text-gray-800">
-                {dataCheckOrder.data.totalPrice
-                  ? dataCheckOrder.data.totalPrice.toLocaleString()
+                {dataCheckOrderMobile.data.totalPrice
+                  ? dataCheckOrderMobile.data.totalPrice.toLocaleString()
                   : "N/A"}{" "}
                 VND
               </span>
@@ -117,39 +119,35 @@ export default function CheckProcessOrder() {
             <div className="flex justify-between">
               <strong className="text-gray-600">Phone Number:</strong>
               <span className="font-semibold text-gray-800">
-                {dataCheckOrder.data.contactNumber}
+                {dataCheckOrderMobile.data.contactNumber}
               </span>
             </div>
             <div className="flex justify-between">
               <strong className="text-gray-600">Shipping Address:</strong>
               <span className="text-gray-800">
-                {dataCheckOrder.data.address},{dataCheckOrder.data.wardName},{" "}
-                {dataCheckOrder.data.districtName},{" "}
-                {dataCheckOrder.data.provinceName}
+                {dataCheckOrderMobile.data.address},
+                {dataCheckOrderMobile.data.wardName},{" "}
+                {dataCheckOrderMobile.data.districtName},{" "}
+                {dataCheckOrderMobile.data.provinceName}
               </span>
             </div>
             <div className="flex justify-between">
               <strong className="text-gray-600">Notes:</strong>
               <span className="italic text-gray-600">
-                {dataCheckOrder.data.notes || "No notes"}
+                {dataCheckOrderMobile.data.notes || "No notes"}
               </span>
             </div>
           </div>
 
           <div className="mt-6 flex justify-between gap-3">
             <Button
-              type="default"
-              icon={<HistoryOutlined />}
-              className="text-green-600 border-green-500 hover:bg-green-50"
-              href="/history-order"
-            >
-              Order History
-            </Button>
-            <Button
               type="primary"
               icon={<HomeOutlined />}
               className="bg-green-500 hover:bg-green-600 text-white"
-              href="/"
+              onClick={() => {
+                window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
+                // window.location.href = "exp://192.168.11.180:19000";
+              }}
             >
               Back Home
             </Button>

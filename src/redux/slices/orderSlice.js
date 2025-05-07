@@ -74,6 +74,26 @@ export const checkSuccessOrder = createAsyncThunk(
     }
   }
 );
+export const checkSuccessOrderMobile = createAsyncThunk(
+  "createOrders/checkSuccessOrderMobile",
+  async ({ urlResponse }, { rejectWithValue }) => {
+    try {
+      // const response = await api.post(`/api/Order/check-order-success`, {
+      const response = await api.post(
+        `/api/Order/check-order-success-by-mobile`,
+        {
+          urlResponse,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      // message.warning("warning", error);
+      // message.warning(error || "An error occurred");
+      return rejectWithValue(error || "Unknown error");
+    }
+  }
+);
 export const getfeeShip = createAsyncThunk(
   "createOrders/getfeeShip",
   async (
@@ -381,6 +401,7 @@ export const createCashPayment = createAsyncThunk(
         deliver_option: deliver_option,
       });
       // message.success(response.data.message);
+
       return response.data;
     } catch (error) {
       // message.error(error);
@@ -393,6 +414,7 @@ export const createCashPayment = createAsyncThunk(
 const initialState = {
   dataPrintLabel: null,
   dataCheckOrder: null,
+  dataCheckOrderMobile: null,
   dataCashPayment: null,
   dataTrackingGhtk: "",
   order: [],
@@ -445,6 +467,9 @@ const orderSlice = createSlice({
     });
     handleAsyncState(builder, checkSuccessOrder, (state, action) => {
       state.dataCheckOrder = action.payload;
+    });
+    handleAsyncState(builder, checkSuccessOrderMobile, (state, action) => {
+      state.dataCheckOrderMobile = action.payload;
     });
     handleAsyncState(builder, createCashPayment, (state, action) => {
       state.dataCashPayment = action.payload;
