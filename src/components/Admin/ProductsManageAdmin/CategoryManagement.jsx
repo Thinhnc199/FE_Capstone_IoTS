@@ -318,7 +318,7 @@ export default function CategoryManagement() {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [activeTab, setActiveTab] = useState("1"); // 1 = Active mặc định
+  const [activeTab, setActiveTab] = useState("1"); 
 
   const {
     activeData,
@@ -372,7 +372,7 @@ export default function CategoryManagement() {
         pageIndex: 1, // Reset về trang đầu tiên khi đổi tab
         pageSize,
         searchKeyword: filters.all.searchKeyword || "",
-        statusFilter: newStatus, // Truyền đúng statusFilter
+        statusFilter: newStatus,
       })
     );
   };
@@ -561,7 +561,7 @@ export default function CategoryManagement() {
             dataSource={activeData}
             loading={loading}
             rowKey="id"
-            pagination={false} // Ẩn pagination mặc định của Table
+            pagination={false}
             bordered
             className="[&_.ant-table-thead_th]:!bg-headerBg [&_.ant-table-thead_th]:!border-none [&_.ant-table-thead_th]:!text-white [&_.ant-pagination]:p-2"
             style={{ borderColor: "#1E90FF", headerBg: "#F5222D" }}
