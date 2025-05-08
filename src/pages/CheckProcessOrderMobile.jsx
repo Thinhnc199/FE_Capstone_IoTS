@@ -57,8 +57,12 @@ export default function CheckProcessOrderMobile() {
               icon={<HomeOutlined />}
               className="bg-red-500 hover:bg-red-600 text-white"
               onClick={() => {
-                window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
-                // window.location.href = "exp://192.168.11.180:19000";
+                // window.location.href = "fe-capstone-iots-mobile://home";
+                const deepLink = `fe-capstone-iots-mobile://home`.replace(
+                  /\/+$/,
+                  ""
+                );
+                window.location.href = deepLink;
               }}
             >
               Back Home
@@ -145,8 +149,12 @@ export default function CheckProcessOrderMobile() {
               icon={<HomeOutlined />}
               className="bg-green-500 hover:bg-green-600 text-white"
               onClick={() => {
-                window.location.href = "fe-capstone-iots-mobile://home"; // hoặc scheme bạn khai báo
-                // window.location.href = "exp://192.168.11.180:19000";
+                // window.location.href = "fe-capstone-iots-mobile://home";
+                const deepLink = `fe-capstone-iots-mobile://home`.replace(
+                  /\/+$/,
+                  ""
+                );
+                window.location.href = deepLink;
               }}
             >
               Back Home
