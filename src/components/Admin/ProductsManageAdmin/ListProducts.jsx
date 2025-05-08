@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 // import { DatePicker } from "antd";
 import SearchAndFilterProducts from "../../StoreIoT/components/SearchAndFilterProducts";
-import ProductsTables from "../components/productsTables";
+import ProductsTables from "./../../Manager/components/productsTables";
 
 // const { RangePicker } = DatePicker;
 

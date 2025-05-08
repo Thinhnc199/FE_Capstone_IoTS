@@ -12,7 +12,7 @@ import {
   activeUsers,
   deActiveUsers,
   updateRole,
-} from "../../../redux/slices/accountSlice";
+} from "./../../../redux/slices/accountSlice";
 import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
@@ -89,7 +89,7 @@ const AccountsTable = ({
       dataIndex: "id",
       key: "id",
       render: (id) => (
-        <a onClick={() => navigate(`/admin/user-detail/${id}`)}>{id}</a>
+        <a onClick={() => navigate(`/staff/user-detail/${id}`)}>{id}</a>
       ),
     },
     {
@@ -97,7 +97,7 @@ const AccountsTable = ({
       dataIndex: "fullname",
       key: "fullname",
       render: (fullname, record) => (
-        <a onClick={() => navigate(`/admin/user-detail/${record.id}`)}>
+        <a onClick={() => navigate(`/staff/user-detail/${record.id}`)}>
           {fullname}
         </a>
       ),

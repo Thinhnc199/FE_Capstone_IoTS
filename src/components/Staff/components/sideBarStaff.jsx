@@ -5,6 +5,7 @@ import {
   UserOutlined,
   HomeOutlined,
   UnorderedListOutlined,
+  PullRequestOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -71,28 +72,28 @@ const items2 = [
   //   ],
   // },
 
-  // {
-  //   key: "sub4",
-  //   icon: <PullRequestOutlined />,
-  //   label: "Request",
-  //   children: [
-  //     {
-  //       key: "userrequest",
-  //       label: <Link to="/staff/user-request">User Requests</Link>,
-  //       icon: <UnorderedListOutlined />,
-  //     },
-  //     {
-  //       key: "cashrequest",
-  //       label: <Link to="/staff/wallet">Cashout Requests</Link>,
-  //       icon: <UnorderedListOutlined />,
-  //     },
-  //     {
-  //       key: "report",
-  //       label: <Link to="/staff/report-request">Report Requests</Link>,
-  //       icon: <UnorderedListOutlined />,
-  //     },
-  //   ],
-  // },
+  {
+    key: "sub4",
+    icon: <PullRequestOutlined />,
+    label: "Request",
+    children: [
+      {
+        key: "userrequest",
+        label: <Link to="/staff/user-request">User Requests</Link>,
+        icon: <UnorderedListOutlined />,
+      },
+      // {
+      //   key: "cashrequest",
+      //   label: <Link to="/staff/wallet">Cashout Requests</Link>,
+      //   icon: <UnorderedListOutlined />,
+      // },
+      // {
+      //   key: "report",
+      //   label: <Link to="/staff/report-request">Report Requests</Link>,
+      //   icon: <UnorderedListOutlined />,
+      // },
+    ],
+  },
 ];
 
 const SideBarStaff = () => {
