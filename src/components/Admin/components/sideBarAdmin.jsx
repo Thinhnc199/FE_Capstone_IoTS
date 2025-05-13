@@ -7,6 +7,7 @@ import {
   HomeOutlined,
   ProductOutlined,
   UnorderedListOutlined,
+  ToolOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -114,6 +115,18 @@ const items2 = [
       {
         key: "refund",
         label: <Link to="/admin/refund-requests">Refund Requests</Link>,
+        icon: <UnorderedListOutlined />,
+      },
+    ],
+  },
+  {
+    key: "sub5",
+    icon: <ToolOutlined />,
+    label: "Settings",
+    children: [
+      {
+        key: "generalsettings",
+        label: <Link to="/admin/GeneralSettings">General Settings</Link>,
         icon: <UnorderedListOutlined />,
       },
     ],
