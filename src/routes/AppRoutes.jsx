@@ -104,6 +104,7 @@ import ListUserResquest from "../components/Staff/ListUserRequest";
 import LabManage from "../components/Manager/LabManage";
 import LabDetailManage from "../components/Manager/LabDetailManage";
 import ManageCombo from "../components/Manager/ManageCombo";
+import GeneralSettings from "../components/Admin/GeneralSettings";
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
@@ -281,6 +282,12 @@ const privateRoute = [
   {
     path: "/admin/dashboard",
     component: DashBoard,
+    layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
+  },
+  {
+    path: "/admin/GeneralSettings",
+    component: GeneralSettings,
     layout: AdminLayout,
     allowedRoles: [Roles.ADMIN],
   },
@@ -704,13 +711,12 @@ const privateRoute = [
     layout: ManagerLayout,
     allowedRoles: [Roles.MANAGER],
   },
- {
+  {
     path: "/manager/category-management",
     component: CategoryManagement,
     layout: ManagerLayout,
     allowedRoles: [Roles.MANAGER],
   },
-
 
   //Staff Staff
   {
