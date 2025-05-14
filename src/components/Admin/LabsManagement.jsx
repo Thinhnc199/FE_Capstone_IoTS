@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { getLabAdminPagination } from "./../../redux/slices/labSlice";
 import debounce from "lodash/debounce";
 
-
 const LabsTable = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -21,22 +20,16 @@ const LabsTable = () => {
   useEffect(() => {
     const fetchLabs = () => {
       const params = {
-
-          pageIndex: pagination.pageIndex,
-          pageSize: pagination.pageSize,
-          searchKeyword,
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        searchKeyword,
       };
 
       dispatch(getLabAdminPagination(params));
     };
 
     fetchLabs();
-  }, [
-    pagination.pageIndex,
-    pagination.pageSize,
-    searchKeyword,
-    dispatch,
-  ]);
+  }, [pagination.pageIndex, pagination.pageSize, searchKeyword, dispatch]);
 
   useEffect(() => {
     setPagination((prev) => ({
@@ -58,7 +51,6 @@ const LabsTable = () => {
     setSearchKeyword(value);
     setPagination({ ...pagination, pageIndex: 1 });
   }, 300);
-
 
   const getStatusTag = (status) => {
     switch (status) {
@@ -147,7 +139,7 @@ const LabsTable = () => {
   ];
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg">
+    <div className="p-4 m-4 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Labs Management</h2>
       </div>
@@ -160,7 +152,6 @@ const LabsTable = () => {
           allowClear
           className="w-1/3"
         />
-    
       </div>
 
       {/* Table */}

@@ -66,7 +66,9 @@ const ProductsTables = ({
       render: (text, record) => (
         <span
           className="text-blue-500 hover:text-blue-700 cursor-pointer hover:underline"
-          onClick={() => navigate(`/manager/list-product/detail-product/${record.id}`)}
+          onClick={() =>
+            navigate(`/admin/list-product/detail-product/${record.id}`)
+          }
         >
           {text}
         </span>

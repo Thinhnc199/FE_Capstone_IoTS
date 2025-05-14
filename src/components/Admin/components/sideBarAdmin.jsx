@@ -8,6 +8,7 @@ import {
   ProductOutlined,
   UnorderedListOutlined,
   ToolOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 
@@ -121,6 +122,11 @@ const items2 = [
   },
   {
     key: "sub5",
+    icon: <HistoryOutlined />,
+    label: <Link to="/admin/history-order">Orders</Link>,
+  },
+  {
+    key: "sub6",
     icon: <ToolOutlined />,
     label: "Settings",
     children: [

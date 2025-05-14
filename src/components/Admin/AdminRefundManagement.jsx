@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Tabs, Button, Modal, message,Tag } from "antd";
-import { getRefundRequests, handleRefundRequest } from "./../../redux/slices/walletSlice";
+import { Table, Tabs, Button, Modal, message, Tag } from "antd";
+import {
+  getRefundRequests,
+  handleRefundRequest,
+} from "./../../redux/slices/walletSlice";
 import moment from "moment";
 import { CheckCircleOutlined } from "@ant-design/icons";
 const { TabPane } = Tabs;
@@ -30,7 +33,7 @@ const AdminRefundManagement = () => {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      render: (amount) => `${(amount).toLocaleString("vi-VN")}đ`,
+      render: (amount) => `${amount.toLocaleString("vi-VN")}đ`,
     },
     {
       title: "Order Code",
@@ -121,7 +124,8 @@ const AdminRefundManagement = () => {
         dispatch(
           getRefundRequests({
             statusFilter:
-              statusTabs.find((tab) => tab.key === Tabs.activeKey)?.statusFilter || 0,
+              statusTabs.find((tab) => tab.key === Tabs.activeKey)
+                ?.statusFilter || 0,
             pageIndex: 0,
             pageSize: 10,
           })
@@ -130,7 +134,9 @@ const AdminRefundManagement = () => {
       })
       .catch((error) => {
         console.error("Handle error:", error);
-        message.error(error?.response?.data?.message || "Failed to handle refund request");
+        message.error(
+          error?.response?.data?.message || "Failed to handle refund request"
+        );
       });
   };
 
@@ -140,7 +146,7 @@ const AdminRefundManagement = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-4 min-h-screen">
       <div className="bg-white rounded-md p-4 overflow-hidden shadow-lg">
         <h1 className="text-2xl font-bold text-black mb-6">
           Refund Requests Management
@@ -194,7 +200,7 @@ const AdminRefundManagement = () => {
                 <div>
                   <span className="font-medium text-gray-600">Amount:</span>
                   <p className="text-gray-900">
-                    {(selectedRequest.amount).toLocaleString("vi-VN")} đ
+                    {selectedRequest.amount.toLocaleString("vi-VN")} đ
                   </p>
                 </div>
                 <div>
@@ -202,25 +208,35 @@ const AdminRefundManagement = () => {
                   <p className="text-gray-900">{selectedRequest.orderId}</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-600">Account Name:</span>
+                  <span className="font-medium text-gray-600">
+                    Account Name:
+                  </span>
                   <p className="text-gray-900">{selectedRequest.accountName}</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-600">Account Number:</span>
-                  <p className="text-gray-900">{selectedRequest.accountNumber}</p>
+                  <span className="font-medium text-gray-600">
+                    Account Number:
+                  </span>
+                  <p className="text-gray-900">
+                    {selectedRequest.accountNumber}
+                  </p>
                 </div>
                 <div>
                   <span className="font-medium text-gray-600">Bank Name:</span>
                   <p className="text-gray-900">{selectedRequest.bankName}</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-600">Requested By:</span>
+                  <span className="font-medium text-gray-600">
+                    Requested By:
+                  </span>
                   <p className="text-gray-900">
                     {selectedRequest.createdByNavigation?.fullname}
                   </p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-600">Requested At:</span>
+                  <span className="font-medium text-gray-600">
+                    Requested At:
+                  </span>
                   <p className="text-gray-900">
                     {selectedRequest.createdDate
                       ? moment(selectedRequest.createdDate).format(

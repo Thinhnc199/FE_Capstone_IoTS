@@ -58,7 +58,7 @@ const GeneralSettings = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen container mx-auto ">
+    <div className="p-4 min-h-screen mx-auto ">
       <Title
         level={2}
         className="flex items-center text-2xl font-bold text-gray-800 mb-6"
@@ -67,7 +67,7 @@ const GeneralSettings = () => {
         General Settings
       </Title>
       <Spin spinning={loading}>
-        <Card className="shadow-md rounded-lg bg-white p-6">
+        <Card className="shadow-md rounded-lg bg-white p-1">
           {dataGeneralSettings && (
             <Form form={form} layout="vertical" onFinish={handleSubmit}>
               <Form.Item

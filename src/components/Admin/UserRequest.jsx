@@ -50,7 +50,7 @@ export default function UserRequest() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="">
+    <div className="p-4">
       <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">User Requests</h1>
 

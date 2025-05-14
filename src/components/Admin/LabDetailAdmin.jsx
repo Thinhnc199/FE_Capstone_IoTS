@@ -23,7 +23,7 @@ import { PlayCircleOutlined } from "@ant-design/icons";
 import PropTypes from "prop-types";
 import ComboDetailModal from "./../../components/StoreIoT/components/ComboDetailModal";
 import { fetchComboDetails } from "./../../redux/slices/comboSlice";
-
+import BreadcrumbNav from "../common/BreadcrumbNav";
 const { Title, Text } = Typography;
 
 class ErrorBoundary extends React.Component {
@@ -131,252 +131,267 @@ const LabDetailAdmin = React.memo(() => {
 
   return (
     <ErrorBoundary>
-      <div className="bg-white min-h-screen font-Mainfont">
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-10 bg-white shadow-md p-6">
-          <div className="flex justify-between items-center">
-            <Title level={2} className="text-headerBg mb-0">
-              {labInfo?.title || "Lab Detail"}
-            </Title>
-          </div>
+      <div className="container mx-auto ">
+        <div className=" max-w-6xl mb-4 p-4">
+          <BreadcrumbNav
+            items={[
+              { label: "Home", path: "/" },
+              { label: "All Labs", path: "/admin/labs-management" },
+              { label: "Lab Detail" },
+            ]}
+          />
         </div>
+        <div className="bg-white min-h-screen m-4 p-4 font-Mainfont">
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-10 bg-white shadow-md p-6">
+            <div className="flex justify-between items-center">
+              <Title level={2} className="text-headerBg mb-0">
+                {labInfo?.title || "Lab Detail"}
+              </Title>
+            </div>
+          </div>
 
-        {/* Main Content */}
-        <Spin
-          spinning={loading}
-          tip="Loading lab details..."
-          className="text-headerBg"
-        >
-          {labInfo ? (
-            <div className="bg-white max-w-7xl mx-auto px-6 py-8">
-              <Row gutter={[32, 32]}>
-                {/* Preview Video Section */}
-                <Col xs={24} lg={16}>
-                  <div className="bg-black rounded-lg overflow-hidden shadow-lg relative">
-                    {labInfo.previewVideoUrl ? (
-                      isVideoPlaying ? (
-                        <video
-                          controls
-                          autoPlay
-                          width="100%"
-                          height={400}
-                          className="object-cover"
-                        >
-                          <source
-                            src={labInfo.previewVideoUrl}
-                            type="video/mp4"
-                          />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <div
-                          className="relative cursor-pointer"
-                          onClick={handleThumbnailClick}
-                        >
-                          <Image
-                            src={
-                              labInfo.imageUrl ||
-                              "https://via.placeholder.com/600x400"
-                            }
-                            alt="Lab Preview Thumbnail"
+          {/* Main Content */}
+          <Spin
+            spinning={loading}
+            tip="Loading lab details..."
+            className="text-headerBg"
+          >
+            {labInfo ? (
+              <div className="bg-white max-w-7xl mx-auto px-6 py-8">
+                <Row gutter={[32, 32]}>
+                  {/* Preview Video Section */}
+                  <Col xs={24} lg={16}>
+                    <div className="bg-black rounded-lg overflow-hidden shadow-lg relative">
+                      {labInfo.previewVideoUrl ? (
+                        isVideoPlaying ? (
+                          <video
+                            controls
+                            autoPlay
                             width="100%"
                             height={400}
                             className="object-cover"
-                            onError={(e) =>
-                              (e.target.src =
-                                "https://via.placeholder.com/600x400")
-                            }
-                          />
-                          <PlayCircleOutlined
-                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-headerBg text-5xl opacity-75 hover:opacity-100 transition-opacity duration-200"
-                            style={{ zIndex: 10 }}
-                          />
-                        </div>
-                      )
-                    ) : (
-                      <Image
-                        src={
-                          labInfo.imageUrl ||
-                          "https://via.placeholder.com/600x400"
-                        }
-                        alt="Lab Image"
-                        width="100%"
-                        height={400}
-                        className="object-cover"
-                        onError={(e) =>
-                          (e.target.src = "https://via.placeholder.com/600x400")
-                        }
-                      />
-                    )}
-                  </div>
-
-                  {/* Lab Info */}
-                  <div className="mt-6">
-                    <Title level={3} className="text-headerBg">
-                      About This Lab
-                    </Title>
-                    <Text className="text-muted-foreground">
-                      {labInfo.summary}
-                    </Text>
-                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Text strong className="text-textColer">
-                          Price:
-                        </Text>{" "}
-                        <Text>
-                          {labInfo.price?.toLocaleString() || "N/A"} VND
-                        </Text>
-                      </div>
-                      <div>
-                        <Text strong className="text-textColer">
-                          Status:
-                        </Text>{" "}
-                        <Text>{getStatusText(labInfo.status)}</Text>
-                      </div>
-                      <div>
-                        <Text strong className="text-textColer">
-                          Created By:
-                        </Text>{" "}
-                        <Text>{labInfo.createdByNavigationEmail}</Text>
-                      </div>
-                      <div>
-                        <Text strong className="text-textColer">
-                          Combo:
-                        </Text>{" "}
-                        <Text>
-                          <a
-                            onClick={() =>
-                              handleShowComboDetail(labInfo.comboId)
-                            }
-                            className="text-blue-500 hover:underline cursor-pointer"
                           >
-                            {labInfo.comboNavigationName}
-                          </a>{" "}
-                          (ID: {labInfo.comboId})
+                            <source
+                              src={labInfo.previewVideoUrl}
+                              type="video/mp4"
+                            />
+                            Your browser does not support the video tag.
+                          </video>
+                        ) : (
+                          <div
+                            className="relative cursor-pointer"
+                            onClick={handleThumbnailClick}
+                          >
+                            <Image
+                              src={
+                                labInfo.imageUrl ||
+                                "https://via.placeholder.com/600x400"
+                              }
+                              alt="Lab Preview Thumbnail"
+                              width="100%"
+                              height={400}
+                              className="object-cover"
+                              onError={(e) =>
+                                (e.target.src =
+                                  "https://via.placeholder.com/600x400")
+                              }
+                            />
+                            <PlayCircleOutlined
+                              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-headerBg text-5xl opacity-75 hover:opacity-100 transition-opacity duration-200"
+                              style={{ zIndex: 10 }}
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <Image
+                          src={
+                            labInfo.imageUrl ||
+                            "https://via.placeholder.com/600x400"
+                          }
+                          alt="Lab Image"
+                          width="100%"
+                          height={400}
+                          className="object-cover"
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://via.placeholder.com/600x400")
+                          }
+                        />
+                      )}
+                    </div>
+
+                    {/* Lab Info */}
+                    <div className="mt-6">
+                      <Title level={3} className="text-headerBg">
+                        About This Lab
+                      </Title>
+                      <Text className="text-muted-foreground">
+                        {labInfo.summary}
+                      </Text>
+                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Text strong className="text-textColer">
+                            Price:
+                          </Text>{" "}
+                          <Text>
+                            {labInfo.price?.toLocaleString() || "N/A"} VND
+                          </Text>
+                        </div>
+                        <div>
+                          <Text strong className="text-textColer">
+                            Status:
+                          </Text>{" "}
+                          <Text>{getStatusText(labInfo.status)}</Text>
+                        </div>
+                        <div>
+                          <Text strong className="text-textColer">
+                            Created By:
+                          </Text>{" "}
+                          <Text>{labInfo.createdByNavigationEmail}</Text>
+                        </div>
+                        <div>
+                          <Text strong className="text-textColer">
+                            Combo:
+                          </Text>{" "}
+                          <Text>
+                            <a
+                              onClick={() =>
+                                handleShowComboDetail(labInfo.comboId)
+                              }
+                              className="text-blue-500 hover:underline cursor-pointer"
+                            >
+                              {labInfo.comboNavigationName}
+                            </a>{" "}
+                            (ID: {labInfo.comboId})
+                          </Text>
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <Text strong className="text-textColer">
+                          Description:
+                        </Text>
+                        <Text className="block mt-2 text-muted-foreground">
+                          {labInfo.description}
                         </Text>
                       </div>
                     </div>
-                    <div className="mt-4">
-                      <Text strong className="text-textColer">
-                        Description:
-                      </Text>
-                      <Text className="block mt-2 text-muted-foreground">
-                        {labInfo.description}
-                      </Text>
-                    </div>
-                  </div>
-                </Col>
+                  </Col>
 
-                {/* Video Playlist */}
-                <Col xs={24} lg={8}>
-                  <Card
-                    title={
-                      <Title level={4} className="text-headerBg">
-                        Labs Content
-                      </Title>
-                    }
-                    bordered={false}
-                    className="shadow-lg rounded-xl bg-white"
-                  >
-                    {sortedVideoList.length > 0 ? (
-                      <List
-                        dataSource={sortedVideoList}
-                        renderItem={(item, index) => (
-                          <List.Item className="border-b border-border py-4 hover:bg-bgColer transition-all duration-200">
-                            <div className="flex items-center w-full justify-between">
-                              <div className="flex items-center flex-1">
-                                <Text className="text-muted-foreground mr-3">
-                                  {index + 1}.
-                                </Text>
-                                <div>
-                                  <Text strong className="text-textColer">
-                                    {item.title}
+                  {/* Video Playlist */}
+                  <Col xs={24} lg={8}>
+                    <Card
+                      title={
+                        <Title level={4} className="text-headerBg">
+                          Labs Content
+                        </Title>
+                      }
+                      bordered={false}
+                      className="shadow-lg rounded-xl bg-white"
+                    >
+                      {sortedVideoList.length > 0 ? (
+                        <List
+                          dataSource={sortedVideoList}
+                          renderItem={(item, index) => (
+                            <List.Item className="border-b border-border py-4 hover:bg-bgColer transition-all duration-200">
+                              <div className="flex items-center w-full justify-between">
+                                <div className="flex items-center flex-1">
+                                  <Text className="text-muted-foreground mr-3">
+                                    {index + 1}.
                                   </Text>
-                                  <Text className="block text-sm text-muted-foreground">
-                                    {item.description}
-                                  </Text>
+                                  <div>
+                                    <Text strong className="text-textColer">
+                                      {item.title}
+                                    </Text>
+                                    <Text className="block text-sm text-muted-foreground">
+                                      {item.description}
+                                    </Text>
+                                  </div>
+                                </div>
+                                <div className="relative ml-4">
+                                  {item.videoUrl ? (
+                                    <div
+                                      className="relative w-20 h-12 rounded-md overflow-hidden cursor-pointer"
+                                      onClick={() =>
+                                        openVideoModal(item.videoUrl)
+                                      }
+                                    >
+                                      <video
+                                        width="100%"
+                                        height="100%"
+                                        className="object-cover"
+                                        muted
+                                      >
+                                        <source
+                                          src={item.videoUrl}
+                                          type="video/mp4"
+                                        />
+                                        Your browser does not support the video
+                                        tag.
+                                      </video>
+                                      <PlayCircleOutlined
+                                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-headerBg text-2xl opacity-75 hover:opacity-100 transition-opacity duration-200"
+                                        style={{ zIndex: 10 }}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <Text className="text-muted-foreground text-sm">
+                                      No video
+                                    </Text>
+                                  )}
                                 </div>
                               </div>
-                              <div className="relative ml-4">
-                                {item.videoUrl ? (
-                                  <div
-                                    className="relative w-20 h-12 rounded-md overflow-hidden cursor-pointer"
-                                    onClick={() =>
-                                      openVideoModal(item.videoUrl)
-                                    }
-                                  >
-                                    <video
-                                      width="100%"
-                                      height="100%"
-                                      className="object-cover"
-                                      muted
-                                    >
-                                      <source
-                                        src={item.videoUrl}
-                                        type="video/mp4"
-                                      />
-                                      Your browser does not support the video
-                                      tag.
-                                    </video>
-                                    <PlayCircleOutlined
-                                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-headerBg text-2xl opacity-75 hover:opacity-100 transition-opacity duration-200"
-                                      style={{ zIndex: 10 }}
-                                    />
-                                  </div>
-                                ) : (
-                                  <Text className="text-muted-foreground text-sm">
-                                    No video
-                                  </Text>
-                                )}
-                              </div>
-                            </div>
-                          </List.Item>
-                        )}
-                      />
-                    ) : (
-                      <Text type="secondary" className="text-muted-foreground">
-                        No videos in playlist.
-                      </Text>
-                    )}
-                  </Card>
-                </Col>
-              </Row>
-            </div>
-          ) : (
-            <Skeleton active paragraph={{ rows: 8 }} className="px-6" />
-          )}
-        </Spin>
+                            </List.Item>
+                          )}
+                        />
+                      ) : (
+                        <Text
+                          type="secondary"
+                          className="text-muted-foreground"
+                        >
+                          No videos in playlist.
+                        </Text>
+                      )}
+                    </Card>
+                  </Col>
+                </Row>
+              </div>
+            ) : (
+              <Skeleton active paragraph={{ rows: 8 }} className="px-6" />
+            )}
+          </Spin>
 
-        {/* Video Modal */}
-        <Modal
-          open={!!selectedVideo}
-          onCancel={closeVideoModal}
-          footer={null}
-          width={800}
-          className="rounded-lg"
-          bodyStyle={{ padding: 0 }}
-          destroyOnClose // Ensure modal resets state when closed
-        >
-          {selectedVideo && (
-            <video
-              controls
-              width="100%"
-              autoPlay
-              className="rounded-t-lg"
-              key={selectedVideo} // Force re-render when video changes
-            >
-              <source src={selectedVideo} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          )}
-        </Modal>
+          {/* Video Modal */}
+          <Modal
+            open={!!selectedVideo}
+            onCancel={closeVideoModal}
+            footer={null}
+            width={800}
+            className="rounded-lg"
+            bodyStyle={{ padding: 0 }}
+            destroyOnClose // Ensure modal resets state when closed
+          >
+            {selectedVideo && (
+              <video
+                controls
+                width="100%"
+                autoPlay
+                className="rounded-t-lg"
+                key={selectedVideo} // Force re-render when video changes
+              >
+                <source src={selectedVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </Modal>
 
-        {/* Combo Detail Modal */}
-        <ComboDetailModal
-          visible={isComboModalVisible}
-          onCancel={() => setIsComboModalVisible(false)}
-          combo={selectedCombo}
-        />
+          {/* Combo Detail Modal */}
+          <ComboDetailModal
+            visible={isComboModalVisible}
+            onCancel={() => setIsComboModalVisible(false)}
+            combo={selectedCombo}
+          />
+        </div>
       </div>
     </ErrorBoundary>
   );

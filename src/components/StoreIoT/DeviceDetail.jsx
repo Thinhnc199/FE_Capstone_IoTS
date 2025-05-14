@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchProductDetails } from "./../../redux/slices/productSlice";
+import BreadcrumbNav from "../common/BreadcrumbNav";
 import {
   Card,
   Spin,
@@ -14,7 +15,7 @@ import {
 } from "antd";
 import { StarFilled } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 const DeviceDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ const DeviceDetail = () => {
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto p-4">
+      <div className=" mx-auto p-4">
         <Alert
           message="Error"
           description="Failed to load device details."
@@ -58,9 +59,18 @@ const DeviceDetail = () => {
       </div>
     );
   }
-
+  const rating = Math.max(0, Math.floor(Number(data.rating) || 0));
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div className="mx-auto p-4">
+      <div className=" max-w-6xl mb-4 ">
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "All Product", path: "/admin/list-product" },
+            { label: "Product Details" },
+          ]}
+        />
+      </div>
       <Card className="shadow-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Image Carousel */}
@@ -84,28 +94,28 @@ const DeviceDetail = () => {
               ))}
             </Carousel>
             {/* Store Information */}
-        <div className="mb-8 *:mt-4">
-          <h2 className="text-2xl font-semibold mb-4">Store Information</h2>
-          <Link to={`/admin/user-detail/${data.createdBy}`}>
-            <div className="flex items-center space-x-4 cursor-pointer hover:bg-gray-100 p-2 rounded">
-              <img
-                src={data.storeInfo.imageUrl}
-                alt={data.storeInfo.name}
-                className="w-24 h-24 object-cover rounded"
-              />
-              <div>
-                <p className="text-lg font-medium">{data.storeInfo.name}</p>
-                <p className="text-gray-600">ID: {data.storeInfo.id}</p>
-                <p className="text-gray-600">
-                  Contact: {data.storeInfo.contactNumber}
-                </p>
-                <p className="text-gray-600">
-                  Address: {data.storeInfo.address}
-                </p>
-              </div>
+            <div className="mb-8 *:mt-4">
+              <h2 className="text-2xl font-semibold mb-4">Store Information</h2>
+              <Link to={`/admin/user-detail/${data.createdBy}`}>
+                <div className="flex items-center space-x-4 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                  <img
+                    src={data.storeInfo.imageUrl}
+                    alt={data.storeInfo.name}
+                    className="w-24 h-24 object-cover rounded"
+                  />
+                  <div>
+                    <p className="text-lg font-medium">{data.storeInfo.name}</p>
+                    <p className="text-gray-600">ID: {data.storeInfo.id}</p>
+                    <p className="text-gray-600">
+                      Contact: {data.storeInfo.contactNumber}
+                    </p>
+                    <p className="text-gray-600">
+                      Address: {data.storeInfo.address}
+                    </p>
+                  </div>
+                </div>
+              </Link>
             </div>
-          </Link>
-        </div>
           </div>
 
           {/* Device Info */}
@@ -123,18 +133,18 @@ const DeviceDetail = () => {
               {data.price.toLocaleString()}đ
             </p> */}
             <div className="flex items-center mb-4 space-x-4">
-  <div className="flex items-center">
-    <span className="text-yellow-400 mr-2">
-      {[...Array(data.rating)].map((_, i) => (
-        <StarFilled key={i} />
-      ))}
-    </span>
-    <span>({data.rating} stars)</span>
-  </div>
-  <p className="text-2xl text-green-600 font-semibold">
-    {data.price.toLocaleString()}đ
-  </p>
-</div>
+              <div className="flex items-center">
+                <span className="text-yellow-400 mr-2">
+                  {[...Array(rating)].map((_, i) => (
+                    <StarFilled key={i} />
+                  ))}
+                </span>
+                <span>({rating} stars)</span>
+              </div>
+              <p className="text-2xl text-green-600 font-semibold">
+                {data.price.toLocaleString()}đ
+              </p>
+            </div>
             <p className="text-gray-600 mb-4">{data.summary}</p>
             <Descriptions bordered column={1} size="small" className="mb-4">
               <Descriptions.Item label="Model">{data.model}</Descriptions.Item>
@@ -160,8 +170,10 @@ const DeviceDetail = () => {
                 {data.weight}
               </Descriptions.Item>
               <Descriptions.Item label="Created-Date">
-  {data.createdDate ? format(new Date(data.createdDate), 'yyyy-MM-dd\'T\'HH-mm-ss') : 'N/A'}
-</Descriptions.Item>
+                {data.createdDate
+                  ? format(new Date(data.createdDate), "yyyy-MM-dd'T'HH-mm-ss")
+                  : "N/A"}
+              </Descriptions.Item>
             </Descriptions>
           </div>
         </div>
