@@ -599,7 +599,7 @@ export default function HistoryOrder() {
         <BreadcrumbNav
           items={[
             { label: "Home", path: "/" },
-            { label: "store", path: "/store" },
+            { label: "Admin", path: "/admin" },
             { label: "manage order" },
           ]}
         />
