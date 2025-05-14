@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchComboDetails } from "./../../redux/slices/comboSlice";
+import BreadcrumbNav from "../common/BreadcrumbNav";
 import {
   Card,
   Row,
@@ -75,124 +76,135 @@ const ComboDetailPage = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg max-w-5xl mx-auto mt-6">
-      <h1 className="text-2xl font-bold mb-6">
-        {selectedCombo.data.name || "Combo Details"}
-      </h1>
+    <div className="container mx-auto p-4">
+      <div className=" max-w-6xl mb-4 ">
+        <BreadcrumbNav
+          items={[
+            { label: "Home", path: "/" },
+            { label: "All combos", path: "/admin/combos-management" },
+            { label: "Combo Details" },
+          ]}
+        />
+      </div>
+      <div className="p-6 bg-white rounded-lg shadow-lg  mx-auto mt-6">
+        <h1 className="text-2xl font-bold mb-6">
+          {selectedCombo.data.name || "Combo Details"}
+        </h1>
 
-      <Row gutter={[24, 24]}>
-        {/* Cột hình ảnh */}
-        <Col span={8}>
-          <Image
-            width="100%"
-            src={selectedCombo.data.imageUrl}
-            alt={selectedCombo.data.name}
-            className="rounded-lg"
-          />
-          {Array.isArray(selectedCombo.data.attachmentsList) &&
-            selectedCombo.data.attachmentsList.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {selectedCombo.data.attachmentsList.map((attachment) => (
-                  <Image
-                    key={attachment.id}
-                    width={80}
-                    src={attachment.imageUrl}
-                    alt="attachment"
-                    className="rounded"
-                  />
-                ))}
-              </div>
-            )}
-        </Col>
+        <Row gutter={[24, 24]}>
+          {/* Cột hình ảnh */}
+          <Col span={8}>
+            <Image
+              width="100%"
+              src={selectedCombo.data.imageUrl}
+              alt={selectedCombo.data.name}
+              className="rounded-lg"
+            />
+            {Array.isArray(selectedCombo.data.attachmentsList) &&
+              selectedCombo.data.attachmentsList.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {selectedCombo.data.attachmentsList.map((attachment) => (
+                    <Image
+                      key={attachment.id}
+                      width={80}
+                      src={attachment.imageUrl}
+                      alt="attachment"
+                      className="rounded"
+                    />
+                  ))}
+                </div>
+              )}
+          </Col>
 
-        {/* Cột thông tin */}
-        <Col span={16}>
-          <Tabs defaultActiveKey="1">
-            <TabPane
-              tab={
-                <span>
-                  <InfoCircleOutlined /> General Info
-                </span>
-              }
-              key="1"
-            >
-              <Card>
-                <p>
-                  <ShopOutlined className="text-blue-500 mr-2" />
-                  <strong>Store:</strong>{" "}
-                  {selectedCombo.data.storeNavigationName}
-                </p>
-                <p>
-                  <strong>Summary:</strong> {selectedCombo.data.summary}
-                </p>
-                <p>
-                  <DollarCircleOutlined className="text-blue-500 mr-2" />
-                  <strong>Price:</strong>{" "}
-                  <Text className="text-blue-500 text-lg font-bold">
-                    {selectedCombo.data.price.toLocaleString("vi-VN")} VND
-                  </Text>
-                </p>
-                <Row gutter={[16, 16]}>
-                  <Col span={12}>
-                    <p>
-                      <strong>Quantity:</strong> {selectedCombo.data.quantity}
-                    </p>
-                  </Col>
-                  <Col span={12}>
-                    <p>
-                      <strong>Rating:</strong> {selectedCombo.data.rating} ⭐
-                    </p>
-                  </Col>
-                </Row>
-              </Card>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <FileTextOutlined /> Description
-                </span>
-              }
-              key="2"
-            >
-              <p>{selectedCombo.data.description}</p>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <TagsOutlined /> Specifications
-                </span>
-              }
-              key="3"
-            >
-              <p>{selectedCombo.data.specifications}</p>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <FileTextOutlined /> Notes
-                </span>
-              }
-              key="4"
-            >
-              <p>{selectedCombo.data.notes}</p>
-            </TabPane>
-          </Tabs>
-        </Col>
-      </Row>
+          {/* Cột thông tin */}
+          <Col span={16}>
+            <Tabs defaultActiveKey="1">
+              <TabPane
+                tab={
+                  <span>
+                    <InfoCircleOutlined /> General Info
+                  </span>
+                }
+                key="1"
+              >
+                <Card>
+                  <p>
+                    <ShopOutlined className="text-blue-500 mr-2" />
+                    <strong>Store:</strong>{" "}
+                    {selectedCombo.data.storeNavigationName}
+                  </p>
+                  <p>
+                    <strong>Summary:</strong> {selectedCombo.data.summary}
+                  </p>
+                  <p>
+                    <DollarCircleOutlined className="text-blue-500 mr-2" />
+                    <strong>Price:</strong>{" "}
+                    <Text className="text-blue-500 text-lg font-bold">
+                      {selectedCombo.data.price.toLocaleString("vi-VN")} VND
+                    </Text>
+                  </p>
+                  <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                      <p>
+                        <strong>Quantity:</strong> {selectedCombo.data.quantity}
+                      </p>
+                    </Col>
+                    <Col span={12}>
+                      <p>
+                        <strong>Rating:</strong> {selectedCombo.data.rating} ⭐
+                      </p>
+                    </Col>
+                  </Row>
+                </Card>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <FileTextOutlined /> Description
+                  </span>
+                }
+                key="2"
+              >
+                <p>{selectedCombo.data.description}</p>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <TagsOutlined /> Specifications
+                  </span>
+                }
+                key="3"
+              >
+                <p>{selectedCombo.data.specifications}</p>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <FileTextOutlined /> Notes
+                  </span>
+                }
+                key="4"
+              >
+                <p>{selectedCombo.data.notes}</p>
+              </TabPane>
+            </Tabs>
+          </Col>
+        </Row>
 
-      {/* Bảng danh sách thiết bị */}
-      {selectedCombo.data.deviceComboList?.length > 0 && (
-        <div className="mt-6">
-          <Table
-            title={() => <h3 className="font-semibold">Device List</h3>}
-            dataSource={selectedCombo.data.deviceComboList}
-            columns={columns}
-            rowKey="deviceComboId"
-            pagination={false}
-            bordered
-          />
-        </div>
-      )}
+        {/* Bảng danh sách thiết bị */}
+        {selectedCombo.data.deviceComboList?.length > 0 && (
+          <div className="mt-6">
+            <Table
+              title={() => <h3 className="font-semibold">Device List</h3>}
+              dataSource={selectedCombo.data.deviceComboList}
+              columns={columns}
+              rowKey="deviceComboId"
+              pagination={false}
+              bordered
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -51,7 +51,7 @@ export default function ComboManagement() {
 
   return (
     <div className="">
-      <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
+      <div className="bg-white rounded-md m-4 p-4 min-h-[60vh] overflow-hidden shadow-lg">
         <h1 className="text-xl font-bold mb-4">Combo Management</h1>
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-4">

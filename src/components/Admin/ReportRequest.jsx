@@ -117,7 +117,6 @@ const ReportRequest = () => {
                 {report.content}
               </p>
             </div>
-
             {/* Thông tin chi tiết */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
               <div className="space-y-2">
@@ -213,7 +212,7 @@ const ReportRequest = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-mainColer min-h-screen">
+    <div className="p-4 mx-auto min-h-screen">
       <div className="mb-6 flex justify-between items-center flex-col sm:flex-row gap-4">
         <h1 className="text-2xl font-bold text-black">Report Requests</h1>
         <Input

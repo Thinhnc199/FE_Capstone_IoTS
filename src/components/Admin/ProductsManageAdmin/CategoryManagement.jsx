@@ -318,7 +318,7 @@ export default function CategoryManagement() {
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [activeTab, setActiveTab] = useState("1"); 
+  const [activeTab, setActiveTab] = useState("1");
 
   const {
     activeData,
@@ -519,7 +519,7 @@ export default function CategoryManagement() {
   ];
 
   return (
-    <div className="bg-white rounded-md p-4 min-h-[60vh] overflow-hidden shadow-lg">
+    <div className="bg-white rounded-md m-4 p-4 min-h-[60vh] overflow-hidden shadow-lg">
       <h1 className="text-xl font-bold mb-4">Material Categories</h1>
       <div className="flex justify-between items-center mb-4">
         <Form layout="inline" onFinish={handleSearch}>

@@ -194,12 +194,14 @@ const productSlice = createSlice({
     });
     handleAsyncState(builder, fetchProductDetails, (state, action) => {
       state.ProductsDetail.data = action.payload;
+      // console.log("ProductsDetail", state.ProductsDetail.data);
+
       state.ProductsDetail.loading = false;
       state.ProductsDetail.error = null;
     });
     handleAsyncState(builder, createProducts, (state, action) => {
-      state.items.unshift(action.payload); 
-      state.totalCount += 1; 
+      state.items.unshift(action.payload);
+      state.totalCount += 1;
     });
 
     handleAsyncState(builder, activeProducts, (state, action) => {
