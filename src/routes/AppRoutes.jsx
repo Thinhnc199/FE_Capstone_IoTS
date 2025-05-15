@@ -80,7 +80,7 @@ import WarrantyTableStore from "../components/StoreIoT/WarrantyTableStore";
 import WarrantyDetail from "../pages/Orders/WarrantyDetail";
 import WalletTrainer from "../components/Trainer/WalletTrainer";
 import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
-import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
+// import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
 import ReportRequest from "../components/Admin/ReportRequest";
 
 import UpdateProductPage from "../components/StoreIoT/UpdateProductPage";
@@ -358,12 +358,12 @@ const privateRoute = [
     layout: AdminLayout,
     allowedRoles: [Roles.ADMIN],
   },
-  {
-    path: "/admin/manage-history-order",
-    component: ManageHistoryOrderAdmin,
-    layout: AdminLayout,
-    allowedRoles: [Roles.ADMIN],
-  },
+  // {
+  //   path: "/admin/manage-history-order",
+  //   component: ManageHistoryOrderAdmin,
+  //   layout: AdminLayout,
+  //   allowedRoles: [Roles.ADMIN],
+  // },
 
   {
     path: "/admin/Profile",

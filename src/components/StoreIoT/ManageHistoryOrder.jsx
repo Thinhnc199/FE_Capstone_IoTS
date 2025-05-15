@@ -122,8 +122,11 @@ const OrderItem = ({ item }) => {
           <p className="text-gray-600">Quantity: {item.quantity}</p>
           {item.physicalSerialNumbers &&
             item.physicalSerialNumbers.length > 0 && (
-              <p className="text-gray-600">
-                Serial Numbers: {item.physicalSerialNumbers.join(", ")}
+              <p className="text-gray-600 flex flex-wrap items-start">
+                Warranty serial number:&nbsp;
+                <span className="text-gray-700 font-semibold">
+                  {item.physicalSerialNumbers.join(", ")}
+                </span>
               </p>
             )}
         </div>
@@ -417,7 +420,7 @@ const SerialNumberModal = ({ visible, onCancel, onOk, items, loading }) => {
 
   return (
     <Modal
-      title="Enter Physical Serial Numbers"
+      title="Enter warranty serial numbers"
       visible={visible}
       onOk={handleSubmit}
       onCancel={onCancel}
@@ -426,7 +429,7 @@ const SerialNumberModal = ({ visible, onCancel, onOk, items, loading }) => {
     >
       <div className="space-y-4">
         <p className="text-red-500 font-medium">
-          You must enter physical serial number before packing.
+          You must enter warranty serial number before packing.
         </p>
 
         {items
@@ -452,9 +455,9 @@ const SerialNumberModal = ({ visible, onCancel, onOk, items, loading }) => {
                   return (
                     <div key={index} className="flex flex-col">
                       <div className="flex items-center">
-                        <span className="mr-2 w-8">#{index + 1}:</span>
+                        <span className="mr-2 w-9">No.{index + 1}:</span>
                         <Input
-                          placeholder={`Enter serial number for item ${
+                          placeholder={`Enter warranty serial number for item ${
                             index + 1
                           }`}
                           value={serialNumbers[item.orderItemId]?.[index] || ""}
