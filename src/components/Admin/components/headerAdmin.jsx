@@ -1,6 +1,7 @@
 import { Modal, Button, Dropdown, Space } from "antd";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 import { toggleSidebar } from "../../../redux/slices/sidebarSlice";
 import useNotification from "../../../utils/useNotification.jsx";
@@ -10,6 +11,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  BarcodeOutlined,
 } from "@ant-design/icons";
 
 export default function HeaderAdmin() {
@@ -50,6 +52,11 @@ export default function HeaderAdmin() {
       key: "2",
       label: "Profile",
       icon: <EditOutlined />,
+    },
+    {
+      key: "5",
+      label: <Link to="/admin/transaction-history">Transaction history</Link>,
+      icon: <BarcodeOutlined />,
     },
     {
       key: "3",
