@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { TruckOutlined } from "@ant-design/icons";
-
+import { ShopOutlined } from "@ant-design/icons";
 import BreadcrumbNav from "../common/BreadcrumbNav";
 
 import {
@@ -99,7 +99,7 @@ const OrderItem = ({ item }) => {
   const isWarrantyApplicable = item.productType !== 3;
   const isWarrantyValid = warrantyEndDate > currentDate;
   return (
-    <div className="flex justify-between items-center border-b p-3 bg-blue-50 rounded-md">
+    <div className="flex justify-between items-center border-b  p-3 bg-blue-50 rounded-md">
       <div className="flex items-center">
         <img
           src={item.imageUrl}
@@ -161,9 +161,17 @@ OrderItem.propTypes = {
 
 const SellerGroup = ({ group }) => (
   <div className="rounded-md mb-4">
-    {group.items.map((item) => (
-      <OrderItem item={item} key={item.orderItemId} />
-    ))}
+    <div className="flex justify-between  items-center pb-1 mb-1">
+      <div className="px-1 py-1 text-gray-600 rounded-sm text-xs">
+        <ShopOutlined className="text-blue-600 mr-2 text-lg" />
+        <span className="font-semibold text-sm">{group.sellerName}</span>
+      </div>
+    </div>
+    <div className=" border-b pb-3">
+      {group.items.map((item) => (
+        <OrderItem item={item} key={item.orderItemId} />
+      ))}
+    </div>
   </div>
 );
 
@@ -233,7 +241,7 @@ const OrderCard = ({
         <SellerGroup group={group} key={`${order.orderId}-${group.sellerId}`} />
       ))}
 
-      <div className="flex justify-between items-center border-t pt-4">
+      <div className="flex justify-between items-center  pt-4">
         <div className="flex items-center space-x-4"></div>
         <div className="flex items-center space-x-4">
           <span className="font-medium text-lg">Total:</span>

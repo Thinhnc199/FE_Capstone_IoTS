@@ -106,6 +106,7 @@ import LabDetailManage from "../components/Manager/LabDetailManage";
 import ManageCombo from "../components/Manager/ManageCombo";
 import GeneralSettings from "../components/Admin/GeneralSettings";
 import HistoryOrder from "../components/Admin/HistoryOrder";
+import TransactionHistory from "../components/Admin/TransactionHistory";
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
@@ -358,6 +359,13 @@ const privateRoute = [
     layout: AdminLayout,
     allowedRoles: [Roles.ADMIN],
   },
+  {
+    path: "/admin/transaction-history",
+    component: TransactionHistory,
+    layout: AdminLayout,
+    allowedRoles: [Roles.ADMIN],
+  },
+
   // {
   //   path: "/admin/manage-history-order",
   //   component: ManageHistoryOrderAdmin,

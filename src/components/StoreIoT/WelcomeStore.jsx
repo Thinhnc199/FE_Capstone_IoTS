@@ -53,7 +53,7 @@ const WelcomeStore = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 p-6">
+    <div className="flex flex-col items-center justify-center min-h-[100vh] bg-blue-50 p-6">
       <Card
         className="shadow-xl rounded-3xl p-8 bg-white w-full max-w-lg text-center transform transition-all hover:scale-105"
         bordered={false}

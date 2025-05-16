@@ -4,7 +4,7 @@ import Error from "../assets/icons/Error";
 export default function ErrorPage() {
   return (
     <div id="error-page">
-      <main className="flex justify-center items-center flex-col min-h-full place-items-center bg-white px-6 py-10">
+      <main className="flex justify-center items-center flex-col min-h-[100vh] place-items-center bg-white px-6 py-10">
         <Error className="w-20 h-20" />
 
         <div className="text-center">
