@@ -146,7 +146,7 @@ const OrderItem = ({ item }) => {
                   {formatDate(item.warrantyEndDate)}
                 </span>
               ) : (
-                <span className="text-gray-500 text-xs">Warranty expired!</span>
+                <></>
               )}
             </div>
           )}

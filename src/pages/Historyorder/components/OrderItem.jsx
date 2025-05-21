@@ -56,7 +56,7 @@ export const OrderItem = ({ item, onWarrantyRequestClick }) => {
                   <SafetyCertificateOutlined />
                 </Button>
               ) : (
-                <span className="text-gray-500 text-xs">Warranty expired!</span>
+                <></>
               )}
             </div>
           )}
