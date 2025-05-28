@@ -81,7 +81,7 @@ import WarrantyDetail from "../pages/Orders/WarrantyDetail";
 import WalletTrainer from "../components/Trainer/WalletTrainer";
 import ManageHistoryOrderTrainer from "../components/Trainer/ManageHistoryOrderTrainer";
 // import ManageHistoryOrderAdmin from "../components/Admin/ManageHistoryOrderAdmin";
-import ReportRequest from "../components/Admin/ReportRequest";
+// import ReportRequest from "../components/Admin/ReportRequest";
 
 import UpdateProductPage from "../components/StoreIoT/UpdateProductPage";
 import CombosManagement from "../components/Admin/CombosManagement";
@@ -107,6 +107,7 @@ import ManageCombo from "../components/Manager/ManageCombo";
 import GeneralSettings from "../components/Admin/GeneralSettings";
 import HistoryOrder from "../components/Admin/HistoryOrder";
 import TransactionHistory from "../components/Admin/TransactionHistory";
+import ReportRequests from "../components/Admin/ReportRequests";
 const publicRoute = [
   { path: "/register", component: Register, layout: MainLayout },
   { path: "/login", component: Login, layout: MainLayout },
@@ -417,10 +418,16 @@ const privateRoute = [
   },
   {
     path: "/admin/report-request",
-    component: ReportRequest,
+    component: ReportRequests,
     layout: AdminLayout,
     allowedRoles: [Roles.ADMIN],
   },
+  // {
+  //   path: "/admin/report-request",
+  //   component: ReportRequest,
+  //   layout: AdminLayout,
+  //   allowedRoles: [Roles.ADMIN],
+  // },
   {
     path: "/admin/combos-management",
     component: CombosManagement,

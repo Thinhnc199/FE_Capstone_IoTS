@@ -33,3 +33,8 @@ export const TypeStatusOrder = {
   SUCCESS_ORDER: 6,
   CANCLE: 7,
 };
+export const StatusRefund = {
+  PENDING: 0,
+  SUCCESS: 1,
+  REFUNDED: 2,
+};
