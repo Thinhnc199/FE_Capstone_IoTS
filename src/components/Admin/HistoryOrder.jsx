@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 // import { TruckOutlined } from "@ant-design/icons";
 import { ShopOutlined } from "@ant-design/icons";
 import BreadcrumbNav from "../common/BreadcrumbNav";
-
+import { StatusRefund } from "../../redux/constants";
 import {
   fetchHistoryOrderAdmin,
   changePackingStatus,
@@ -16,8 +16,8 @@ import {
 } from "../../redux/slices/orderSlice";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
-
-const { Title } = Typography;
+import { Tag } from "antd";
+const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 dayjs.locale("vi");
 
@@ -92,7 +92,30 @@ const getStatusTag = (statusId) => {
 const formatDate = (dateString) => {
   return dayjs(dateString).format("DD/MM/YYYY HH:mm");
 };
-
+const getReportStatusTag = (status) => {
+  switch (status) {
+    case StatusRefund.PENDING:
+      return (
+        <Tag color="orange" style={{ fontWeight: 500 }}>
+          PENDING
+        </Tag>
+      );
+    case StatusRefund.SUCCESS:
+      return (
+        <Tag color="green" style={{ fontWeight: 500 }}>
+          RESOLVED
+        </Tag>
+      );
+    case StatusRefund.REFUNDED:
+      return (
+        <Tag color="red" style={{ fontWeight: 500 }}>
+          REFUNDED
+        </Tag>
+      );
+    default:
+      return <Tag style={{ fontWeight: 500 }}>UNKNOWN</Tag>;
+  }
+};
 const OrderItem = ({ item }) => {
   const currentDate = new Date();
   const warrantyEndDate = new Date(item.warrantyEndDate);
@@ -120,6 +143,32 @@ const OrderItem = ({ item }) => {
                 </span>
               </p>
             )}
+
+          {item.orderItemStatus === 8 && (
+            <div className="mt-2 space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">Report Status:</span>
+                {getReportStatusTag(item.reportStatus)}
+              </div>
+
+              {item.reportStatus === StatusRefund.REFUNDED && (
+                <div className="space-y-1 mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Refund Quantity:</span>
+                    <Text strong className="text-red-500">
+                      {item.refundQuantity}
+                    </Text>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Refund Amount:</span>
+                    <Text strong className="text-red-500 text-md">
+                      {item.refundAmount.toLocaleString()}₫
+                    </Text>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex items-end space-x-4 flex-col-reverse">
@@ -152,6 +201,9 @@ OrderItem.propTypes = {
     nameProduct: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
+    refundQuantity: PropTypes.number.isRequired,
+    refundAmount: PropTypes.number.isRequired,
+    reportStatus: PropTypes.number.isRequired,
     orderItemStatus: PropTypes.number.isRequired,
     productType: PropTypes.number.isRequired,
     warrantyEndDate: PropTypes.string.isRequired,

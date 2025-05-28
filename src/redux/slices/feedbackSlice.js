@@ -1,12 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "./../../api/apiConfig";
-
+// import { message } from "antd";
 // fetchFeedbackHistory
 export const fetchFeedbackHistory = createAsyncThunk(
   "feedback/fetchFeedbackHistory",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await api.post("/api/feedback/product/get-pagination", payload);
+      const response = await api.post(
+        "/api/feedback/product/get-pagination",
+        payload
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -32,7 +35,10 @@ export const fetchActivityLog = createAsyncThunk(
   "feedback/fetchActivityLog",
   async ({ userId, payload }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/activity-log/get-pagination-activity-log/${userId}`, payload);
+      const response = await api.post(
+        `/api/activity-log/get-pagination-activity-log/${userId}`,
+        payload
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -43,9 +49,11 @@ export const fetchActivityLog = createAsyncThunk(
 // fetchReports - Thêm API lấy danh sách reports
 export const fetchReports = createAsyncThunk(
   "feedback/fetchReports",
-  async (payload, { rejectWithValue }) => {
+  async ({ payload, statusFilter }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/api/report/get-pagination", payload);
+      const response = await api.post("/api/report/get-pagination", payload, {
+        params: { statusFilter },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -59,21 +67,27 @@ export const approveReport = createAsyncThunk(
   async (reportId, { rejectWithValue }) => {
     try {
       const response = await api.post(`/api/report/approve/${reportId}`);
+      // message.success("Report approved successfully");
       return { reportId, data: response.data };
     } catch (error) {
+      // message.error(error);
       return rejectWithValue(error);
     }
   }
 );
 
 // rejectReport - Thêm API reject report
-export const rejectReport = createAsyncThunk(
-  "feedback/rejectReport",
-  async (reportId, { rejectWithValue }) => {
+export const refundReport = createAsyncThunk(
+  "feedback/refundReport",
+  async ({ reportId, refundQuantity }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/report/reject/${reportId}`);
+      const response = await api.post(`/api/report/refund/${reportId}`, {
+        refundQuantity: refundQuantity,
+      });
+      // message.success("Report refunded successfully");
       return { reportId, data: response.data };
     } catch (error) {
+      // message.error(error);
       return rejectWithValue(error);
     }
   }
@@ -87,8 +101,17 @@ const feedbackSlice = createSlice({
     reports: [], // Thêm state cho reports
     loading: false,
     error: null,
+    pageIndex: 1,
+    pageSize: 10,
   },
-  reducers: {},
+  reducers: {
+    setPageIndex: (state, action) => {
+      state.pageIndex = action.payload;
+    },
+    setPageSize: (state, action) => {
+      state.pageSize = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // fetchFeedbackHistory
@@ -134,6 +157,7 @@ const feedbackSlice = createSlice({
       .addCase(fetchReports.fulfilled, (state, action) => {
         state.loading = false;
         state.reports = action.payload.data.data;
+        state.totalCount = action.payload.totalCount;
       })
       .addCase(fetchReports.rejected, (state, action) => {
         state.loading = false;
@@ -159,10 +183,10 @@ const feedbackSlice = createSlice({
         state.error = action.payload;
       })
       // rejectReport
-      .addCase(rejectReport.pending, (state) => {
+      .addCase(refundReport.pending, (state) => {
         state.loading = true;
       })
-      .addCase(rejectReport.fulfilled, (state, action) => {
+      .addCase(refundReport.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         // Cập nhật status của report trong state
@@ -170,14 +194,14 @@ const feedbackSlice = createSlice({
           (report) => report.id === action.payload.reportId
         );
         if (reportIndex !== -1) {
-          state.reports[reportIndex].status = 2; // 2 là rejected
+          state.reports[reportIndex].status = 2;
         }
       })
-      .addCase(rejectReport.rejected, (state, action) => {
+      .addCase(refundReport.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
-
+export const { setPageIndex, setPageSize } = feedbackSlice.actions;
 export default feedbackSlice.reducer;

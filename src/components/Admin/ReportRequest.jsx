@@ -6,9 +6,8 @@ import PropTypes from "prop-types";
 import {
   fetchReports,
   approveReport,
-  rejectReport,
+  refundReport,
 } from "./../../redux/slices/feedbackSlice";
-// import { useNavigate } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
@@ -19,6 +18,7 @@ const ReportRequest = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [refundQuantity, setRefundQuantity] = useState(1); // Default to 1
   const [actionType, setActionType] = useState("");
 
   // Memoize fetchReportData với useCallback
@@ -27,7 +27,7 @@ const ReportRequest = () => {
       dispatch(
         fetchReports({
           pageIndex: 0,
-          pageSize: 10,
+          pageSize: 500000,
           searchKeyword,
           statusFilter,
         })
@@ -55,14 +55,15 @@ const ReportRequest = () => {
   const showConfirmModal = (reportId, type) => {
     setSelectedReport(reportId);
     setActionType(type);
+    setRefundQuantity(1); // Reset to default when opening modal
     setIsModalVisible(true);
   };
 
   const handleConfirm = () => {
     if (actionType === "approve") {
       dispatch(approveReport(selectedReport));
-    } else if (actionType === "reject") {
-      dispatch(rejectReport(selectedReport));
+    } else if (actionType === "refund") {
+      dispatch(refundReport({ reportId: selectedReport, refundQuantity }));
     }
     setIsModalVisible(false);
   };
@@ -107,13 +108,13 @@ const ReportRequest = () => {
             hoverable
           >
             {/* Header */}
-            <h3 className="text-lg font-semibold text-headerBg break-words ">
+            <h3 className="text-lg font-semibold text-headerBg line-clamp-2">
               {report.title}
             </h3>
 
             {/* Content */}
             <div className="mb-4">
-              <p className="text-sm text-gray-600 italic bg-gray-50 p-2 rounded-md">
+              <p className="text-sm text-gray-600 italic bg-blue-50 p-2 rounded-md">
                 {report.content}
               </p>
             </div>
@@ -125,8 +126,12 @@ const ReportRequest = () => {
                   <span className="text-gray-600">{report.orderItemId}</span>
                 </p>
                 <p>
-                  <span className="font-medium text-gray-900">Product ID:</span>{" "}
-                  <span className="text-gray-600">{report.productId}</span>
+                  <span className="font-medium text-gray-900">
+                    Product Name:
+                  </span>{" "}
+                  <span className="text-gray-600 line-clamp-2">
+                    {report.productName}
+                  </span>
                 </p>
               </div>
               <div className="space-y-2">
@@ -143,11 +148,17 @@ const ReportRequest = () => {
               </div>
             </div>
             <p>
+              <span className="font-medium text-gray-900">Order Code:</span>{" "}
+              <span className="text-gray-600">{report.orderItemId}</span>
+            </p>
+            <p>
               <span className="font-medium text-gray-900">Name:</span>{" "}
               <span className="text-gray-600">{report.createdByFullname}</span>
             </p>
             <p>
-              <span className="font-medium text-gray-900">Email:</span>{" "}
+              <span className="font-medium text-gray-900">
+                Create by email:
+              </span>{" "}
               <span className="text-gray-600">{report.createdByEmail}</span>
             </p>
             <p>
@@ -178,9 +189,9 @@ const ReportRequest = () => {
                 <Button
                   danger
                   className="w-full hover:bg-red-700 transition-colors rounded-lg font-medium"
-                  onClick={() => showConfirmModal(report.id, "reject")}
+                  onClick={() => showConfirmModal(report.id, "refund")}
                 >
-                  Reject
+                  Refund
                 </Button>
               </div>
             )}
@@ -243,7 +254,7 @@ const ReportRequest = () => {
             loading={loading}
           />
         </TabPane>
-        <TabPane tab="Rejected" key="2">
+        <TabPane tab="Refunded" key="2">
           <ReportList
             reports={reports.filter((r) => r.status === 2)}
             loading={loading}
@@ -252,7 +263,7 @@ const ReportRequest = () => {
       </Tabs>
 
       <Modal
-        title={`Confirm ${actionType === "approve" ? "Approval" : "Rejection"}`}
+        title={`Confirm ${actionType === "approve" ? "Approval" : "Refund"}`}
         visible={isModalVisible}
         onOk={handleConfirm}
         onCancel={handleCancel}
@@ -263,6 +274,20 @@ const ReportRequest = () => {
         }}
       >
         <p>Are you sure you want to {actionType} this report?</p>
+        {actionType === "refund" && (
+          <div style={{ marginTop: 16 }}>
+            <label>Refund Quantity: </label>
+            <Input
+              type="number"
+              min="1"
+              value={refundQuantity}
+              onChange={(e) =>
+                setRefundQuantity(Math.max(1, parseInt(e.target.value) || 1))
+              }
+              style={{ width: 80, marginLeft: 8 }}
+            />
+          </div>
+        )}
       </Modal>
     </div>
   );
