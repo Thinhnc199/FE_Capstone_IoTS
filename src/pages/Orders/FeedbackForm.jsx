@@ -235,18 +235,41 @@ import {
   Space,
   Card,
   Alert,
+  message,
+  Select,
+  Image,
 } from "antd";
+import {
+  ExclamationCircleOutlined,
+  UserOutlined,
+  CreditCardOutlined,
+  BankOutlined,
+} from "@ant-design/icons";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createFeedback } from "./../../redux/slices/feedbackSlice";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { fetchBanks } from "../../redux/slices/bankSlice";
 const FeedbackForm = ({ visible, onClose, sellerGroup, fetchHistoryOrder }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [hasLowRating, setHasLowRating] = useState(false);
-
+  const {
+    banks,
+    loading: bankLoading,
+    error: bankError,
+  } = useSelector((state) => state.banks);
   // Watch for rating changes to determine if we need to show bank info
+
+  useEffect(() => {
+    dispatch(fetchBanks());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (bankError) {
+      message.error(bankError);
+    }
+  }, [bankError]);
   const handleValuesChange = (changedValues, allValues) => {
     const ratings = sellerGroup.items.map(
       (item) => allValues[`rating_${item.orderItemId}`]
@@ -457,31 +480,101 @@ const FeedbackForm = ({ visible, onClose, sellerGroup, fetchHistoryOrder }) => {
             bodyStyle={{ padding: "16px" }}
           >
             <Alert
-              message="Refund Information Required"
-              description="Since you rated one or more items below 2 stars, please provide your bank account details for possible refund."
+              message={
+                <span className="text-yellow-800 font-medium">
+                  Refund Information Required
+                </span>
+              }
+              description={
+                <span className="text-yellow-700 ">
+                  Since you rated one or more items below 2 stars, please
+                  provide your bank account details for possible refund.
+                </span>
+              }
               type="warning"
               showIcon
+              icon={<ExclamationCircleOutlined style={{ color: "#faad14" }} />}
               style={{ marginBottom: "16px" }}
             />
 
+            <Form.Item
+              name="bankName"
+              label={
+                <span>
+                  <BankOutlined className="text-gray-500 mr-2" />
+                  Bank name{" "}
+                </span>
+              }
+              rules={[{ required: true, message: "Please select a bank" }]}
+            >
+              <Select
+                showSearch
+                placeholder="Select a bank"
+                optionFilterProp="children"
+                loading={bankLoading}
+                filterOption={(input, option) =>
+                  option.children[1]
+                    ?.toLowerCase()
+                    .includes(input.toLowerCase()) ||
+                  option.code?.toLowerCase().includes(input.toLowerCase())
+                }
+                className="w-full"
+              >
+                {banks.map((bank) => (
+                  <Select.Option
+                    key={bank.id}
+                    value={bank.shortName}
+                    code={bank.code}
+                  >
+                    <div className="flex items-center">
+                      <Image
+                        src={bank.logo}
+                        alt={bank.shortName}
+                        width={40}
+                        height={24}
+                        preview={false}
+                        className="mr-3"
+                      />
+                      <span className="flex-1 text-center">
+                        {bank.shortName}
+                      </span>
+                    </div>
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
-                  label="Bank Name"
-                  name="bankName"
+                  label={
+                    <span>
+                      <CreditCardOutlined className="text-gray-500 mr-2" />
+                      Account Number{" "}
+                    </span>
+                  }
+                  name="accountNumber"
                   rules={[
                     {
                       required: hasLowRating,
-                      message: "Please input your bank name",
+                      message: "Please input account number",
+                    },
+                    {
+                      pattern: /^\d+$/,
+                      message: "Account number should contain only numbers",
                     },
                   ]}
                 >
-                  <Input placeholder="e.g., Vietcombank, Techcombank" />
+                  <Input placeholder="Bank account number" />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
-                  label="Account Name"
+                  label={
+                    <span>
+                      <UserOutlined className="text-gray-500 mr-2" />
+                      Account name{" "}
+                    </span>
+                  }
                   name="accountName"
                   rules={[
                     {
@@ -494,23 +587,6 @@ const FeedbackForm = ({ visible, onClose, sellerGroup, fetchHistoryOrder }) => {
                 </Form.Item>
               </Col>
             </Row>
-
-            <Form.Item
-              label="Account Number"
-              name="accountNumber"
-              rules={[
-                {
-                  required: hasLowRating,
-                  message: "Please input account number",
-                },
-                {
-                  pattern: /^\d+$/,
-                  message: "Account number should contain only numbers",
-                },
-              ]}
-            >
-              <Input placeholder="Bank account number" />
-            </Form.Item>
           </Card>
         )}
       </Form>
