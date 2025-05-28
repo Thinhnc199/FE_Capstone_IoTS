@@ -533,6 +533,36 @@ const ReportRequests = () => {
                       </p>
                       <p>
                         <span className="font-medium text-gray-900">
+                          Email:
+                        </span>{" "}
+                        <span className="text-gray-600">
+                          {report.createdByEmail}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-900">
+                          Bank Name:
+                        </span>{" "}
+                        <span className="text-gray-600">{report.bankName}</span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-900">
+                          Account Name:
+                        </span>{" "}
+                        <span className="text-gray-600">
+                          {report.accountName}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-900">
+                          Account Number:
+                        </span>{" "}
+                        <span className="text-gray-600">
+                          {report.accountNumber}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="font-medium text-gray-900">
                           Store:
                         </span>{" "}
                         <span className="text-blue-600 cursor-pointer hover:underline">
