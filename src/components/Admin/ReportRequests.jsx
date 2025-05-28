@@ -293,7 +293,7 @@
 // export default ReportRequests;
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, Tabs, Button, Modal, message, Input } from "antd";
+import { Card, Tabs, Button, Modal, message, Input, Pagination } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import {
   fetchReports,
@@ -306,7 +306,7 @@ const { TabPane } = Tabs;
 
 const ReportRequests = () => {
   const dispatch = useDispatch();
-  const { reports, pageIndex, pageSize } = useSelector(
+  const { reports, pageIndex, pageSize, totalCount } = useSelector(
     (state) => state.feedback
   );
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -397,6 +397,9 @@ const ReportRequests = () => {
   const calculateRefundAmount = () => {
     if (!selectedReport) return 0;
     return selectedReport.price * refundQuantity;
+  };
+  const handlePageChange = (page, pageSize) => {
+    fetchData({ page, pageSize });
   };
 
   return (
@@ -562,7 +565,7 @@ const ReportRequests = () => {
               </div>
 
               {/* Pagination */}
-              <div className="flex justify-center mt-4">
+              {/* <div className="flex justify-center mt-4">
                 <Button
                   disabled={pageIndex === 1}
                   onClick={() => fetchData({ page: pageIndex - 1 })}
@@ -577,6 +580,18 @@ const ReportRequests = () => {
                 >
                   Next
                 </Button>
+              </div> */}
+              <div className="flex justify-end mt-4">
+                <Pagination
+                  current={pageIndex}
+                  pageSize={pageSize}
+                  total={totalCount}
+                  onChange={handlePageChange}
+                  showSizeChanger
+                  showQuickJumper
+                  showTotal={(total) => `Total ${total} reports`}
+                  style={{ marginTop: 16 }}
+                />
               </div>
             </TabPane>
           ))}
