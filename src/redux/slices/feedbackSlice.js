@@ -102,7 +102,7 @@ const feedbackSlice = createSlice({
     loading: false,
     error: null,
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: 500000,
   },
   reducers: {
     setPageIndex: (state, action) => {
