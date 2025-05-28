@@ -102,7 +102,8 @@ const feedbackSlice = createSlice({
     loading: false,
     error: null,
     pageIndex: 1,
-    pageSize: 500000,
+    pageSize: 10,
+    totalCount: 0, // Thêm state cho tổng số lượng reports
   },
   reducers: {
     setPageIndex: (state, action) => {
@@ -157,7 +158,7 @@ const feedbackSlice = createSlice({
       .addCase(fetchReports.fulfilled, (state, action) => {
         state.loading = false;
         state.reports = action.payload.data.data;
-        state.totalCount = action.payload.totalCount;
+        state.totalCount = action.payload.data.totalCount;
       })
       .addCase(fetchReports.rejected, (state, action) => {
         state.loading = false;
