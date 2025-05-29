@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Roles } from "../../../redux/constants";
 import {
   Table,
   Tag,
@@ -23,6 +24,7 @@ import {
 
 const WalletManagement = () => {
   const dispatch = useDispatch();
+  const RoleUser = localStorage.getItem("role");
   const { transactions, loading } = useSelector((state) => state.wallet);
   const {
     banks,
@@ -152,13 +154,17 @@ const WalletManagement = () => {
               {wallet?.ballance.toLocaleString() || 0} gold
             </p>
           </div>
-          <Button
-            type="primary"
-            className="bg-headerBg"
-            onClick={() => setIsModalOpen(true)}
-          >
-            Withdraw
-          </Button>
+          {RoleUser != Roles.CUSTOMER ? (
+            <Button
+              type="primary"
+              className="bg-headerBg"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Withdraw
+            </Button>
+          ) : (
+            <></>
+          )}
         </div>
 
         {/* Transactions Table */}

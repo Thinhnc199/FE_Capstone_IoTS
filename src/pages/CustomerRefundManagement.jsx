@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Tabs, Tag } from "antd";
 import { getRefundRequests } from "./../redux/slices/walletSlice";
+import BreadcrumbNav from "../components/common/BreadcrumbNav";
 const { TabPane } = Tabs;
 
 const CustomerRefundManagement = () => {
@@ -90,7 +91,12 @@ const CustomerRefundManagement = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="mx-auto  p-8 bg-background min-h-screen container">
+      <div className="max-w-6xl mb-4">
+        <BreadcrumbNav
+          items={[{ label: "Home", path: "/" }, { label: "Refund requests" }]}
+        />
+      </div>
       <div className="bg-white rounded-md p-4 overflow-hidden shadow-lg">
         <h1 className="text-2xl font-bold text-black mb-6">Refund Requests</h1>
 
