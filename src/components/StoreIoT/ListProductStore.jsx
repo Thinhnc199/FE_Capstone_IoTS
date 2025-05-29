@@ -47,7 +47,6 @@ export default function ListProductStore() {
     searchKeyword,
     startFilterDate,
     endFilterDate,
-    totalCount,
   ]);
   console.log("totaltotal", totalCount);
 
@@ -83,11 +82,14 @@ export default function ListProductStore() {
             <div>
               <p className="font-semibold text-sm">Search by related</p>
               <SearchAndFilterProducts
-                onSearch={(keyword) => dispatch(setsearchKeyword(keyword))}
-                onFilterDate={(startDate, endDate) => {
-                  dispatch(setStartFilterDate(startDate));
-                  dispatch(setEndFilterDate(endDate));
-                }}
+                // onSearch={(keyword) => dispatch(setsearchKeyword(keyword))}
+                // onFilterDate={(startDate, endDate) => {
+                //   dispatch(setStartFilterDate(startDate));
+                //   dispatch(setEndFilterDate(endDate));
+                // }}
+                setEndFilterDate={setEndFilterDate}
+                setStartFilterDate={setStartFilterDate}
+                setsearchKeyword={setsearchKeyword}
               />
             </div>
           </div>

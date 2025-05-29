@@ -329,6 +329,7 @@ export default function ManageHistoryOrderTrainer() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
+  const FeePercent = localStorage.getItem("applicationFeePercent");
   const showConfirmModal = (title, content, onConfirm) => {
     Modal.confirm({
       title,
@@ -492,10 +493,13 @@ export default function ManageHistoryOrderTrainer() {
             className="shadow-sm rounded-lg border-0 overflow-hidden"
             bodyStyle={{ padding: 0 }}
           >
-            <div className="px-6 py-4 border-b border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <Title level={4} className="mb-0 text-gray-800">
                 Order History
               </Title>
+              <span className="text-sm text-yellow-600 bg-yellow-50 px-3 py-1 rounded-md font-medium">
+                {`The website charges an ${FeePercent}% fee per order.`}
+              </span>
             </div>
 
             <Tabs
