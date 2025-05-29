@@ -82,8 +82,15 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await api.post("/api/login", credentials);
-      const { token, id, roleId, email, imageUrl, username } =
-        response.data.data;
+      const {
+        token,
+        id,
+        roleId,
+        email,
+        imageUrl,
+        username,
+        applicationFeePercent,
+      } = response.data.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("userId", id);
@@ -91,6 +98,7 @@ export const loginUser = createAsyncThunk(
       localStorage.setItem("imageUrl", imageUrl);
       localStorage.setItem("username", username);
       localStorage.setItem("email", email);
+      localStorage.setItem("applicationFeePercent", applicationFeePercent);
 
       const userDetails = await fetchUserRequest(id);
 
@@ -123,6 +131,7 @@ const userAuthSlice = createSlice({
     },
     loading: false,
     error: null,
+    FeePercent: 0,
   },
   reducers: {
     logout: (state) => {
@@ -160,6 +169,7 @@ const userAuthSlice = createSlice({
         state.fullname = action.payload.fullname;
         state.imageUrl = action.payload.imageUrl;
         state.userDetails = action.payload.userDetails;
+        state.FeePercent = action.payload.applicationFeePercent;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

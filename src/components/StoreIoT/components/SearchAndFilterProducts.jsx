@@ -1,12 +1,12 @@
-import { Input, Space, DatePicker } from "antd";
+import { Input, Space } from "antd";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 const { Search } = Input;
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 
 const SearchAndFilterProducts = ({
-  setEndFilterDate,
-  setStartFilterDate,
+  // setEndFilterDate,
+  // setStartFilterDate,
   setsearchKeyword,
 }) => {
   const dispatch = useDispatch();

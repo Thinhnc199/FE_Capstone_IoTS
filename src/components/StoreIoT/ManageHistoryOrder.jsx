@@ -7,6 +7,7 @@ import {
   Button,
   message,
   Modal,
+  Tag,
 } from "antd";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -14,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { TruckOutlined, EyeOutlined, RocketOutlined } from "@ant-design/icons";
 import { getTrackingGhtk } from "../../redux/slices/orderSlice";
 import BreadcrumbNav from "../common/BreadcrumbNav";
-
+import { StatusRefund } from "../../redux/constants";
 import {
   fetchHistoryOrderStoreTrainer,
   changePackingStatus,
@@ -26,7 +27,7 @@ import {
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 dayjs.locale("vi");
 
@@ -101,7 +102,30 @@ const getStatusTag = (statusId) => {
 const formatDate = (dateString) => {
   return dayjs(dateString).format("DD/MM/YYYY HH:mm");
 };
-
+const getReportStatusTag = (status) => {
+  switch (status) {
+    case StatusRefund.PENDING:
+      return (
+        <Tag color="orange" style={{ fontWeight: 500 }}>
+          PENDING
+        </Tag>
+      );
+    case StatusRefund.SUCCESS:
+      return (
+        <Tag color="green" style={{ fontWeight: 500 }}>
+          RESOLVED
+        </Tag>
+      );
+    case StatusRefund.REFUNDED:
+      return (
+        <Tag color="red" style={{ fontWeight: 500 }}>
+          REFUNDED
+        </Tag>
+      );
+    default:
+      return <Tag style={{ fontWeight: 500 }}>UNKNOWN</Tag>;
+  }
+};
 const OrderItem = ({ item }) => {
   const currentDate = new Date();
   const warrantyEndDate = new Date(item.warrantyEndDate);
@@ -129,6 +153,32 @@ const OrderItem = ({ item }) => {
                 </span>
               </p>
             )}
+
+          {item.orderItemStatus === 8 && (
+            <div className="mt-2 space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">Report Status:</span>
+                {getReportStatusTag(item.reportStatus)}
+              </div>
+
+              {item.reportStatus === StatusRefund.REFUNDED && (
+                <div className="space-y-1 mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Refund Quantity:</span>
+                    <Text strong className="text-red-500">
+                      {item.refundQuantity}
+                    </Text>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Refund Amount:</span>
+                    <Text strong className="text-red-500 text-md">
+                      {item.refundAmount.toLocaleString()}₫
+                    </Text>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex items-end space-x-4 flex-col-reverse">
@@ -161,6 +211,9 @@ OrderItem.propTypes = {
     nameProduct: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
+    refundQuantity: PropTypes.number.isRequired,
+    refundAmount: PropTypes.number.isRequired,
+    reportStatus: PropTypes.number.isRequired,
     orderItemStatus: PropTypes.number.isRequired,
     productType: PropTypes.number.isRequired,
     warrantyEndDate: PropTypes.string.isRequired,
@@ -520,6 +573,8 @@ export default function ManageHistoryOrder() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const { historyOrdersStoreTrainer, pageIndex, pageSize, loading } =
     useSelector((state) => state.orders);
+  const FeePercent = localStorage.getItem("applicationFeePercent");
+
   const showConfirmModal = (title, content, onConfirm) => {
     Modal.confirm({
       title,
@@ -694,10 +749,13 @@ export default function ManageHistoryOrder() {
             className="shadow-sm rounded-lg border-0 overflow-hidden"
             bodyStyle={{ padding: 0 }}
           >
-            <div className="px-6 py-4 border-b border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
               <Title level={4} className="mb-0 text-gray-800">
                 Order History
               </Title>
+              <span className="text-sm text-yellow-600 bg-yellow-50 px-3 py-1 rounded-md font-medium">
+                {`The website charges an ${FeePercent}% fee per order.`}
+              </span>
             </div>
 
             <Tabs
