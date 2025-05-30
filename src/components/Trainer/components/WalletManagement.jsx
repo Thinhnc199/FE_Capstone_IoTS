@@ -145,16 +145,17 @@ const WalletManagement = () => {
         </div> */}
 
         {/* Balance and Cashout Button */}
-        <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg">
-          <div className="flex space-x-2">
-            <h2 className="text-xl font-bold font-Mainfont">
-              Current Balance:
-            </h2>
-            <p className="text-xl font-bold font-Mainfont text-headerBg">
-              {wallet?.ballance.toLocaleString() || 0} gold
-            </p>
-          </div>
-          {RoleUser != Roles.CUSTOMER ? (
+        {RoleUser != Roles.CUSTOMER ? (
+          <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg">
+            <div className="flex space-x-2">
+              <h2 className="text-xl font-bold font-Mainfont">
+                Current Balance:
+              </h2>
+              <p className="text-xl font-bold font-Mainfont text-headerBg">
+                {wallet?.ballance.toLocaleString() || 0} gold
+              </p>
+            </div>
+
             <Button
               type="primary"
               className="bg-headerBg"
@@ -162,11 +163,12 @@ const WalletManagement = () => {
             >
               Withdraw
             </Button>
-          ) : (
-            <></>
-          )}
-        </div>
-
+          </div>
+        ) : (
+          <h2 className="text-xl font-bold font-Mainfont py-2">
+            Transaction History
+          </h2>
+        )}
         {/* Transactions Table */}
         <Table
           columns={columns}
