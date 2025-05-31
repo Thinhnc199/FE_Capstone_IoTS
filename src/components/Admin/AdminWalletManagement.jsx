@@ -7,7 +7,7 @@ import {
   approveCashoutRequest,
   rejectCashoutRequest,
 } from "./../../redux/slices/walletSlice";
-import moment from "moment";
+// import moment from "moment";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 const { TabPane } = Tabs;
 
@@ -306,7 +306,7 @@ const AdminWalletManagement = () => {
                     {selectedRequest.createdByNavigationFullname}
                   </p>
                 </div>
-                <div>
+                {/* <div>
                   <span className="font-medium text-gray-600">
                     Requested At:
                   </span>
@@ -317,7 +317,7 @@ const AdminWalletManagement = () => {
                         )
                       : "N/A"}
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           )}
